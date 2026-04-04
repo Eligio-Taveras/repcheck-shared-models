@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, "feature/**"]
+    branches: [main, "feature/**", "claude/**"]
   pull_request:
-    branches: [main, "feature/**"]
+    branches: [main, "feature/**", "claude/**"]
 
 jobs:
   build:
@@ -14,10 +14,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
-      - name: Set up JDK $java_version$
+      - name: Set up JDK 21
         uses: actions/setup-java@v4.7.0
         with:
-          java-version: '$java_version$'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Install sbt
@@ -38,9 +38,9 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
-          token: \${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: |
-            $name$/target/scala-$scala_version$/scoverage-report/scoverage.xml
+            repcheck-shared-models/target/scala-3.4.1/scoverage-report/scoverage.xml
           fail_ci_if_error: false
 
   doc-generator:
@@ -50,10 +50,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
-      - name: Set up JDK $java_version$
+      - name: Set up JDK 21
         uses: actions/setup-java@v4.7.0
         with:
-          java-version: '$java_version$'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Install sbt
