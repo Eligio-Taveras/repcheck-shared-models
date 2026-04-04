@@ -35,9 +35,7 @@ class PorkTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   "PorkType Circe codec" should "round-trip all values" in {
-    PorkType.values.foreach { pt =>
-      pt.asJson.as[PorkType] shouldBe Right(pt)
-    }
+    PorkType.values.foreach(pt => pt.asJson.as[PorkType] shouldBe Right(pt))
   }
 
   it should "serialize to lowercase" in {

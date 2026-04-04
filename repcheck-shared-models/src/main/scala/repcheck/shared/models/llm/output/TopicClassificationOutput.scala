@@ -1,11 +1,11 @@
 package repcheck.shared.models.llm.output
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class TopicScore(
-    topic: String,
-    confidence: Double
+  topic: String,
+  confidence: Double,
 )
 
 object TopicScore {
@@ -16,7 +16,7 @@ object TopicScore {
 }
 
 final case class TopicClassificationOutput(
-    topics: List[TopicScore]
+  topics: List[TopicScore]
 )
 
 object TopicClassificationOutput {

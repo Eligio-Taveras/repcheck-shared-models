@@ -1,12 +1,13 @@
 package repcheck.shared.models.congress.dto.member
 
-import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder, HCursor, Json}
+
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
 
 final case class MemberDepictionDTO(
-    imageUrl: Option[String],
-    attribution: Option[String]
+  imageUrl: Option[String],
+  attribution: Option[String],
 )
 
 object MemberDepictionDTO {
@@ -15,8 +16,8 @@ object MemberDepictionDTO {
 }
 
 final case class MemberTermSummaryDTO(
-    chamber: Option[String],
-    startYear: Option[Int]
+  chamber: Option[String],
+  startYear: Option[Int],
 )
 
 object MemberTermSummaryDTO {
@@ -25,14 +26,14 @@ object MemberTermSummaryDTO {
 }
 
 final case class MemberDetailTermDTO(
-    chamber: Option[String],
-    congress: Option[Int],
-    endYear: Option[Int],
-    memberType: Option[String],
-    startYear: Option[Int],
-    stateCode: Option[String],
-    stateName: Option[String],
-    district: Option[Int]
+  chamber: Option[String],
+  congress: Option[Int],
+  endYear: Option[Int],
+  memberType: Option[String],
+  startYear: Option[Int],
+  stateCode: Option[String],
+  stateName: Option[String],
+  district: Option[Int],
 )
 
 object MemberDetailTermDTO {
@@ -41,9 +42,9 @@ object MemberDetailTermDTO {
 }
 
 final case class PartyHistoryDTO(
-    partyAbbreviation: Option[String],
-    partyName: Option[String],
-    startYear: Option[Int]
+  partyAbbreviation: Option[String],
+  partyName: Option[String],
+  startYear: Option[Int],
 )
 
 object PartyHistoryDTO {
@@ -52,36 +53,37 @@ object PartyHistoryDTO {
 }
 
 final case class LeadershipDTO(
-    congress: Option[Int],
-    type_ : Option[String]
+  congress: Option[Int],
+  type_ : Option[String],
 )
 
 object LeadershipDTO {
+
   implicit val encoder: Encoder[LeadershipDTO] = Encoder.instance { l =>
     val fields = List(
       l.congress.map(v => "congress" -> Json.fromInt(v)),
-      l.type_.map(v => "type" -> Json.fromString(v))
+      l.type_.map(v => "type" -> Json.fromString(v)),
     ).flatten
     Json.obj(fields*)
   }
 
-  implicit val decoder: Decoder[LeadershipDTO] = (c: HCursor) => {
+  implicit val decoder: Decoder[LeadershipDTO] = (c: HCursor) =>
     for {
       congress <- c.downField("congress").as[Option[Int]]
-      t <- c.downField("type").as[Option[String]]
+      t        <- c.downField("type").as[Option[String]]
     } yield LeadershipDTO(congress = congress, type_ = t)
-  }
+
 }
 
 final case class MemberListItemDTO(
-    bioguideId: String,
-    name: Option[String],
-    partyName: Option[String],
-    state: Option[String],
-    depiction: Option[MemberDepictionDTO],
-    terms: Option[List[MemberTermSummaryDTO]],
-    updateDate: Option[String],
-    url: Option[String]
+  bioguideId: String,
+  name: Option[String],
+  partyName: Option[String],
+  state: Option[String],
+  depiction: Option[MemberDepictionDTO],
+  terms: Option[List[MemberTermSummaryDTO]],
+  updateDate: Option[String],
+  url: Option[String],
 )
 
 object MemberListItemDTO {
@@ -90,21 +92,21 @@ object MemberListItemDTO {
 }
 
 final case class MemberDetailDTO(
-    bioguideId: String,
-    birthYear: Option[String],
-    firstName: Option[String],
-    lastName: Option[String],
-    directOrderName: Option[String],
-    invertedOrderName: Option[String],
-    honorificName: Option[String],
-    cosponsoredLegislation: Option[PaginationInfoDTO],
-    depiction: Option[MemberDepictionDTO],
-    leadership: Option[List[LeadershipDTO]],
-    partyHistory: Option[List[PartyHistoryDTO]],
-    sponsoredLegislation: Option[PaginationInfoDTO],
-    state: Option[String],
-    terms: Option[List[MemberDetailTermDTO]],
-    updateDate: Option[String]
+  bioguideId: String,
+  birthYear: Option[String],
+  firstName: Option[String],
+  lastName: Option[String],
+  directOrderName: Option[String],
+  invertedOrderName: Option[String],
+  honorificName: Option[String],
+  cosponsoredLegislation: Option[PaginationInfoDTO],
+  depiction: Option[MemberDepictionDTO],
+  leadership: Option[List[LeadershipDTO]],
+  partyHistory: Option[List[PartyHistoryDTO]],
+  sponsoredLegislation: Option[PaginationInfoDTO],
+  state: Option[String],
+  terms: Option[List[MemberDetailTermDTO]],
+  updateDate: Option[String],
 )
 
 object MemberDetailDTO {

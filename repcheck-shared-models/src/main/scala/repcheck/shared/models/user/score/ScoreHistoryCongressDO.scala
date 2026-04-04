@@ -2,13 +2,13 @@ package repcheck.shared.models.user.score
 
 import java.util.UUID
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class ScoreHistoryCongressDO(
-    scoreId: UUID,
-    congress: Int,
-    overallScore: Float
+  scoreId: UUID,
+  congress: Int,
+  overallScore: Float,
 )
 
 object ScoreHistoryCongressDO {

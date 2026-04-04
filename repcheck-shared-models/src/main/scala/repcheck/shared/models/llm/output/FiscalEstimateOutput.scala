@@ -1,13 +1,13 @@
 package repcheck.shared.models.llm.output
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class FiscalEstimateOutput(
-    estimatedCost: String,
-    timeframe: String,
-    assumptions: List[String],
-    confidence: Double
+  estimatedCost: String,
+  timeframe: String,
+  assumptions: List[String],
+  confidence: Double,
 )
 
 object FiscalEstimateOutput {

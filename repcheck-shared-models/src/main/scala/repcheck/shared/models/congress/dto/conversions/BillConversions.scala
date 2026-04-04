@@ -1,8 +1,8 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import repcheck.shared.models.congress.dto.bill.{BillDetailDTO, BillListItemDTO}
 import repcheck.shared.models.congress.dos.bill.{BillCosponsorDO, BillDO, BillSubjectDO}
 import repcheck.shared.models.congress.dos.results.BillConversionResult
+import repcheck.shared.models.congress.dto.bill.{BillDetailDTO, BillListItemDTO}
 
 object BillConversions {
 
@@ -10,10 +10,10 @@ object BillConversions {
     s"$congress-${billType.toUpperCase}-$number"
 
   private[conversions] def validateBillFields(
-      congress: Int,
-      number: String,
-      title: String
-  ): Either[String, Unit] = {
+    congress: Int,
+    number: String,
+    title: String,
+  ): Either[String, Unit] =
     if (congress <= 0) {
       Left(s"congress must be > 0, got: $congress")
     } else if (number.trim.isEmpty) {
@@ -23,10 +23,10 @@ object BillConversions {
     } else {
       Right(())
     }
-  }
 
   implicit class BillListItemDTOOps(private val dto: BillListItemDTO) extends AnyVal {
-    def toDO: Either[String, BillDO] = {
+
+    def toDO: Either[String, BillDO] =
       for {
         _ <- validateBillFields(dto.congress, dto.number, dto.title)
       } yield BillDO(
@@ -57,13 +57,14 @@ object BillConversions {
         legislationUrl = None,
         apiUrl = Some(dto.url),
         createdAt = None,
-        updatedAt = None
+        updatedAt = None,
       )
-    }
+
   }
 
   implicit class BillDetailDTOOps(private val dto: BillDetailDTO) extends AnyVal {
-    def toDO: Either[String, BillConversionResult] = {
+
+    def toDO: Either[String, BillConversionResult] =
       for {
         _ <- validateBillFields(dto.congress, dto.number, dto.title)
       } yield {
@@ -72,14 +73,14 @@ object BillConversions {
         val sponsorBioguideId = dto.sponsors.flatMap(_.headOption).map(_.bioguideId)
 
         val firstTextVersion = dto.textVersions.flatMap(_.headOption)
-        val firstFormat = firstTextVersion.flatMap(_.formats).flatMap(_.headOption)
-        val textUrl = firstFormat.map(_.url)
-        val textFormat = firstFormat.map(_.type_)
-        val textVersionType = firstTextVersion.flatMap(_.type_)
-        val textDate = firstTextVersion.flatMap(_.date)
+        val firstFormat      = firstTextVersion.flatMap(_.formats).flatMap(_.headOption)
+        val textUrl          = firstFormat.map(_.url)
+        val textFormat       = firstFormat.map(_.type_)
+        val textVersionType  = firstTextVersion.flatMap(_.type_)
+        val textDate         = firstTextVersion.flatMap(_.date)
 
-        val firstSummary = dto.summaries.flatMap(_.headOption)
-        val summaryText = firstSummary.flatMap(_.text)
+        val firstSummary      = dto.summaries.flatMap(_.headOption)
+        val summaryText       = firstSummary.flatMap(_.text)
         val summaryActionDesc = firstSummary.flatMap(_.actionDesc)
         val summaryActionDate = firstSummary.flatMap(_.actionDate)
 
@@ -111,7 +112,7 @@ object BillConversions {
           legislationUrl = dto.legislationUrl,
           apiUrl = Some(dto.url),
           createdAt = None,
-          updatedAt = None
+          updatedAt = None,
         )
 
         val cosponsors: List[BillCosponsorDO] = List.empty
@@ -124,16 +125,17 @@ object BillConversions {
               billId = billId,
               subjectName = subj.name,
               embedding = None,
-              updateDate = subj.updateDate
+              updateDate = subj.updateDate,
             )
           }
 
         BillConversionResult(
           bill = bill,
           cosponsors = cosponsors,
-          subjects = subjects
+          subjects = subjects,
         )
       }
-    }
+
   }
+
 }

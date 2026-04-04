@@ -42,9 +42,7 @@ class PromptStageSpec extends AnyFlatSpec with Matchers {
   }
 
   "PromptStage Circe codec" should "round-trip all values" in {
-    PromptStage.values.foreach { ps =>
-      ps.asJson.as[PromptStage] shouldBe Right(ps)
-    }
+    PromptStage.values.foreach(ps => ps.asJson.as[PromptStage] shouldBe Right(ps))
   }
 
   it should "serialize to lowercase" in {

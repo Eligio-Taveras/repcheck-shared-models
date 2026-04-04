@@ -1,15 +1,15 @@
 package repcheck.shared.models.congress.dto.vote
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class VoteResultDTO(
-    memberId: Option[String],
-    firstName: Option[String],
-    lastName: Option[String],
-    voteCast: Option[String],
-    party: Option[String],
-    state: Option[String]
+  memberId: Option[String],
+  firstName: Option[String],
+  lastName: Option[String],
+  voteCast: Option[String],
+  party: Option[String],
+  state: Option[String],
 )
 
 object VoteResultDTO {
@@ -18,12 +18,12 @@ object VoteResultDTO {
 }
 
 final case class VotePartyTotalDTO(
-    voteParty: Option[String],
-    party: Option[String],
-    yeaTotal: Option[Int],
-    nayTotal: Option[Int],
-    presentTotal: Option[Int],
-    notVotingTotal: Option[Int]
+  voteParty: Option[String],
+  party: Option[String],
+  yeaTotal: Option[Int],
+  nayTotal: Option[Int],
+  presentTotal: Option[Int],
+  notVotingTotal: Option[Int],
 )
 
 object VotePartyTotalDTO {
@@ -32,18 +32,18 @@ object VotePartyTotalDTO {
 }
 
 final case class VoteListItemDTO(
-    congress: Int,
-    chamber: String,
-    rollCallNumber: Int,
-    sessionNumber: Option[Int],
-    startDate: Option[String],
-    updateDate: Option[String],
-    result: Option[String],
-    voteType: Option[String],
-    legislationNumber: Option[String],
-    legislationType: Option[String],
-    legislationUrl: Option[String],
-    url: Option[String]
+  congress: Int,
+  chamber: String,
+  rollCallNumber: Int,
+  sessionNumber: Option[Int],
+  startDate: Option[String],
+  updateDate: Option[String],
+  result: Option[String],
+  voteType: Option[String],
+  legislationNumber: Option[String],
+  legislationType: Option[String],
+  legislationUrl: Option[String],
+  url: Option[String],
 )
 
 object VoteListItemDTO {
@@ -52,20 +52,20 @@ object VoteListItemDTO {
 }
 
 final case class VoteDetailDTO(
-    congress: Int,
-    chamber: String,
-    rollCallNumber: Int,
-    sessionNumber: Option[Int],
-    startDate: Option[String],
-    updateDate: Option[String],
-    result: Option[String],
-    voteType: Option[String],
-    legislationNumber: Option[String],
-    legislationType: Option[String],
-    legislationUrl: Option[String],
-    url: Option[String],
-    voteQuestion: Option[String],
-    votePartyTotal: Option[List[VotePartyTotalDTO]]
+  congress: Int,
+  chamber: String,
+  rollCallNumber: Int,
+  sessionNumber: Option[Int],
+  startDate: Option[String],
+  updateDate: Option[String],
+  result: Option[String],
+  voteType: Option[String],
+  legislationNumber: Option[String],
+  legislationType: Option[String],
+  legislationUrl: Option[String],
+  url: Option[String],
+  voteQuestion: Option[String],
+  votePartyTotal: Option[List[VotePartyTotalDTO]],
 )
 
 object VoteDetailDTO {
@@ -74,20 +74,20 @@ object VoteDetailDTO {
 }
 
 final case class VoteMembersDTO(
-    congress: Int,
-    chamber: String,
-    rollCallNumber: Int,
-    sessionNumber: Option[Int],
-    startDate: Option[String],
-    updateDate: Option[String],
-    result: Option[String],
-    voteType: Option[String],
-    legislationNumber: Option[String],
-    legislationType: Option[String],
-    legislationUrl: Option[String],
-    url: Option[String],
-    voteQuestion: Option[String],
-    results: Option[List[VoteResultDTO]]
+  congress: Int,
+  chamber: String,
+  rollCallNumber: Int,
+  sessionNumber: Option[Int],
+  startDate: Option[String],
+  updateDate: Option[String],
+  result: Option[String],
+  voteType: Option[String],
+  legislationNumber: Option[String],
+  legislationType: Option[String],
+  legislationUrl: Option[String],
+  url: Option[String],
+  voteQuestion: Option[String],
+  results: Option[List[VoteResultDTO]],
 )
 
 object VoteMembersDTO {

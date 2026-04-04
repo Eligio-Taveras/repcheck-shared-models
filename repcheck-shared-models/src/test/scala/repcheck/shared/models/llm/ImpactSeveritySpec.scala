@@ -29,9 +29,7 @@ class ImpactSeveritySpec extends AnyFlatSpec with Matchers {
   }
 
   "ImpactSeverity Circe codec" should "round-trip all values" in {
-    ImpactSeverity.values.foreach { is =>
-      is.asJson.as[ImpactSeverity] shouldBe Right(is)
-    }
+    ImpactSeverity.values.foreach(is => is.asJson.as[ImpactSeverity] shouldBe Right(is))
   }
 
   it should "serialize to lowercase" in {

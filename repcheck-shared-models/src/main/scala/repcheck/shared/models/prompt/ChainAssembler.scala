@@ -3,9 +3,9 @@ package repcheck.shared.models.prompt
 trait ChainAssembler {
 
   def assemble(
-      profile: PromptProfile,
-      blocks: Map[String, InstructionBlock],
-      context: Map[String, String]
+    profile: PromptProfile,
+    blocks: Map[String, InstructionBlock],
+    context: Map[String, String],
   ): Either[String, String]
 
 }
@@ -15,9 +15,9 @@ object DefaultChainAssembler extends ChainAssembler {
   private val placeholderPattern = """\{\{(\w+)\}\}""".r
 
   def assemble(
-      profile: PromptProfile,
-      blocks: Map[String, InstructionBlock],
-      context: Map[String, String]
+    profile: PromptProfile,
+    blocks: Map[String, InstructionBlock],
+    context: Map[String, String],
   ): Either[String, String] = {
     val sortedStages = profile.chain.sortBy(_.stage.stageOrder)
 
@@ -43,11 +43,13 @@ object DefaultChainAssembler extends ChainAssembler {
     }
   }
 
-  private def replacePlaceholders(content: String, context: Map[String, String]): String = {
-    placeholderPattern.replaceAllIn(content, m => {
-      val key = m.group(1)
-      java.util.regex.Matcher.quoteReplacement(context.getOrElse(key, m.matched))
-    })
-  }
+  private def replacePlaceholders(content: String, context: Map[String, String]): String =
+    placeholderPattern.replaceAllIn(
+      content,
+      m => {
+        val key = m.group(1)
+        java.util.regex.Matcher.quoteReplacement(context.getOrElse(key, m.matched))
+      },
+    )
 
 }

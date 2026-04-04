@@ -1,15 +1,15 @@
 package repcheck.shared.models.congress.dto.vote
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class SenateVoteMemberXmlDTO(
-    lisMemberId: String,
-    firstName: String,
-    lastName: String,
-    party: String,
-    state: String,
-    voteCast: String
+  lisMemberId: String,
+  firstName: String,
+  lastName: String,
+  party: String,
+  state: String,
+  voteCast: String,
 )
 
 object SenateVoteMemberXmlDTO {
@@ -18,13 +18,13 @@ object SenateVoteMemberXmlDTO {
 }
 
 final case class SenateVoteXmlDTO(
-    congress: Int,
-    session: Int,
-    voteNumber: Int,
-    question: String,
-    voteDate: String,
-    result: String,
-    members: List[SenateVoteMemberXmlDTO]
+  congress: Int,
+  session: Int,
+  voteNumber: Int,
+  question: String,
+  voteDate: String,
+  result: String,
+  members: List[SenateVoteMemberXmlDTO],
 )
 
 object SenateVoteXmlDTO {
@@ -33,15 +33,15 @@ object SenateVoteXmlDTO {
 }
 
 final case class SenateMemberContactDTO(
-    bioguideId: String,
-    firstName: String,
-    lastName: String,
-    party: String,
-    state: String,
-    senateClass: Option[Int],
-    address: Option[String],
-    phone: Option[String],
-    website: Option[String]
+  bioguideId: String,
+  firstName: String,
+  lastName: String,
+  party: String,
+  state: String,
+  senateClass: Option[Int],
+  address: Option[String],
+  phone: Option[String],
+  website: Option[String],
 )
 
 object SenateMemberContactDTO {

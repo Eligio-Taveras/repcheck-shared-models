@@ -13,8 +13,8 @@ class PromptProfileSpec extends AnyFlatSpec with Matchers {
       chain = List(
         StageConfig(PromptStage.System, List("system-base"), 1.0),
         StageConfig(PromptStage.Persona, List("analyst-persona"), 0.8),
-        StageConfig(PromptStage.Output, List("json-output"), 1.0)
-      )
+        StageConfig(PromptStage.Output, List("json-output"), 1.0),
+      ),
     )
     profile.asJson.as[PromptProfile] shouldBe Right(profile)
   }

@@ -15,7 +15,7 @@ class SenateVoteXmlDTOsSpec extends AnyFlatSpec with Matchers {
       lastName = "Smith",
       party = "D",
       state = "NY",
-      voteCast = "Yea"
+      voteCast = "Yea",
     )
     decode[SenateVoteMemberXmlDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -30,8 +30,8 @@ class SenateVoteXmlDTOsSpec extends AnyFlatSpec with Matchers {
       result = "Motion Agreed to",
       members = List(
         SenateVoteMemberXmlDTO("S0001", "John", "Smith", "D", "NY", "Yea"),
-        SenateVoteMemberXmlDTO("S0002", "Jane", "Doe", "R", "TX", "Nay")
-      )
+        SenateVoteMemberXmlDTO("S0002", "Jane", "Doe", "R", "TX", "Nay"),
+      ),
     )
     decode[SenateVoteXmlDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -46,16 +46,17 @@ class SenateVoteXmlDTOsSpec extends AnyFlatSpec with Matchers {
       senateClass = Some(1),
       address = Some("332 Dirksen Senate Office Building"),
       phone = Some("202-224-5141"),
-      website = Some("https://www.sanders.senate.gov")
+      website = Some("https://www.sanders.senate.gov"),
     )
     decode[SenateMemberContactDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
   it should "decode with missing optional fields" in {
-    val json = """{"bioguideId":"T000001","firstName":"Test","lastName":"Person","party":"D","state":"NY"}"""
+    val json   = """{"bioguideId":"T000001","firstName":"Test","lastName":"Person","party":"D","state":"NY"}"""
     val result = decode[SenateMemberContactDTO](json)
     result.isRight shouldBe true
     result.map(_.senateClass) shouldBe Right(None)
     result.map(_.address) shouldBe Right(None)
   }
+
 }

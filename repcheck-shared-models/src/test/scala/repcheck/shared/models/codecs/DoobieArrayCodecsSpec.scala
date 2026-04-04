@@ -15,25 +15,35 @@ class DoobieArrayCodecsSpec extends AnyFlatSpec with Matchers {
     Option(listStringPut).isDefined shouldBe true
   }
 
-  "List[String] round-trip via Array" should "preserve values" in {
-    val original   = List("healthcare", "defense", "education")
-    val asArray    = original.toArray
-    val backToList = asArray.toList
-    backToList shouldBe original
+  "DoobieArrayCodecs.arrayToList" should "convert array to list preserving order" in {
+    DoobieArrayCodecs.arrayToList(Array("healthcare", "defense", "education")) shouldBe
+      List("healthcare", "defense", "education")
+  }
+
+  it should "handle empty array" in {
+    DoobieArrayCodecs.arrayToList(Array.empty[String]) shouldBe List.empty[String]
+  }
+
+  it should "handle single-element array" in {
+    DoobieArrayCodecs.arrayToList(Array("taxation")) shouldBe List("taxation")
+  }
+
+  "DoobieArrayCodecs.listToArray" should "convert list to array preserving order" in {
+    DoobieArrayCodecs.listToArray(List("healthcare", "defense", "education")).toSeq shouldBe
+      Seq("healthcare", "defense", "education")
   }
 
   it should "handle empty list" in {
-    val original   = List.empty[String]
-    val asArray    = original.toArray
-    val backToList = asArray.toList
-    backToList shouldBe original
+    DoobieArrayCodecs.listToArray(List.empty[String]) shouldBe empty
   }
 
-  it should "handle single element" in {
-    val original   = List("taxation")
-    val asArray    = original.toArray
-    val backToList = asArray.toList
-    backToList shouldBe original
+  it should "handle single-element list" in {
+    DoobieArrayCodecs.listToArray(List("taxation")).toSeq shouldBe Seq("taxation")
+  }
+
+  "arrayToList and listToArray" should "form inverse pair" in {
+    val original = List("a", "b", "c")
+    DoobieArrayCodecs.arrayToList(DoobieArrayCodecs.listToArray(original)) shouldBe original
   }
 
 }

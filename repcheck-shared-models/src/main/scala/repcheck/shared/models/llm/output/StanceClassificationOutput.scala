@@ -1,15 +1,15 @@
 package repcheck.shared.models.llm.output
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 import repcheck.shared.models.llm.StanceType
 
 final case class TopicStance(
-    topic: String,
-    stance: StanceType,
-    confidence: Double,
-    reasoning: String
+  topic: String,
+  stance: StanceType,
+  confidence: Double,
+  reasoning: String,
 )
 
 object TopicStance {
@@ -20,7 +20,7 @@ object TopicStance {
 }
 
 final case class StanceClassificationOutput(
-    stances: List[TopicStance]
+  stances: List[TopicStance]
 )
 
 object StanceClassificationOutput {
