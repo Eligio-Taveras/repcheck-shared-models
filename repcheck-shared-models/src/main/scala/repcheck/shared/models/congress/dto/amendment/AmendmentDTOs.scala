@@ -1,0 +1,54 @@
+package repcheck.shared.models.congress.dto.amendment
+
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import repcheck.shared.models.congress.dto.bill.{LatestActionDTO, SponsorDTO}
+
+final case class AmendedBillDTO(
+    congress: Option[Int],
+    number: Option[Int],
+    originChamber: Option[String],
+    originChamberCode: Option[String],
+    title: Option[String],
+    billType: Option[String],
+    url: Option[String]
+)
+
+object AmendedBillDTO {
+  implicit val encoder: Encoder[AmendedBillDTO] = deriveEncoder[AmendedBillDTO]
+  implicit val decoder: Decoder[AmendedBillDTO] = deriveDecoder[AmendedBillDTO]
+}
+
+final case class AmendmentListItemDTO(
+    congress: Int,
+    number: String,
+    amendmentType: Option[String],
+    description: Option[String],
+    latestAction: Option[LatestActionDTO],
+    updateDate: Option[String],
+    url: Option[String]
+)
+
+object AmendmentListItemDTO {
+  implicit val encoder: Encoder[AmendmentListItemDTO] = deriveEncoder[AmendmentListItemDTO]
+  implicit val decoder: Decoder[AmendmentListItemDTO] = deriveDecoder[AmendmentListItemDTO]
+}
+
+final case class AmendmentDetailDTO(
+    congress: Int,
+    number: String,
+    amendmentType: Option[String],
+    amendedBill: Option[AmendedBillDTO],
+    chamber: Option[String],
+    description: Option[String],
+    purpose: Option[String],
+    sponsors: Option[List[SponsorDTO]],
+    submittedDate: Option[String],
+    latestAction: Option[LatestActionDTO],
+    updateDate: Option[String]
+)
+
+object AmendmentDetailDTO {
+  implicit val encoder: Encoder[AmendmentDetailDTO] = deriveEncoder[AmendmentDetailDTO]
+  implicit val decoder: Decoder[AmendmentDetailDTO] = deriveDecoder[AmendmentDetailDTO]
+}
