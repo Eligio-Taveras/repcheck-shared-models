@@ -39,8 +39,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: |
-            repcheck-shared-models/target/scala-3.4.1/scoverage-report/scoverage.xml
+          search_dir: .
           fail_ci_if_error: false
 
   doc-generator:
