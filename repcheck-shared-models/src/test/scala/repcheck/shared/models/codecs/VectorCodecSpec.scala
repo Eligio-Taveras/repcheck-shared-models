@@ -28,17 +28,39 @@ class VectorCodecSpec extends AnyFlatSpec with Matchers {
     result.map(_.length) shouldBe Right(0)
   }
 
-  "VectorCodec Get" should "parse pgvector string format" in {
-    val pgString = "[1.0,2.5,3.7]"
-    val trimmed  = pgString.stripPrefix("[").stripSuffix("]")
-    val result   = trimmed.split(",").map(_.trim.toFloat)
+  "VectorCodec.parseFloatVector" should "parse pgvector string with multiple values" in {
+    val result = VectorCodec.parseFloatVector("[1.0,2.5,3.7]")
     result.toSeq shouldBe Seq(1.0f, 2.5f, 3.7f)
   }
 
-  "VectorCodec Put" should "format array as pgvector string" in {
-    val arr    = Array(1.0f, 2.5f, 3.7f)
-    val result = arr.mkString("[", ",", "]")
+  it should "parse pgvector string with whitespace around values" in {
+    val result = VectorCodec.parseFloatVector("[ 1.0 , 2.5 , 3.7 ]")
+    result.toSeq shouldBe Seq(1.0f, 2.5f, 3.7f)
+  }
+
+  it should "return empty array for empty pgvector string" in {
+    val result = VectorCodec.parseFloatVector("[]")
+    result shouldBe empty
+  }
+
+  it should "parse single-element pgvector string" in {
+    val result = VectorCodec.parseFloatVector("[0.5]")
+    result.toSeq shouldBe Seq(0.5f)
+  }
+
+  "VectorCodec.formatFloatVector" should "format array as pgvector string" in {
+    val result = VectorCodec.formatFloatVector(Array(1.0f, 2.5f, 3.7f))
     result shouldBe "[1.0,2.5,3.7]"
+  }
+
+  it should "format empty array as empty pgvector string" in {
+    val result = VectorCodec.formatFloatVector(Array.empty[Float])
+    result shouldBe "[]"
+  }
+
+  it should "format single-element array" in {
+    val result = VectorCodec.formatFloatVector(Array(0.5f))
+    result shouldBe "[0.5]"
   }
 
 }

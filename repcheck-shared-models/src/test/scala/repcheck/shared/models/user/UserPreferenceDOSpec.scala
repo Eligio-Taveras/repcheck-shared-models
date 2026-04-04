@@ -13,9 +13,11 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
   private val samplePref = UserPreferenceDO(
     preferenceId = UUID.fromString("660e8400-e29b-41d4-a716-446655440000"),
     userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-    topic = "Healthcare", stance = "support universal coverage",
-    importance = 8, embedding = Some(Array(0.1f, 0.2f, 0.3f)),
-    updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z"))
+    topic = "Healthcare",
+    stance = "support universal coverage",
+    importance = 8,
+    embedding = Some(Array(0.1f, 0.2f, 0.3f)),
+    updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),
   )
 
   "UserPreferenceDO Circe codec" should "round-trip with all fields" in {
@@ -33,9 +35,7 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
     val noEmbed = samplePref.copy(embedding = None)
     val decoded = noEmbed.asJson.as[UserPreferenceDO]
     decoded.isRight shouldBe true
-    decoded.foreach { result =>
-      result.embedding shouldBe None
-    }
+    decoded.foreach(result => result.embedding shouldBe None)
   }
 
   "importance" should "accept values 1-10 at the model level (DB-enforced constraint)" in {

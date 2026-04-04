@@ -5,12 +5,12 @@ import java.util.UUID
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
-import repcheck.shared.models.congress.dto.member._
 import repcheck.shared.models.congress.dto.conversions.MemberConversions._
+import repcheck.shared.models.congress.dto.member._
 
 class MemberConversionsSpec extends AnyFlatSpec with Matchers {
 
-  private val fixedUuid = UUID.fromString("00000000-0000-0000-0000-000000000001")
+  private val fixedUuid           = UUID.fromString("00000000-0000-0000-0000-000000000001")
   private val uuidGen: () => UUID = () => fixedUuid
 
   private val validMemberDetail = MemberDetailDTO(
@@ -24,22 +24,44 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     cosponsoredLegislation = Some(PaginationInfoDTO(Some(500), None)),
     depiction = Some(MemberDepictionDTO(Some("https://photo.url"), Some("Senate photo"))),
     leadership = Some(List(LeadershipDTO(Some(117), Some("Chair")))),
-    partyHistory = Some(List(
-      PartyHistoryDTO(Some("D"), Some("Democratic"), Some(1981)),
-      PartyHistoryDTO(Some("I"), Some("Independent"), Some(2007))
-    )),
+    partyHistory = Some(
+      List(
+        PartyHistoryDTO(Some("D"), Some("Democratic"), Some(1981)),
+        PartyHistoryDTO(Some("I"), Some("Independent"), Some(2007)),
+      )
+    ),
     sponsoredLegislation = Some(PaginationInfoDTO(Some(300), None)),
     state = Some("Vermont"),
-    terms = Some(List(
-      MemberDetailTermDTO(Some("House"), Some(102), Some(1997), Some("rep"), Some(1991), Some("VT"), Some("Vermont"), Some(0)),
-      MemberDetailTermDTO(Some("Senate"), Some(118), Some(2025), Some("sen"), Some(2007), Some("VT"), Some("Vermont"), None)
-    )),
-    updateDate = Some("2024-06-15")
+    terms = Some(
+      List(
+        MemberDetailTermDTO(
+          Some("House"),
+          Some(102),
+          Some(1997),
+          Some("rep"),
+          Some(1991),
+          Some("VT"),
+          Some("Vermont"),
+          Some(0),
+        ),
+        MemberDetailTermDTO(
+          Some("Senate"),
+          Some(118),
+          Some(2025),
+          Some("sen"),
+          Some(2007),
+          Some("VT"),
+          Some("Vermont"),
+          None,
+        ),
+      )
+    ),
+    updateDate = Some("2024-06-15"),
   )
 
   "MemberDetailDTO.toDO" should "produce MemberDO with correct fields" in {
     val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
-    val m = result.member
+    val m             = result.member
     m.memberId shouldBe "S000033"
     m.firstName shouldBe Some("Bernard")
     m.lastName shouldBe Some("Sanders")
@@ -95,7 +117,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "handle None terms and partyHistory" in {
-    val dto = validMemberDetail.copy(terms = None, partyHistory = None)
+    val dto           = validMemberDetail.copy(terms = None, partyHistory = None)
     val Right(result) = dto.toDO(uuidGen): @unchecked
     result.terms shouldBe List.empty
     result.partyHistory shouldBe List.empty
@@ -104,9 +126,19 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "handle None depiction" in {
-    val dto = validMemberDetail.copy(depiction = None)
+    val dto           = validMemberDetail.copy(depiction = None)
     val Right(result) = dto.toDO(uuidGen): @unchecked
     result.member.imageUrl shouldBe None
     result.member.imageAttribution shouldBe None
   }
+
+  it should "succeed using default UUID generator" in {
+    val result = validMemberDetail.toDO
+    result.isRight shouldBe true
+    val Right(conv) = result: @unchecked
+    conv.member.memberId shouldBe "S000033"
+    conv.terms.length shouldBe 2
+    conv.partyHistory.length shouldBe 2
+  }
+
 }

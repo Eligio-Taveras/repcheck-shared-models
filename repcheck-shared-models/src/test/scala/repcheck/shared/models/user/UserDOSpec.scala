@@ -18,7 +18,7 @@ class UserDOSpec extends AnyFlatSpec with Matchers {
     state = Some("NY"),
     district = Some(14),
     createdAt = Some(Instant.parse("2024-01-15T10:30:00Z")),
-    updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z"))
+    updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),
   )
 
   "UserDO Circe codec" should "round-trip with all fields populated" in {
@@ -30,8 +30,12 @@ class UserDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = UserDO(
       userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
-      displayName = None, email = None, state = None,
-      district = None, createdAt = None, updatedAt = None
+      displayName = None,
+      email = None,
+      state = None,
+      district = None,
+      createdAt = None,
+      updatedAt = None,
     )
     minimal.asJson.as[UserDO] shouldBe Right(minimal)
   }

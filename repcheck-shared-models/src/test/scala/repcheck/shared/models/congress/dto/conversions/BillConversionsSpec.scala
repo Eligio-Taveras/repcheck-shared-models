@@ -18,7 +18,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     title = "A bill to do something",
     updateDate = Some("2024-02-01"),
     updateDateIncludingText = Some("2024-02-15"),
-    url = "https://api.congress.gov/v3/bill/118/hr/1234"
+    url = "https://api.congress.gov/v3/bill/118/hr/1234",
   )
 
   "BillListItemDTO.toDO" should "convert with correct natural key" in {
@@ -83,23 +83,38 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     url = "https://api.congress.gov/v3/bill/118/s/5678",
     introducedDate = Some("2024-01-10"),
     policyArea = Some("Transportation"),
-    sponsors = Some(List(SponsorDTO("S000033", Some("Bernie"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))),
+    sponsors =
+      Some(List(SponsorDTO("S000033", Some("Bernie"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))),
     cosponsors = Some(PaginationInfoDTO(Some(25), None)),
-    subjects = Some(BillSubjectsDTO(
-      Some(List(
-        LegislativeSubjectDTO("Roads and highways", Some("2024-01-15")),
-        LegislativeSubjectDTO("Infrastructure development", None)
-      )),
-      Some("Transportation")
-    )),
-    summaries = Some(List(BillSummaryDTO(Some("2024-01-10"), Some("Introduced in Senate"), Some("Summary text"), None, Some("00")))),
-    textVersions = Some(List(TextVersionDTO(Some("2024-01-10"), Some(List(FormatDTO("Formatted Text", "https://example.com/text"))), Some("Introduced in Senate")))),
+    subjects = Some(
+      BillSubjectsDTO(
+        Some(
+          List(
+            LegislativeSubjectDTO("Roads and highways", Some("2024-01-15")),
+            LegislativeSubjectDTO("Infrastructure development", None),
+          )
+        ),
+        Some("Transportation"),
+      )
+    ),
+    summaries = Some(
+      List(BillSummaryDTO(Some("2024-01-10"), Some("Introduced in Senate"), Some("Summary text"), None, Some("00")))
+    ),
+    textVersions = Some(
+      List(
+        TextVersionDTO(
+          Some("2024-01-10"),
+          Some(List(FormatDTO("Formatted Text", "https://example.com/text"))),
+          Some("Introduced in Senate"),
+        )
+      )
+    ),
     titles = None,
     constitutionalAuthorityStatementText = Some("Congress has the power..."),
     cboCostEstimates = None,
     committeeReports = None,
     relatedBills = None,
-    legislationUrl = Some("https://congress.gov/bill/118/s/5678")
+    legislationUrl = Some("https://congress.gov/bill/118/s/5678"),
   )
 
   "BillDetailDTO.toDO" should "produce BillConversionResult with correct BillDO" in {
@@ -165,4 +180,5 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     BillConversions.buildBillId(118, "hr", "1234") shouldBe "118-HR-1234"
     BillConversions.buildBillId(117, "sjres", "10") shouldBe "117-SJRES-10"
   }
+
 }

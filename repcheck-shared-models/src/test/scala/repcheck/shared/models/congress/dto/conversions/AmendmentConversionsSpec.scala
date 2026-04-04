@@ -12,14 +12,17 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     congress = 118,
     number = "200",
     amendmentType = Some("SAMDT"),
-    amendedBill = Some(AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None)),
+    amendedBill =
+      Some(AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None)),
     chamber = Some("Senate"),
     description = Some("Amendment description"),
     purpose = Some("To improve the bill"),
-    sponsors = Some(List(SponsorDTO("S000033", Some("Bernard"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))),
+    sponsors = Some(
+      List(SponsorDTO("S000033", Some("Bernard"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))
+    ),
     submittedDate = Some("2024-02-15"),
     latestAction = Some(LatestActionDTO("2024-03-01", "Submitted")),
-    updateDate = Some("2024-03-15")
+    updateDate = Some("2024-03-15"),
   )
 
   "AmendmentDetailDTO.toDO" should "produce AmendmentDO with correct natural key" in {
@@ -48,26 +51,26 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "use UNKNOWN when amendmentType is None" in {
-    val dto = validAmendmentDetail.copy(amendmentType = None)
+    val dto      = validAmendmentDetail.copy(amendmentType = None)
     val Right(a) = dto.toDO: @unchecked
     a.amendmentId shouldBe "118-UNKNOWN-200"
     a.amendmentType shouldBe None
   }
 
   it should "handle None amendedBill" in {
-    val dto = validAmendmentDetail.copy(amendedBill = None)
+    val dto      = validAmendmentDetail.copy(amendedBill = None)
     val Right(a) = dto.toDO: @unchecked
     a.billId shouldBe None
   }
 
   it should "handle None sponsors" in {
-    val dto = validAmendmentDetail.copy(sponsors = None)
+    val dto      = validAmendmentDetail.copy(sponsors = None)
     val Right(a) = dto.toDO: @unchecked
     a.sponsorBioguideId shouldBe None
   }
 
   it should "handle None latestAction" in {
-    val dto = validAmendmentDetail.copy(latestAction = None)
+    val dto      = validAmendmentDetail.copy(latestAction = None)
     val Right(a) = dto.toDO: @unchecked
     a.latestActionDate shouldBe None
     a.latestActionText shouldBe None
@@ -107,4 +110,5 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     AmendmentConversions.buildBillIdFromAmendedBill(Some(118), None, Some(1234)) shouldBe None
     AmendmentConversions.buildBillIdFromAmendedBill(Some(118), Some("hr"), None) shouldBe None
   }
+
 }

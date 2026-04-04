@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dto.member
 
-import io.circe.parser.decode
+import io.circe.parser.{decode, decodeAccumulating}
 import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -12,7 +12,7 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
   "MemberDepictionDTO" should "round-trip" in {
     val dto = MemberDepictionDTO(
       imageUrl = Some("https://example.com/photo.jpg"),
-      attribution = Some("Courtesy Official Photo")
+      attribution = Some("Courtesy Official Photo"),
     )
     decode[MemberDepictionDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -35,7 +35,7 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
       startYear = Some(2019),
       stateCode = Some("VT"),
       stateName = Some("Vermont"),
-      district = None
+      district = None,
     )
     decode[MemberDetailTermDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -44,13 +44,13 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
     val dto = PartyHistoryDTO(
       partyAbbreviation = Some("D"),
       partyName = Some("Democratic"),
-      startYear = Some(2003)
+      startYear = Some(2003),
     )
     decode[PartyHistoryDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
   "LeadershipDTO" should "encode 'type' field and round-trip" in {
-    val dto = LeadershipDTO(congress = Some(118), type_ = Some("Majority Leader"))
+    val dto  = LeadershipDTO(congress = Some(118), type_ = Some("Majority Leader"))
     val json = dto.asJson
     json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Majority Leader"))
     json.as[LeadershipDTO] shouldBe Right(dto)
@@ -61,7 +61,7 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "decode JSON with 'type' field" in {
-    val json = """{"congress":117,"type":"Speaker"}"""
+    val json   = """{"congress":117,"type":"Speaker"}"""
     val result = decode[LeadershipDTO](json)
     result shouldBe Right(LeadershipDTO(congress = Some(117), type_ = Some("Speaker")))
   }
@@ -75,7 +75,7 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
       depiction = Some(MemberDepictionDTO(Some("https://photo.url"), Some("Official"))),
       terms = Some(List(MemberTermSummaryDTO(Some("House"), Some(1987)))),
       updateDate = Some("2024-01-01"),
-      url = Some("https://api.congress.gov/v3/member/P000197")
+      url = Some("https://api.congress.gov/v3/member/P000197"),
     )
     decode[MemberListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -95,18 +95,127 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
       partyHistory = Some(List(PartyHistoryDTO(Some("I"), Some("Independent"), Some(2007)))),
       sponsoredLegislation = Some(PaginationInfoDTO(Some(300), Some("https://api.congress.gov/sponsored"))),
       state = Some("Vermont"),
-      terms = Some(List(MemberDetailTermDTO(Some("Senate"), Some(118), Some(2025), Some("sen"), Some(2019), Some("VT"), Some("Vermont"), None))),
-      updateDate = Some("2024-06-15")
+      terms = Some(
+        List(
+          MemberDetailTermDTO(
+            Some("Senate"),
+            Some(118),
+            Some(2025),
+            Some("sen"),
+            Some(2019),
+            Some("VT"),
+            Some("Vermont"),
+            None,
+          )
+        )
+      ),
+      updateDate = Some("2024-06-15"),
     )
     decode[MemberDetailDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
   it should "decode with only required field" in {
-    val json = """{"bioguideId":"T000001"}"""
+    val json   = """{"bioguideId":"T000001"}"""
     val result = decode[MemberDetailDTO](json)
     result.isRight shouldBe true
     result.map(_.bioguideId) shouldBe Right("T000001")
     result.map(_.firstName) shouldBe Right(None)
     result.map(_.terms) shouldBe Right(None)
   }
+
+  "LeadershipDTO" should "encode with both fields None producing empty object" in {
+    val dto  = LeadershipDTO(congress = None, type_ = None)
+    val json = dto.asJson
+    json.hcursor.downField("congress").failed shouldBe true
+    json.hcursor.downField("type").failed shouldBe true
+    json.as[LeadershipDTO] shouldBe Right(dto)
+  }
+
+  it should "encode with only congress Some" in {
+    val dto  = LeadershipDTO(congress = Some(115), type_ = None)
+    val json = dto.asJson
+    json.hcursor.downField("congress").as[Option[Int]] shouldBe Right(Some(115))
+    json.hcursor.downField("type").failed shouldBe true
+    json.as[LeadershipDTO] shouldBe Right(dto)
+  }
+
+  it should "encode with only type_ Some" in {
+    val dto  = LeadershipDTO(congress = None, type_ = Some("Whip"))
+    val json = dto.asJson
+    json.hcursor.downField("congress").failed shouldBe true
+    json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Whip"))
+    json.as[LeadershipDTO] shouldBe Right(dto)
+  }
+
+  "MemberTermSummaryDTO" should "round-trip with all fields None" in {
+    val dto = MemberTermSummaryDTO(chamber = None, startYear = None)
+    decode[MemberTermSummaryDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  it should "decode with absent optional fields" in {
+    decode[MemberTermSummaryDTO]("{}") shouldBe Right(MemberTermSummaryDTO(None, None))
+  }
+
+  "MemberDetailTermDTO" should "round-trip with district Some" in {
+    val dto = MemberDetailTermDTO(
+      chamber = Some("House"),
+      congress = Some(118),
+      endYear = Some(2025),
+      memberType = Some("rep"),
+      startYear = Some(2023),
+      stateCode = Some("CA"),
+      stateName = Some("California"),
+      district = Some(12),
+    )
+    decode[MemberDetailTermDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  it should "round-trip with all fields None" in {
+    val dto = MemberDetailTermDTO(None, None, None, None, None, None, None, None)
+    decode[MemberDetailTermDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  "PartyHistoryDTO" should "round-trip with all fields None" in {
+    val dto = PartyHistoryDTO(partyAbbreviation = None, partyName = None, startYear = None)
+    decode[PartyHistoryDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  "MemberListItemDTO" should "round-trip with all optional fields None" in {
+    val dto = MemberListItemDTO(
+      bioguideId = "X000001",
+      name = None,
+      partyName = None,
+      state = None,
+      depiction = None,
+      terms = None,
+      updateDate = None,
+      url = None,
+    )
+    decode[MemberListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  "MemberDepictionDTO decodeAccumulating" should "succeed on valid JSON" in {
+    decodeAccumulating[MemberDepictionDTO]("""{}""").isValid shouldBe true
+  }
+
+  "MemberTermSummaryDTO decodeAccumulating" should "succeed on valid JSON" in {
+    decodeAccumulating[MemberTermSummaryDTO]("""{}""").isValid shouldBe true
+  }
+
+  "MemberDetailTermDTO decodeAccumulating" should "succeed on valid JSON" in {
+    decodeAccumulating[MemberDetailTermDTO]("""{}""").isValid shouldBe true
+  }
+
+  "PartyHistoryDTO decodeAccumulating" should "succeed on valid JSON" in {
+    decodeAccumulating[PartyHistoryDTO]("""{}""").isValid shouldBe true
+  }
+
+  "MemberListItemDTO decodeAccumulating" should "succeed on valid JSON" in {
+    decodeAccumulating[MemberListItemDTO]("""{"bioguideId":"X000001"}""").isValid shouldBe true
+  }
+
+  "MemberDetailDTO decodeAccumulating" should "succeed on valid JSON" in {
+    decodeAccumulating[MemberDetailDTO]("""{"bioguideId":"X000001"}""").isValid shouldBe true
+  }
+
 }

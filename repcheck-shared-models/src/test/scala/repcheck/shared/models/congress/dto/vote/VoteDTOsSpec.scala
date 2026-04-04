@@ -15,7 +15,7 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       lastName = Some("Buck"),
       voteCast = Some("Yea"),
       party = Some("R"),
-      state = Some("CO")
+      state = Some("CO"),
     )
     decode[VoteResultDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -31,7 +31,7 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       yeaTotal = Some(200),
       nayTotal = Some(15),
       presentTotal = Some(3),
-      notVotingTotal = Some(7)
+      notVotingTotal = Some(7),
     )
     decode[VotePartyTotalDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -49,13 +49,13 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       legislationNumber = Some("HR 1234"),
       legislationType = Some("HR"),
       legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
-      url = Some("https://api.congress.gov/v3/vote/118/house/42")
+      url = Some("https://api.congress.gov/v3/vote/118/house/42"),
     )
     decode[VoteListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
   it should "decode with only required fields" in {
-    val json = """{"congress":118,"chamber":"Senate","rollCallNumber":10}"""
+    val json   = """{"congress":118,"chamber":"Senate","rollCallNumber":10}"""
     val result = decode[VoteListItemDTO](json)
     result.isRight shouldBe true
     result.map(_.sessionNumber) shouldBe Right(None)
@@ -76,9 +76,11 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       legislationUrl = None,
       url = Some("https://api.congress.gov/v3/vote/118/senate/99"),
       voteQuestion = Some("On the Motion"),
-      votePartyTotal = Some(List(
-        VotePartyTotalDTO(Some("Democratic"), Some("D"), Some(48), Some(0), Some(1), Some(1))
-      ))
+      votePartyTotal = Some(
+        List(
+          VotePartyTotalDTO(Some("Democratic"), Some("D"), Some(48), Some(0), Some(1), Some(1))
+        )
+      ),
     )
     decode[VoteDetailDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -98,11 +100,14 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       legislationUrl = None,
       url = Some("https://api.congress.gov/v3/vote/118/house/50"),
       voteQuestion = Some("On Passage"),
-      results = Some(List(
-        VoteResultDTO(Some("A000370"), Some("Alma"), Some("Adams"), Some("Yea"), Some("D"), Some("NC")),
-        VoteResultDTO(Some("B001297"), Some("Ken"), Some("Buck"), Some("Nay"), Some("R"), Some("CO"))
-      ))
+      results = Some(
+        List(
+          VoteResultDTO(Some("A000370"), Some("Alma"), Some("Adams"), Some("Yea"), Some("D"), Some("NC")),
+          VoteResultDTO(Some("B001297"), Some("Ken"), Some("Buck"), Some("Nay"), Some("R"), Some("CO")),
+        )
+      ),
     )
     decode[VoteMembersDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
+
 }

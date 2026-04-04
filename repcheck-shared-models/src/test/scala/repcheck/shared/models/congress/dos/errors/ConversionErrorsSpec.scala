@@ -29,4 +29,5 @@ class ConversionErrorsSpec extends AnyFlatSpec with Matchers {
     error.getMessage should include("Amendment conversion failed")
     error.getMessage should include("bad congress")
   }
+
 }

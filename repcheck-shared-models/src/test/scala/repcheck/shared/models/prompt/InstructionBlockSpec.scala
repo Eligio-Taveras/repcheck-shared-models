@@ -9,9 +9,11 @@ import org.scalatest.matchers.should.Matchers
 class InstructionBlockSpec extends AnyFlatSpec with Matchers {
 
   private val sampleBlock = InstructionBlock(
-    name = "system-base", stage = PromptStage.System,
-    weight = 1.0, version = "1.0.0",
-    content = "You are a legislative analysis assistant."
+    name = "system-base",
+    stage = PromptStage.System,
+    weight = 1.0,
+    version = "1.0.0",
+    content = "You are a legislative analysis assistant.",
   )
 
   "InstructionBlock Circe codec" should "round-trip" in {

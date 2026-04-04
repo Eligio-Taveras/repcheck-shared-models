@@ -2,8 +2,8 @@ package repcheck.shared.models.congress.dto.conversions
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.dto.vote._
 import repcheck.shared.models.congress.dto.conversions.VoteConversions._
+import repcheck.shared.models.congress.dto.vote._
 
 class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
@@ -21,11 +21,13 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
     url = Some("https://api.congress.gov/v3/vote/118/house/42"),
     voteQuestion = Some("On Passage"),
-    results = Some(List(
-      VoteResultDTO(Some("A000370"), Some("Alma"), Some("Adams"), Some("Yea"), Some("D"), Some("NC")),
-      VoteResultDTO(Some("B001297"), Some("Ken"), Some("Buck"), Some("Nay"), Some("R"), Some("CO")),
-      VoteResultDTO(None, Some("Ghost"), Some("Member"), Some("Present"), Some("I"), Some("VT"))
-    ))
+    results = Some(
+      List(
+        VoteResultDTO(Some("A000370"), Some("Alma"), Some("Adams"), Some("Yea"), Some("D"), Some("NC")),
+        VoteResultDTO(Some("B001297"), Some("Ken"), Some("Buck"), Some("Nay"), Some("R"), Some("CO")),
+        VoteResultDTO(None, Some("Ghost"), Some("Member"), Some("Present"), Some("I"), Some("VT")),
+      )
+    ),
   )
 
   "VoteMembersDTO.toDO" should "produce VoteDO with correct natural key" in {
@@ -35,7 +37,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "map all vote fields correctly" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
-    val v = result.vote
+    val v             = result.vote
     v.congress shouldBe 118
     v.chamber shouldBe "House"
     v.rollNumber shouldBe 42
@@ -59,7 +61,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "map position fields correctly" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
-    val first = result.positions.headOption
+    val first         = result.positions.headOption
     first.map(_.voteId) shouldBe Some("118-House-42")
     first.map(_.memberId) shouldBe Some("A000370")
     first.flatMap(_.position) shouldBe Some("Yea")
@@ -95,8 +97,8 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     result = "Motion Agreed to",
     members = List(
       SenateVoteMemberXmlDTO("S0001", "John", "Smith", "D", "NY", "Yea"),
-      SenateVoteMemberXmlDTO("S0002", "Jane", "Doe", "R", "TX", "Nay")
-    )
+      SenateVoteMemberXmlDTO("S0002", "Jane", "Doe", "R", "TX", "Nay"),
+    ),
   )
 
   private val completeMapping = Map("S0001" -> "B001001", "S0002" -> "B002002")
@@ -114,7 +116,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "resolve lisMemberIds to bioguideIds in results" in {
     val Right(result) = senateVoteXml.toDO(completeMapping): @unchecked
-    val members = result.results.getOrElse(List.empty)
+    val members       = result.results.getOrElse(List.empty)
     members.length shouldBe 2
     members.flatMap(_.memberId) shouldBe List("B001001", "B002002")
     members.flatMap(_.firstName) shouldBe List("John", "Jane")
@@ -123,7 +125,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "fail with missing mappings listing unresolved IDs" in {
     val partialMapping = Map("S0001" -> "B001001")
-    val result = senateVoteXml.toDO(partialMapping)
+    val result         = senateVoteXml.toDO(partialMapping)
     result.isLeft shouldBe true
     result.left.map(msg => msg.contains("S0002")) shouldBe Left(true)
   }
@@ -139,4 +141,5 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     VoteConversions.buildVoteId(118, "House", 42) shouldBe "118-House-42"
     VoteConversions.buildVoteId(117, "Senate", 100) shouldBe "117-Senate-100"
   }
+
 }

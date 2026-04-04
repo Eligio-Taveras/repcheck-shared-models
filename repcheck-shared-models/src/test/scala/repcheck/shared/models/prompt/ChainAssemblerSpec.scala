@@ -7,11 +7,14 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
 
   private val assembler = DefaultChainAssembler
 
-  private val systemBlock     = InstructionBlock("system-base", PromptStage.System, 1.0, "1.0.0", "You are an assistant.")
-  private val personaBlock    = InstructionBlock("analyst", PromptStage.Persona, 0.8, "1.0.0", "Act as a policy analyst.")
-  private val lensBlock1      = InstructionBlock("fiscal-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on fiscal impact.")
-  private val lensBlock2      = InstructionBlock("social-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on social impact.")
-  private val contextBlock    = InstructionBlock("bill-context", PromptStage.Context, 0.8, "1.0.0", "Bill text: {{bill_text}}")
+  private val systemBlock  = InstructionBlock("system-base", PromptStage.System, 1.0, "1.0.0", "You are an assistant.")
+  private val personaBlock = InstructionBlock("analyst", PromptStage.Persona, 0.8, "1.0.0", "Act as a policy analyst.")
+  private val lensBlock1   = InstructionBlock("fiscal-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on fiscal impact.")
+  private val lensBlock2   = InstructionBlock("social-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on social impact.")
+
+  private val contextBlock =
+    InstructionBlock("bill-context", PromptStage.Context, 0.8, "1.0.0", "Bill text: {{bill_text}}")
+
   private val guardrailsBlock = InstructionBlock("safety", PromptStage.Guardrails, 1.0, "1.0.0", "Do not hallucinate.")
   private val outputBlock     = InstructionBlock("json-out", PromptStage.Output, 1.0, "1.0.0", "Return JSON.")
   private val customBlock     = InstructionBlock("custom-1", PromptStage.Custom, 0.6, "1.0.0", "Extra instruction.")
@@ -24,16 +27,19 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
     "bill-context" -> contextBlock,
     "safety"       -> guardrailsBlock,
     "json-out"     -> outputBlock,
-    "custom-1"     -> customBlock
+    "custom-1"     -> customBlock,
   )
 
   "DefaultChainAssembler" should "assemble with one block per stage in correct order" in {
-    val profile = PromptProfile("test", List(
-      StageConfig(PromptStage.Output, List("json-out"), 1.0),
-      StageConfig(PromptStage.System, List("system-base"), 1.0),
-      StageConfig(PromptStage.Persona, List("analyst"), 0.8),
-      StageConfig(PromptStage.Guardrails, List("safety"), 1.0)
-    ))
+    val profile = PromptProfile(
+      "test",
+      List(
+        StageConfig(PromptStage.Output, List("json-out"), 1.0),
+        StageConfig(PromptStage.System, List("system-base"), 1.0),
+        StageConfig(PromptStage.Persona, List("analyst"), 0.8),
+        StageConfig(PromptStage.Guardrails, List("safety"), 1.0),
+      ),
+    )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
     result.isRight shouldBe true
     result.foreach { assembled =>
@@ -47,10 +53,13 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "assemble with multiple Lens blocks together" in {
-    val profile = PromptProfile("test", List(
-      StageConfig(PromptStage.System, List("system-base"), 1.0),
-      StageConfig(PromptStage.Lens, List("fiscal-lens", "social-lens"), 0.5)
-    ))
+    val profile = PromptProfile(
+      "test",
+      List(
+        StageConfig(PromptStage.System, List("system-base"), 1.0),
+        StageConfig(PromptStage.Lens, List("fiscal-lens", "social-lens"), 0.5),
+      ),
+    )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
     result.isRight shouldBe true
     result.foreach { assembled =>
@@ -60,10 +69,13 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "return Left with missing block names" in {
-    val profile = PromptProfile("test", List(
-      StageConfig(PromptStage.System, List("system-base", "nonexistent-block"), 1.0),
-      StageConfig(PromptStage.Lens, List("missing-lens"), 0.5)
-    ))
+    val profile = PromptProfile(
+      "test",
+      List(
+        StageConfig(PromptStage.System, List("system-base", "nonexistent-block"), 1.0),
+        StageConfig(PromptStage.Lens, List("missing-lens"), 0.5),
+      ),
+    )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
     result.isLeft shouldBe true
     result.swap.foreach { error =>
@@ -73,38 +85,43 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "replace context placeholders" in {
-    val profile = PromptProfile("test", List(
-      StageConfig(PromptStage.Context, List("bill-context"), 0.8)
-    ))
+    val profile = PromptProfile(
+      "test",
+      List(
+        StageConfig(PromptStage.Context, List("bill-context"), 0.8)
+      ),
+    )
     val context = Map("bill_text" -> "This is the actual bill text.")
     val result  = assembler.assemble(profile, allBlocks, context)
     result.isRight shouldBe true
-    result.foreach { assembled =>
-      assembled should include("Bill text: This is the actual bill text.")
-    }
+    result.foreach(assembled => assembled should include("Bill text: This is the actual bill text."))
   }
 
   it should "leave unmatched placeholders as-is" in {
-    val profile = PromptProfile("test", List(
-      StageConfig(PromptStage.Context, List("bill-context"), 0.8)
-    ))
+    val profile = PromptProfile(
+      "test",
+      List(
+        StageConfig(PromptStage.Context, List("bill-context"), 0.8)
+      ),
+    )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
     result.isRight shouldBe true
-    result.foreach { assembled =>
-      assembled should include("{{bill_text}}")
-    }
+    result.foreach(assembled => assembled should include("{{bill_text}}"))
   }
 
   it should "order stages correctly: System > Persona > Lens > Context > Custom > Guardrails > Output" in {
-    val profile = PromptProfile("full", List(
-      StageConfig(PromptStage.Output, List("json-out"), 1.0),
-      StageConfig(PromptStage.Custom, List("custom-1"), 0.6),
-      StageConfig(PromptStage.System, List("system-base"), 1.0),
-      StageConfig(PromptStage.Guardrails, List("safety"), 1.0),
-      StageConfig(PromptStage.Context, List("bill-context"), 0.8),
-      StageConfig(PromptStage.Lens, List("fiscal-lens"), 0.5),
-      StageConfig(PromptStage.Persona, List("analyst"), 0.8)
-    ))
+    val profile = PromptProfile(
+      "full",
+      List(
+        StageConfig(PromptStage.Output, List("json-out"), 1.0),
+        StageConfig(PromptStage.Custom, List("custom-1"), 0.6),
+        StageConfig(PromptStage.System, List("system-base"), 1.0),
+        StageConfig(PromptStage.Guardrails, List("safety"), 1.0),
+        StageConfig(PromptStage.Context, List("bill-context"), 0.8),
+        StageConfig(PromptStage.Lens, List("fiscal-lens"), 0.5),
+        StageConfig(PromptStage.Persona, List("analyst"), 0.8),
+      ),
+    )
     val context = Map("bill_text" -> "Some bill")
     val result  = assembler.assemble(profile, allBlocks, context)
     result.isRight shouldBe true
