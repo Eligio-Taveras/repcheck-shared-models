@@ -49,8 +49,7 @@ lazy val root = (project in file("."))
 lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
   .settings(
     commonSettings,
-    libraryDependencies ++= http4sEmber ++ circe ++ pureConfig ++ fs2
-      ++ doobie
+    libraryDependencies ++= circe ++ doobie
   )
 
 lazy val docGenerator = (project in file("doc-generator"))
