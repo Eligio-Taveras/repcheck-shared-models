@@ -5,18 +5,18 @@ import repcheck.shared.models.congress.dos.member.{MemberDO, MemberPartyHistoryD
 import repcheck.shared.models.congress.dos.vote.{VoteDO, VotePositionDO}
 
 final case class BillConversionResult(
-    bill: BillDO,
-    cosponsors: List[BillCosponsorDO],
-    subjects: List[BillSubjectDO]
+  bill: BillDO,
+  cosponsors: List[BillCosponsorDO],
+  subjects: List[BillSubjectDO],
 )
 
 final case class MemberConversionResult(
-    member: MemberDO,
-    terms: List[MemberTermDO],
-    partyHistory: List[MemberPartyHistoryDO]
+  member: MemberDO,
+  terms: List[MemberTermDO],
+  partyHistory: List[MemberPartyHistoryDO],
 )
 
 final case class VoteConversionResult(
-    vote: VoteDO,
-    positions: List[VotePositionDO]
+  vote: VoteDO,
+  positions: List[VotePositionDO],
 )

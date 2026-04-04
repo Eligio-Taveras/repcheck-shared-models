@@ -1,8 +1,8 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import repcheck.shared.models.congress.dto.vote.{SenateVoteXmlDTO, VoteMembersDTO, VoteResultDTO}
-import repcheck.shared.models.congress.dos.vote.{VoteDO, VotePositionDO}
 import repcheck.shared.models.congress.dos.results.VoteConversionResult
+import repcheck.shared.models.congress.dos.vote.{VoteDO, VotePositionDO}
+import repcheck.shared.models.congress.dto.vote.{SenateVoteXmlDTO, VoteMembersDTO, VoteResultDTO}
 
 object VoteConversions {
 
@@ -10,7 +10,8 @@ object VoteConversions {
     s"$congress-$chamber-$rollCallNumber"
 
   implicit class VoteMembersDTOOps(private val dto: VoteMembersDTO) extends AnyVal {
-    def toDO: Either[String, VoteConversionResult] = {
+
+    def toDO: Either[String, VoteConversionResult] =
       if (dto.congress <= 0) {
         Left(s"congress must be > 0, got: ${dto.congress}")
       } else if (dto.chamber.trim.isEmpty) {
@@ -35,7 +36,7 @@ object VoteConversions {
           sourceDataUrl = dto.url,
           updateDate = dto.updateDate,
           createdAt = None,
-          updatedAt = None
+          updatedAt = None,
         )
 
         val positions: List[VotePositionDO] = dto.results
@@ -48,20 +49,23 @@ object VoteConversions {
                 position = r.voteCast,
                 partyAtVote = r.party,
                 stateAtVote = r.state,
-                createdAt = None
+                createdAt = None,
               )
             }
           }
 
-        Right(VoteConversionResult(
-          vote = vote,
-          positions = positions
-        ))
+        Right(
+          VoteConversionResult(
+            vote = vote,
+            positions = positions,
+          )
+        )
       }
-    }
+
   }
 
   implicit class SenateVoteXmlDTOOps(private val dto: SenateVoteXmlDTO) extends AnyVal {
+
     def toDO(lisMapping: Map[String, String]): Either[String, VoteMembersDTO] = {
       val unresolvedIds = dto.members
         .map(_.lisMemberId)
@@ -77,27 +81,31 @@ object VoteConversions {
             lastName = Some(m.lastName),
             voteCast = Some(m.voteCast),
             party = Some(m.party),
-            state = Some(m.state)
+            state = Some(m.state),
           )
         }
 
-        Right(VoteMembersDTO(
-          congress = dto.congress,
-          chamber = "Senate",
-          rollCallNumber = dto.voteNumber,
-          sessionNumber = Some(dto.session),
-          startDate = Some(dto.voteDate),
-          updateDate = None,
-          result = Some(dto.result),
-          voteType = None,
-          legislationNumber = None,
-          legislationType = None,
-          legislationUrl = None,
-          url = None,
-          voteQuestion = Some(dto.question),
-          results = Some(results)
-        ))
+        Right(
+          VoteMembersDTO(
+            congress = dto.congress,
+            chamber = "Senate",
+            rollCallNumber = dto.voteNumber,
+            sessionNumber = Some(dto.session),
+            startDate = Some(dto.voteDate),
+            updateDate = None,
+            result = Some(dto.result),
+            voteType = None,
+            legislationNumber = None,
+            legislationType = None,
+            legislationUrl = None,
+            url = None,
+            voteQuestion = Some(dto.question),
+            results = Some(results),
+          )
+        )
       }
     }
+
   }
+
 }

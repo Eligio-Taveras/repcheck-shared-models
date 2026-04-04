@@ -1,17 +1,18 @@
 package repcheck.shared.models.congress.dto.amendment
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
+
 import repcheck.shared.models.congress.dto.bill.{LatestActionDTO, SponsorDTO}
 
 final case class AmendedBillDTO(
-    congress: Option[Int],
-    number: Option[Int],
-    originChamber: Option[String],
-    originChamberCode: Option[String],
-    title: Option[String],
-    billType: Option[String],
-    url: Option[String]
+  congress: Option[Int],
+  number: Option[Int],
+  originChamber: Option[String],
+  originChamberCode: Option[String],
+  title: Option[String],
+  billType: Option[String],
+  url: Option[String],
 )
 
 object AmendedBillDTO {
@@ -20,13 +21,13 @@ object AmendedBillDTO {
 }
 
 final case class AmendmentListItemDTO(
-    congress: Int,
-    number: String,
-    amendmentType: Option[String],
-    description: Option[String],
-    latestAction: Option[LatestActionDTO],
-    updateDate: Option[String],
-    url: Option[String]
+  congress: Int,
+  number: String,
+  amendmentType: Option[String],
+  description: Option[String],
+  latestAction: Option[LatestActionDTO],
+  updateDate: Option[String],
+  url: Option[String],
 )
 
 object AmendmentListItemDTO {
@@ -35,17 +36,17 @@ object AmendmentListItemDTO {
 }
 
 final case class AmendmentDetailDTO(
-    congress: Int,
-    number: String,
-    amendmentType: Option[String],
-    amendedBill: Option[AmendedBillDTO],
-    chamber: Option[String],
-    description: Option[String],
-    purpose: Option[String],
-    sponsors: Option[List[SponsorDTO]],
-    submittedDate: Option[String],
-    latestAction: Option[LatestActionDTO],
-    updateDate: Option[String]
+  congress: Int,
+  number: String,
+  amendmentType: Option[String],
+  amendedBill: Option[AmendedBillDTO],
+  chamber: Option[String],
+  description: Option[String],
+  purpose: Option[String],
+  sponsors: Option[List[SponsorDTO]],
+  submittedDate: Option[String],
+  latestAction: Option[LatestActionDTO],
+  updateDate: Option[String],
 )
 
 object AmendmentDetailDTO {

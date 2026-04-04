@@ -1,12 +1,13 @@
 package repcheck.shared.models.congress.dto.bill
 
-import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder, HCursor, Json}
+
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
 
 final case class LatestActionDTO(
-    actionDate: String,
-    text: String
+  actionDate: String,
+  text: String,
 )
 
 object LatestActionDTO {
@@ -15,8 +16,8 @@ object LatestActionDTO {
 }
 
 final case class SourceSystemDTO(
-    code: Option[Int],
-    name: Option[String]
+  code: Option[Int],
+  name: Option[String],
 )
 
 object SourceSystemDTO {
@@ -25,15 +26,15 @@ object SourceSystemDTO {
 }
 
 final case class SponsorDTO(
-    bioguideId: String,
-    firstName: Option[String],
-    lastName: Option[String],
-    fullName: Option[String],
-    middleName: Option[String],
-    isByRequest: Option[String],
-    party: Option[String],
-    state: Option[String],
-    url: Option[String]
+  bioguideId: String,
+  firstName: Option[String],
+  lastName: Option[String],
+  fullName: Option[String],
+  middleName: Option[String],
+  isByRequest: Option[String],
+  party: Option[String],
+  state: Option[String],
+  url: Option[String],
 )
 
 object SponsorDTO {
@@ -42,16 +43,16 @@ object SponsorDTO {
 }
 
 final case class CoSponsorDTO(
-    bioguideId: String,
-    district: Option[Int],
-    firstName: Option[String],
-    fullName: Option[String],
-    isOriginalCosponsor: Option[Boolean],
-    lastName: Option[String],
-    party: Option[String],
-    sponsorshipDate: Option[String],
-    state: Option[String],
-    url: Option[String]
+  bioguideId: String,
+  district: Option[Int],
+  firstName: Option[String],
+  fullName: Option[String],
+  isOriginalCosponsor: Option[Boolean],
+  lastName: Option[String],
+  party: Option[String],
+  sponsorshipDate: Option[String],
+  state: Option[String],
+  url: Option[String],
 )
 
 object CoSponsorDTO {
@@ -60,45 +61,46 @@ object CoSponsorDTO {
 }
 
 final case class BillActionDTO(
-    actionCode: Option[String],
-    actionDate: String,
-    sourceSystem: Option[SourceSystemDTO],
-    text: String,
-    actionType: Option[String]
+  actionCode: Option[String],
+  actionDate: String,
+  sourceSystem: Option[SourceSystemDTO],
+  text: String,
+  actionType: Option[String],
 )
 
 object BillActionDTO {
+
   implicit val encoder: Encoder[BillActionDTO] = Encoder.instance { a =>
     val fields = List(
       a.actionCode.map(v => "actionCode" -> Json.fromString(v)),
       Some("actionDate" -> Json.fromString(a.actionDate)),
       a.sourceSystem.map(v => "sourceSystem" -> SourceSystemDTO.encoder.apply(v)),
       Some("text" -> Json.fromString(a.text)),
-      a.actionType.map(v => "type" -> Json.fromString(v))
+      a.actionType.map(v => "type" -> Json.fromString(v)),
     ).flatten
     Json.obj(fields*)
   }
 
-  implicit val decoder: Decoder[BillActionDTO] = (c: HCursor) => {
+  implicit val decoder: Decoder[BillActionDTO] = (c: HCursor) =>
     for {
-      actionCode <- c.downField("actionCode").as[Option[String]]
-      actionDate <- c.downField("actionDate").as[String]
+      actionCode   <- c.downField("actionCode").as[Option[String]]
+      actionDate   <- c.downField("actionDate").as[String]
       sourceSystem <- c.downField("sourceSystem").as[Option[SourceSystemDTO]]
-      text <- c.downField("text").as[String]
-      actionType <- c.downField("type").as[Option[String]]
+      text         <- c.downField("text").as[String]
+      actionType   <- c.downField("type").as[Option[String]]
     } yield BillActionDTO(
       actionCode = actionCode,
       actionDate = actionDate,
       sourceSystem = sourceSystem,
       text = text,
-      actionType = actionType
+      actionType = actionType,
     )
-  }
+
 }
 
 final case class LegislativeSubjectDTO(
-    name: String,
-    updateDate: Option[String]
+  name: String,
+  updateDate: Option[String],
 )
 
 object LegislativeSubjectDTO {
@@ -107,8 +109,8 @@ object LegislativeSubjectDTO {
 }
 
 final case class BillSubjectsDTO(
-    legislativeSubjects: Option[List[LegislativeSubjectDTO]],
-    policyArea: Option[String]
+  legislativeSubjects: Option[List[LegislativeSubjectDTO]],
+  policyArea: Option[String],
 )
 
 object BillSubjectsDTO {
@@ -117,11 +119,11 @@ object BillSubjectsDTO {
 }
 
 final case class BillSummaryDTO(
-    actionDate: Option[String],
-    actionDesc: Option[String],
-    text: Option[String],
-    updateDate: Option[String],
-    versionCode: Option[String]
+  actionDate: Option[String],
+  actionDesc: Option[String],
+  text: Option[String],
+  updateDate: Option[String],
+  versionCode: Option[String],
 )
 
 object BillSummaryDTO {
@@ -130,35 +132,36 @@ object BillSummaryDTO {
 }
 
 final case class RelationshipDetailDTO(
-    identifiedBy: Option[String],
-    relationshipType: Option[String]
+  identifiedBy: Option[String],
+  relationshipType: Option[String],
 )
 
 object RelationshipDetailDTO {
+
   implicit val encoder: Encoder[RelationshipDetailDTO] = Encoder.instance { r =>
     val fields = List(
       r.identifiedBy.map(v => "identifiedBy" -> Json.fromString(v)),
-      r.relationshipType.map(v => "type" -> Json.fromString(v))
+      r.relationshipType.map(v => "type" -> Json.fromString(v)),
     ).flatten
     Json.obj(fields*)
   }
 
-  implicit val decoder: Decoder[RelationshipDetailDTO] = (c: HCursor) => {
+  implicit val decoder: Decoder[RelationshipDetailDTO] = (c: HCursor) =>
     for {
-      identifiedBy <- c.downField("identifiedBy").as[Option[String]]
+      identifiedBy     <- c.downField("identifiedBy").as[Option[String]]
       relationshipType <- c.downField("type").as[Option[String]]
     } yield RelationshipDetailDTO(
       identifiedBy = identifiedBy,
-      relationshipType = relationshipType
+      relationshipType = relationshipType,
     )
-  }
+
 }
 
 final case class RelatedBillDTO(
-    congress: Option[Int],
-    number: Option[Int],
-    latestAction: Option[LatestActionDTO],
-    relationshipDetails: Option[List[RelationshipDetailDTO]]
+  congress: Option[Int],
+  number: Option[Int],
+  latestAction: Option[LatestActionDTO],
+  relationshipDetails: Option[List[RelationshipDetailDTO]],
 )
 
 object RelatedBillDTO {
@@ -167,10 +170,10 @@ object RelatedBillDTO {
 }
 
 final case class CboCostEstimateDTO(
-    description: Option[String],
-    pubDate: Option[String],
-    title: Option[String],
-    url: Option[String]
+  description: Option[String],
+  pubDate: Option[String],
+  title: Option[String],
+  url: Option[String],
 )
 
 object CboCostEstimateDTO {
@@ -179,8 +182,8 @@ object CboCostEstimateDTO {
 }
 
 final case class CommitteeReportDTO(
-    citation: Option[String],
-    url: Option[String]
+  citation: Option[String],
+  url: Option[String],
 )
 
 object CommitteeReportDTO {
@@ -189,12 +192,12 @@ object CommitteeReportDTO {
 }
 
 final case class TitleDTO(
-    title: String,
-    updateDate: Option[String],
-    titleType: Option[String],
-    titleTypeCode: Option[Int],
-    billTextVersionCode: Option[String],
-    billTextVersionName: Option[String]
+  title: String,
+  updateDate: Option[String],
+  titleType: Option[String],
+  titleTypeCode: Option[Int],
+  billTextVersionCode: Option[String],
+  billTextVersionName: Option[String],
 )
 
 object TitleDTO {
@@ -203,16 +206,16 @@ object TitleDTO {
 }
 
 final case class BillListItemDTO(
-    congress: Int,
-    number: String,
-    billType: String,
-    latestAction: Option[LatestActionDTO],
-    originChamber: Option[String],
-    originChamberCode: Option[String],
-    title: String,
-    updateDate: Option[String],
-    updateDateIncludingText: Option[String],
-    url: String
+  congress: Int,
+  number: String,
+  billType: String,
+  latestAction: Option[LatestActionDTO],
+  originChamber: Option[String],
+  originChamberCode: Option[String],
+  title: String,
+  updateDate: Option[String],
+  updateDateIncludingText: Option[String],
+  url: String,
 )
 
 object BillListItemDTO {
@@ -221,29 +224,29 @@ object BillListItemDTO {
 }
 
 final case class BillDetailDTO(
-    congress: Int,
-    number: String,
-    billType: String,
-    latestAction: Option[LatestActionDTO],
-    originChamber: Option[String],
-    originChamberCode: Option[String],
-    title: String,
-    updateDate: Option[String],
-    updateDateIncludingText: Option[String],
-    url: String,
-    introducedDate: Option[String],
-    policyArea: Option[String],
-    sponsors: Option[List[SponsorDTO]],
-    cosponsors: Option[PaginationInfoDTO],
-    subjects: Option[BillSubjectsDTO],
-    summaries: Option[List[BillSummaryDTO]],
-    textVersions: Option[List[TextVersionDTO]],
-    titles: Option[List[TitleDTO]],
-    constitutionalAuthorityStatementText: Option[String],
-    cboCostEstimates: Option[List[CboCostEstimateDTO]],
-    committeeReports: Option[List[CommitteeReportDTO]],
-    relatedBills: Option[List[RelatedBillDTO]],
-    legislationUrl: Option[String]
+  congress: Int,
+  number: String,
+  billType: String,
+  latestAction: Option[LatestActionDTO],
+  originChamber: Option[String],
+  originChamberCode: Option[String],
+  title: String,
+  updateDate: Option[String],
+  updateDateIncludingText: Option[String],
+  url: String,
+  introducedDate: Option[String],
+  policyArea: Option[String],
+  sponsors: Option[List[SponsorDTO]],
+  cosponsors: Option[PaginationInfoDTO],
+  subjects: Option[BillSubjectsDTO],
+  summaries: Option[List[BillSummaryDTO]],
+  textVersions: Option[List[TextVersionDTO]],
+  titles: Option[List[TitleDTO]],
+  constitutionalAuthorityStatementText: Option[String],
+  cboCostEstimates: Option[List[CboCostEstimateDTO]],
+  committeeReports: Option[List[CommitteeReportDTO]],
+  relatedBills: Option[List[RelatedBillDTO]],
+  legislationUrl: Option[String],
 )
 
 object BillDetailDTO {

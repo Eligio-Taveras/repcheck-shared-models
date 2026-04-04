@@ -1,12 +1,12 @@
 package repcheck.shared.models.llm.output
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class BillSummaryOutput(
-    summary: String,
-    readingLevel: String,
-    keyPoints: List[String]
+  summary: String,
+  readingLevel: String,
+  keyPoints: List[String],
 )
 
 object BillSummaryOutput {

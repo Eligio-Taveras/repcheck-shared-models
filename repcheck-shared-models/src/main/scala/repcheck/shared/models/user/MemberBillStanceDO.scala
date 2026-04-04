@@ -1,17 +1,17 @@
 package repcheck.shared.models.user
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class MemberBillStanceDO(
-    memberId: String,
-    billId: String,
-    voteId: Option[String],
-    position: Option[String],
-    voteType: Option[String],
-    voteDate: Option[String],
-    congress: Option[Int],
-    topics: List[String]
+  memberId: String,
+  billId: String,
+  voteId: Option[String],
+  position: Option[String],
+  voteType: Option[String],
+  voteDate: Option[String],
+  congress: Option[Int],
+  topics: List[String],
 )
 
 object MemberBillStanceDO {

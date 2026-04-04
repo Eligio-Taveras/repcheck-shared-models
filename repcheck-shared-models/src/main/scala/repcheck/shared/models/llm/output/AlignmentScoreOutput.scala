@@ -1,12 +1,12 @@
 package repcheck.shared.models.llm.output
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class TopicAlignmentScore(
-    topic: String,
-    score: Double,
-    explanation: String
+  topic: String,
+  score: Double,
+  explanation: String,
 )
 
 object TopicAlignmentScore {
@@ -17,11 +17,11 @@ object TopicAlignmentScore {
 }
 
 final case class AlignmentHighlight(
-    billId: String,
-    topic: String,
-    stance: String,
-    vote: String,
-    alignment: Double
+  billId: String,
+  topic: String,
+  stance: String,
+  vote: String,
+  alignment: Double,
 )
 
 object AlignmentHighlight {
@@ -32,10 +32,10 @@ object AlignmentHighlight {
 }
 
 final case class AlignmentScoreOutput(
-    topicScores: List[TopicAlignmentScore],
-    overallScore: Double,
-    highlights: List[AlignmentHighlight],
-    reasoning: String
+  topicScores: List[TopicAlignmentScore],
+  overallScore: Double,
+  highlights: List[AlignmentHighlight],
+  reasoning: String,
 )
 
 object AlignmentScoreOutput {

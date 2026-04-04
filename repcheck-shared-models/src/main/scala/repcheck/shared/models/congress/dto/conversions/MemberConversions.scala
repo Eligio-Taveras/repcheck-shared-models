@@ -2,16 +2,16 @@ package repcheck.shared.models.congress.dto.conversions
 
 import java.util.UUID
 
-import repcheck.shared.models.congress.dto.member.MemberDetailDTO
 import repcheck.shared.models.congress.dos.member.{MemberDO, MemberPartyHistoryDO, MemberTermDO}
 import repcheck.shared.models.congress.dos.results.MemberConversionResult
+import repcheck.shared.models.congress.dto.member.MemberDetailDTO
 
 object MemberConversions {
 
   implicit class MemberDetailDTOOps(private val dto: MemberDetailDTO) extends AnyVal {
     def toDO: Either[String, MemberConversionResult] = toDO(() => UUID.randomUUID())
 
-    def toDO(uuidGenerator: () => UUID): Either[String, MemberConversionResult] = {
+    def toDO(uuidGenerator: () => UUID): Either[String, MemberConversionResult] =
       if (dto.bioguideId.trim.isEmpty) {
         Left("bioguideId must not be empty")
       } else {
@@ -39,7 +39,7 @@ object MemberConversions {
           officialUrl = None,
           updateDate = dto.updateDate,
           createdAt = None,
-          updatedAt = None
+          updatedAt = None,
         )
 
         val terms: List[MemberTermDO] = dto.terms
@@ -55,7 +55,7 @@ object MemberConversions {
               memberType = t.memberType,
               stateCode = t.stateCode,
               stateName = t.stateName,
-              district = t.district
+              district = t.district,
             )
           }
 
@@ -67,16 +67,19 @@ object MemberConversions {
               memberId = dto.bioguideId,
               partyName = ph.partyName,
               partyAbbreviation = ph.partyAbbreviation,
-              startYear = ph.startYear
+              startYear = ph.startYear,
             )
           }
 
-        Right(MemberConversionResult(
-          member = member,
-          terms = terms,
-          partyHistory = partyHistory
-        ))
+        Right(
+          MemberConversionResult(
+            member = member,
+            terms = terms,
+            partyHistory = partyHistory,
+          )
+        )
       }
-    }
+
   }
+
 }

@@ -16,11 +16,11 @@ enum PorkType(val apiValue: String) {
 object PorkType {
 
   private val lookup: Map[String, PorkType] = {
-    val byName  = PorkType.values.map(pt => pt.toString.toUpperCase -> pt).toMap
-    val byApi   = PorkType.values.map(pt => pt.apiValue.toUpperCase -> pt).toMap
+    val byName = PorkType.values.map(pt => pt.toString.toUpperCase -> pt).toMap
+    val byApi  = PorkType.values.map(pt => pt.apiValue.toUpperCase -> pt).toMap
     val aliases = Map(
       "UNRELATED_PROVISION" -> PorkType.UnrelatedProvision,
-      "UNRELATED-PROVISION" -> PorkType.UnrelatedProvision
+      "UNRELATED-PROVISION" -> PorkType.UnrelatedProvision,
     )
     byName ++ byApi ++ aliases
   }

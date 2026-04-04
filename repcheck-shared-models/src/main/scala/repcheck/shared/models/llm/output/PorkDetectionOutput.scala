@@ -1,15 +1,15 @@
 package repcheck.shared.models.llm.output
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 import repcheck.shared.models.llm.{ImpactSeverity, PorkType}
 
 final case class PorkFinding(
-    porkType: PorkType,
-    description: String,
-    affectedSection: String,
-    severity: ImpactSeverity
+  porkType: PorkType,
+  description: String,
+  affectedSection: String,
+  severity: ImpactSeverity,
 )
 
 object PorkFinding {
@@ -20,7 +20,7 @@ object PorkFinding {
 }
 
 final case class PorkDetectionOutput(
-    findings: List[PorkFinding]
+  findings: List[PorkFinding]
 )
 
 object PorkDetectionOutput {

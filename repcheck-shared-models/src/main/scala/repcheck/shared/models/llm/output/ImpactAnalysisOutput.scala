@@ -1,15 +1,15 @@
 package repcheck.shared.models.llm.output
 
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 import repcheck.shared.models.llm.ImpactSeverity
 
 final case class ImpactItem(
-    affectedGroup: String,
-    impactType: String,
-    description: String,
-    severity: ImpactSeverity
+  affectedGroup: String,
+  impactType: String,
+  description: String,
+  severity: ImpactSeverity,
 )
 
 object ImpactItem {
@@ -20,7 +20,7 @@ object ImpactItem {
 }
 
 final case class ImpactAnalysisOutput(
-    impacts: List[ImpactItem]
+  impacts: List[ImpactItem]
 )
 
 object ImpactAnalysisOutput {
