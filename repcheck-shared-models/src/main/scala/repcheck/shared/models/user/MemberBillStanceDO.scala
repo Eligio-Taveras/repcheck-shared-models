@@ -7,6 +7,7 @@ final case class MemberBillStanceDO(
   memberId: String,
   billId: String,
   voteId: Option[String],
+  amendmentId: Option[String],
   position: Option[String],
   voteType: Option[String],
   voteDate: Option[String],

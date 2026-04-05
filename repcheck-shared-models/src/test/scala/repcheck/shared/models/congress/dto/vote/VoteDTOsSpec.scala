@@ -50,6 +50,8 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       legislationType = Some("HR"),
       legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
       url = Some("https://api.congress.gov/v3/vote/118/house/42"),
+      identifier = Some("118-H-42"),
+      sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll042.xml"),
     )
     decode[VoteListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -59,6 +61,8 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
     val result = decode[VoteListItemDTO](json)
     result.isRight shouldBe true
     result.map(_.sessionNumber) shouldBe Right(None)
+    result.map(_.identifier) shouldBe Right(None)
+    result.map(_.sourceDataUrl) shouldBe Right(None)
   }
 
   "VoteDetailDTO" should "round-trip" in {

@@ -47,7 +47,7 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.implicits._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Read[UserPreferenceDO]].shouldBe(a[AnyRef])
   }
 
@@ -55,7 +55,7 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.implicits._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Write[UserPreferenceDO]].shouldBe(a[AnyRef])
   }
 

@@ -59,4 +59,50 @@ class SenateVoteXmlDTOsSpec extends AnyFlatSpec with Matchers {
     result.map(_.address) shouldBe Right(None)
   }
 
+  "ServicePeriodDTO" should "round-trip" in {
+    val dto = ServicePeriodDTO(
+      congress = Some(118),
+      startDate = Some("2023-01-03"),
+      endDate = Some("2025-01-03"),
+    )
+    decode[ServicePeriodDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  it should "decode with all None fields" in {
+    decode[ServicePeriodDTO]("{}") shouldBe Right(ServicePeriodDTO(None, None, None))
+  }
+
+  "SenatorLookupXmlDTO" should "round-trip" in {
+    val dto = SenatorLookupXmlDTO(
+      lisId = "S001",
+      bioguideId = "S000033",
+      firstName = "Bernard",
+      lastName = "Sanders",
+      party = "I",
+      state = "VT",
+      senateClass = Some(1),
+      serviceDates = List(
+        ServicePeriodDTO(Some(117), Some("2021-01-03"), Some("2023-01-03")),
+        ServicePeriodDTO(Some(118), Some("2023-01-03"), None),
+      ),
+      isCurrent = true,
+    )
+    decode[SenatorLookupXmlDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  it should "round-trip with empty service dates" in {
+    val dto = SenatorLookupXmlDTO(
+      lisId = "S002",
+      bioguideId = "M000355",
+      firstName = "Mitch",
+      lastName = "McConnell",
+      party = "R",
+      state = "KY",
+      senateClass = None,
+      serviceDates = List.empty,
+      isCurrent = false,
+    )
+    decode[SenatorLookupXmlDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
 }

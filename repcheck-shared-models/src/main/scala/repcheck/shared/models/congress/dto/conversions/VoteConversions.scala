@@ -28,6 +28,7 @@ object VoteConversions {
           billId = None,
           question = dto.voteQuestion,
           voteType = dto.voteType,
+          voteMethod = None,
           result = dto.result,
           voteDate = dto.startDate,
           legislationNumber = dto.legislationNumber,

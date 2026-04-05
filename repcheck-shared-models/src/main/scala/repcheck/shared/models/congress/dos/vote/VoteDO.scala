@@ -14,6 +14,7 @@ final case class VoteDO(
   billId: Option[String],
   question: Option[String],
   voteType: Option[String],
+  voteMethod: Option[String],
   result: Option[String],
   voteDate: Option[String],
   legislationNumber: Option[String],

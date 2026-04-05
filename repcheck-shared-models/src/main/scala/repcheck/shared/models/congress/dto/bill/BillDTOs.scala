@@ -3,7 +3,7 @@ package repcheck.shared.models.congress.dto.bill
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, HCursor, Json}
 
-import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
+import repcheck.shared.models.congress.dto.common.{PagedObject, PaginationInfoDTO}
 
 final case class LatestActionDTO(
   actionDate: String,
@@ -252,4 +252,23 @@ final case class BillDetailDTO(
 object BillDetailDTO {
   implicit val encoder: Encoder[BillDetailDTO] = deriveEncoder[BillDetailDTO]
   implicit val decoder: Decoder[BillDetailDTO] = deriveDecoder[BillDetailDTO]
+}
+
+final case class BillListResponseDTO(
+  items: List[BillListItemDTO],
+  pagination: Option[PaginationInfoDTO],
+) extends PagedObject[BillListItemDTO]
+
+object BillListResponseDTO {
+  import cats.Semigroup
+
+  implicit val semigroup: Semigroup[BillListResponseDTO] = Semigroup.instance { (a, b) =>
+    BillListResponseDTO(
+      items = a.items ++ b.items,
+      pagination = b.pagination,
+    )
+  }
+
+  implicit val encoder: Encoder[BillListResponseDTO] = deriveEncoder[BillListResponseDTO]
+  implicit val decoder: Decoder[BillListResponseDTO] = deriveDecoder[BillListResponseDTO]
 }

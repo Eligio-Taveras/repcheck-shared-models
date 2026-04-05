@@ -44,6 +44,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     v.sessionNumber shouldBe Some(1)
     v.question shouldBe Some("On Passage")
     v.voteType shouldBe Some("YEA-AND-NAY")
+    v.voteMethod shouldBe None
     v.result shouldBe Some("Passed")
     v.voteDate shouldBe Some("2024-01-15")
     v.legislationNumber shouldBe Some("HR 1234")

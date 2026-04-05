@@ -44,6 +44,8 @@ final case class VoteListItemDTO(
   legislationType: Option[String],
   legislationUrl: Option[String],
   url: Option[String],
+  identifier: Option[String],
+  sourceDataUrl: Option[String],
 )
 
 object VoteListItemDTO {

@@ -13,6 +13,7 @@ final case class AmendedBillDTO(
   title: Option[String],
   billType: Option[String],
   url: Option[String],
+  updateDateIncludingText: Option[String],
 )
 
 object AmendedBillDTO {
@@ -47,6 +48,8 @@ final case class AmendmentDetailDTO(
   submittedDate: Option[String],
   latestAction: Option[LatestActionDTO],
   updateDate: Option[String],
+  actions: Option[List[LatestActionDTO]],
+  textVersions: Option[List[String]],
 )
 
 object AmendmentDetailDTO {

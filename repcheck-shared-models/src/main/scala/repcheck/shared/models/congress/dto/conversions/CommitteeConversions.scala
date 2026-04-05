@@ -31,12 +31,18 @@ object CommitteeConversions {
         )
       }
 
-    def toLisMemberMapping: LisMemberMappingDO =
-      LisMemberMappingDO(
-        lisMemberId = dto.lisMemberId,
-        memberId = dto.bioguideId,
-        lastVerified = Instant.now(),
-      )
+    def toLisMemberMapping: Option[LisMemberMappingDO] =
+      if (dto.lisMemberId.trim.isEmpty || dto.bioguideId.trim.isEmpty) {
+        None
+      } else {
+        Some(
+          LisMemberMappingDO(
+            lisMemberId = dto.lisMemberId,
+            memberId = dto.bioguideId,
+            lastVerified = Instant.now(),
+          )
+        )
+      }
 
   }
 

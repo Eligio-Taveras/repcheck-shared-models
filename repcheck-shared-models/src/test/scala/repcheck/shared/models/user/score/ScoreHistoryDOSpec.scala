@@ -22,31 +22,39 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
       "M000303",
       Some(instant),
       0.85f,
+      Some("scored"),
       Some("vote_cast"),
       Some("Strong alignment on healthcare votes"),
+      Some(Array(0.1f, 0.2f, 0.3f)),
     )
-    sh.asJson.as[ScoreHistoryDO] shouldBe Right(sh)
+    val decoded = sh.asJson.as[ScoreHistoryDO]
+    decoded.isRight shouldBe true
+    decoded.foreach { result =>
+      result.scoreId shouldBe sh.scoreId
+      result.status shouldBe sh.status
+      result.reasoningEmbedding.map(_.toSeq) shouldBe sh.reasoningEmbedding.map(_.toSeq)
+    }
   }
 
   it should "round-trip with all optional fields None" in {
-    val sh = ScoreHistoryDO(scoreId, uid, "M000303", None, 0.5f, None, None)
+    val sh = ScoreHistoryDO(scoreId, uid, "M000303", None, 0.5f, None, None, None, None)
     sh.asJson.as[ScoreHistoryDO] shouldBe Right(sh)
   }
 
   it should "round-trip with computedAt Some and triggerEvent None" in {
-    val sh = ScoreHistoryDO(scoreId, uid, "M000303", Some(instant), 0.7f, None, Some("reasoning"))
+    val sh = ScoreHistoryDO(scoreId, uid, "M000303", Some(instant), 0.7f, Some("scored"), None, Some("reasoning"), None)
     sh.asJson.as[ScoreHistoryDO] shouldBe Right(sh)
   }
 
   it should "round-trip with computedAt None and triggerEvent Some" in {
-    val sh = ScoreHistoryDO(scoreId, uid, "M000303", None, 0.6f, Some("bill_analyzed"), None)
+    val sh = ScoreHistoryDO(scoreId, uid, "M000303", None, 0.6f, None, Some("bill_analyzed"), None, None)
     sh.asJson.as[ScoreHistoryDO] shouldBe Right(sh)
   }
 
   it should "decode with absent optional fields" in {
     val json = s"""{"scoreId":"$scoreId","userId":"$uid","memberId":"M000303","aggregateScore":0.5}"""
     decode[ScoreHistoryDO](json) shouldBe Right(
-      ScoreHistoryDO(scoreId, uid, "M000303", None, 0.5f, None, None)
+      ScoreHistoryDO(scoreId, uid, "M000303", None, 0.5f, None, None, None, None)
     )
   }
 
@@ -68,9 +76,20 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
     decodeAccumulating[ScoreHistoryDO]("""{}""").isInvalid should be(true)
   }
 
-  "ScoreHistoryCongressDO Circe codec" should "round-trip" in {
-    val shc = ScoreHistoryCongressDO(scoreId, 118, 0.82f)
+  "ScoreHistoryCongressDO Circe codec" should "round-trip with all fields" in {
+    val shc = ScoreHistoryCongressDO(scoreId, 118, 0.82f, Some(42), Some(38))
     shc.asJson.as[ScoreHistoryCongressDO] shouldBe Right(shc)
+  }
+
+  it should "round-trip with None fields" in {
+    val shc = ScoreHistoryCongressDO(scoreId, 118, 0.82f, None, None)
+    shc.asJson.as[ScoreHistoryCongressDO] shouldBe Right(shc)
+  }
+
+  it should "decodeAccumulating valid JSON" in {
+    decodeAccumulating[ScoreHistoryCongressDO](
+      s"""{"scoreId":"$scoreId","congress":118,"overallScore":0.8}"""
+    ).isValid shouldBe true
   }
 
   "ScoreHistoryCongressTopicDO Circe codec" should "round-trip" in {
@@ -78,54 +97,20 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
     shct.asJson.as[ScoreHistoryCongressTopicDO] shouldBe Right(shct)
   }
 
-  "ScoreHistoryHighlightDO Circe codec" should "round-trip" in {
-    val shh = ScoreHistoryHighlightDO(scoreId, "hr-1234-118", "healthcare", "progressive", "Yea", 0.95f)
-    shh.asJson.as[ScoreHistoryHighlightDO] shouldBe Right(shh)
-  }
-
-  "ScoreHistoryCongressDO decodeAccumulating" should "succeed on valid JSON" in {
-    decodeAccumulating[ScoreHistoryCongressDO](
-      s"""{"scoreId":"$scoreId","congress":118,"overallScore":0.8}"""
-    ).isValid shouldBe true
-  }
-
-  "ScoreHistoryCongressTopicDO decodeAccumulating" should "succeed on valid JSON" in {
+  it should "decodeAccumulating valid JSON" in {
     decodeAccumulating[ScoreHistoryCongressTopicDO](
       s"""{"scoreId":"$scoreId","congress":118,"topic":"healthcare","score":0.9}"""
     ).isValid shouldBe true
   }
 
-  "ScoreHistoryHighlightDO decodeAccumulating" should "succeed on valid JSON" in {
+  "ScoreHistoryHighlightDO Circe codec" should "round-trip" in {
+    val shh = ScoreHistoryHighlightDO(scoreId, "hr-1234-118", "healthcare", "progressive", "Yea", 0.95f)
+    shh.asJson.as[ScoreHistoryHighlightDO] shouldBe Right(shh)
+  }
+
+  it should "decodeAccumulating valid JSON" in {
     decodeAccumulating[ScoreHistoryHighlightDO](
       s"""{"scoreId":"$scoreId","billId":"hr-1-118","topic":"health","stance":"progressive","vote":"Yea","alignment":0.9}"""
-    ).isValid shouldBe true
-  }
-
-  "ScoreDO decodeAccumulating" should "succeed on valid JSON" in {
-    val uid2 = UUID.fromString("660e8400-e29b-41d4-a716-446655440000")
-    decodeAccumulating[ScoreDO](
-      s"""{"userId":"$uid2","memberId":"M000303","aggregateScore":0.8}"""
-    ).isValid shouldBe true
-  }
-
-  "ScoreCongressDO decodeAccumulating" should "succeed on valid JSON" in {
-    val uid2 = UUID.fromString("660e8400-e29b-41d4-a716-446655440000")
-    decodeAccumulating[ScoreCongressDO](
-      s"""{"userId":"$uid2","memberId":"M000303","congress":118,"overallScore":0.8}"""
-    ).isValid shouldBe true
-  }
-
-  "ScoreCongressTopicDO decodeAccumulating" should "succeed on valid JSON" in {
-    val uid2 = UUID.fromString("660e8400-e29b-41d4-a716-446655440000")
-    decodeAccumulating[ScoreCongressTopicDO](
-      s"""{"userId":"$uid2","memberId":"M000303","congress":118,"topic":"health","score":0.8}"""
-    ).isValid shouldBe true
-  }
-
-  "ScoreTopicDO decodeAccumulating" should "succeed on valid JSON" in {
-    val uid2 = UUID.fromString("660e8400-e29b-41d4-a716-446655440000")
-    decodeAccumulating[ScoreTopicDO](
-      s"""{"userId":"$uid2","memberId":"M000303","topic":"health","score":0.8}"""
     ).isValid shouldBe true
   }
 
@@ -133,6 +118,7 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.implicits._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Read[ScoreHistoryDO]].shouldBe(a[AnyRef])
   }
 
@@ -140,6 +126,7 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.implicits._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Write[ScoreHistoryDO]].shouldBe(a[AnyRef])
   }
 

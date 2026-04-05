@@ -9,6 +9,8 @@ final case class ScoreHistoryCongressDO(
   scoreId: UUID,
   congress: Int,
   overallScore: Float,
+  billsConsidered: Option[Int],
+  votesAnalyzed: Option[Int],
 )
 
 object ScoreHistoryCongressDO {

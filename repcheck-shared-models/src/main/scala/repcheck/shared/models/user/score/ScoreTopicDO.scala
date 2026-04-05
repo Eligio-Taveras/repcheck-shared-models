@@ -10,7 +10,6 @@ final case class ScoreTopicDO(
   memberId: String,
   topic: String,
   score: Float,
-  topBillId: Option[String],
 )
 
 object ScoreTopicDO {
