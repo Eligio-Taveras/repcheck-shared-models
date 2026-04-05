@@ -1,0 +1,78 @@
+package repcheck.shared.models.congress.dos.bill
+
+import java.time.Instant
+import java.util.UUID
+
+import io.circe.parser.decode
+import io.circe.syntax._
+
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
+class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
+
+  private val sampleVersion = BillTextVersionDO(
+    versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+    billId = "118-HR-1234",
+    versionCode = "ih",
+    versionType = "Introduced in House",
+    versionDate = Some("2024-01-15"),
+    formatType = Some("xml"),
+    url = Some("https://congress.gov/bill/118/hr/1234/text/ih"),
+    content = Some("Full text of the bill version"),
+    embedding = None,
+    fetchedAt = Some(Instant.parse("2024-06-01T12:00:00Z")),
+    createdAt = Some(Instant.parse("2024-06-01T12:00:00Z")),
+  )
+
+  "BillTextVersionDO Circe codec" should "round-trip with all fields populated" in {
+    val json    = sampleVersion.asJson
+    val decoded = json.as[BillTextVersionDO]
+    decoded shouldBe Right(sampleVersion)
+  }
+
+  it should "round-trip with optional fields as None" in {
+    val minimal = BillTextVersionDO(
+      versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+      billId = "118-HR-1234",
+      versionCode = "ih",
+      versionType = "Introduced in House",
+      versionDate = None,
+      formatType = None,
+      url = None,
+      content = None,
+      embedding = None,
+      fetchedAt = None,
+      createdAt = None,
+    )
+    minimal.asJson.as[BillTextVersionDO] shouldBe Right(minimal)
+  }
+
+  it should "fail on missing required field" in {
+    decode[BillTextVersionDO]("""{"versionId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    implicitly[Read[BillTextVersionDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    implicitly[Write[BillTextVersionDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "accumulate decode errors" in {
+    import io.circe.Decoder
+    val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
+    val result = Decoder[BillTextVersionDO].decodeAccumulating(bad.hcursor)
+    result.isInvalid should be(true)
+  }
+
+}

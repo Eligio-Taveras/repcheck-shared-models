@@ -58,6 +58,7 @@ object BillConversions {
         apiUrl = Some(dto.url),
         createdAt = None,
         updatedAt = None,
+        latestTextVersionId = None,
       )
 
   }
@@ -113,6 +114,7 @@ object BillConversions {
           apiUrl = Some(dto.url),
           createdAt = None,
           updatedAt = None,
+          latestTextVersionId = None,
         )
 
         val cosponsors: List[BillCosponsorDO] = List.empty

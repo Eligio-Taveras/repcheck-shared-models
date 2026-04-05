@@ -49,7 +49,9 @@ lazy val root = (project in file("."))
 lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
   .settings(
     commonSettings,
-    libraryDependencies ++= circe ++ doobie
+    libraryDependencies ++= circe ++ doobie,
+    // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
+    scalacOptions += "-Xmax-inlines:64"
   )
 
 lazy val docGenerator = (project in file("doc-generator"))
