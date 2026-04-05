@@ -8,10 +8,10 @@ final case class UnrecognizedChangeType(value: String)
     )
 
 enum ChangeType(val apiValue: String) {
-  case Added      extends ChangeType("Added")
-  case Removed    extends ChangeType("Removed")
-  case Modified   extends ChangeType("Modified")
-  case Renumbered extends ChangeType("Renumbered")
+  case Added      extends ChangeType("added")
+  case Removed    extends ChangeType("removed")
+  case Modified   extends ChangeType("modified")
+  case Renumbered extends ChangeType("renumbered")
 }
 
 object ChangeType {

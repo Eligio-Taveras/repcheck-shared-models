@@ -83,6 +83,8 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     url = "https://api.congress.gov/v3/bill/118/s/5678",
     introducedDate = Some("2024-01-10"),
     policyArea = Some("Transportation"),
+    actions = None,
+    committees = None,
     sponsors =
       Some(List(SponsorDTO("S000033", Some("Bernie"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))),
     cosponsors = Some(PaginationInfoDTO(Some(25), None)),

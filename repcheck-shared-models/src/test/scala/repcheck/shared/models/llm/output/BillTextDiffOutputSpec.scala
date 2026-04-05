@@ -5,12 +5,13 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.bill.ChangeType
 
 class BillTextDiffOutputSpec extends AnyFlatSpec with Matchers {
 
   private val sampleChange = SectionChange(
     sectionId = "sec-1",
-    changeType = "modified",
+    changeType = ChangeType.Modified,
     previousText = Some("Original text of section 1"),
     currentText = Some("Updated text of section 1"),
     description = "Language was strengthened regarding enforcement",
@@ -24,7 +25,7 @@ class BillTextDiffOutputSpec extends AnyFlatSpec with Matchers {
       sampleChange,
       SectionChange(
         sectionId = "sec-3",
-        changeType = "added",
+        changeType = ChangeType.Added,
         previousText = None,
         currentText = Some("New section added"),
         description = "New reporting requirement added",
@@ -79,7 +80,7 @@ class BillTextDiffOutputSpec extends AnyFlatSpec with Matchers {
     diff.foreach { d =>
       d.billId shouldBe "118-HR-5678"
       d.sections.length shouldBe 1
-      d.sections.headOption.foreach(_.changeType shouldBe "removed")
+      d.sections.headOption.foreach(_.changeType shouldBe ChangeType.Removed)
     }
   }
 

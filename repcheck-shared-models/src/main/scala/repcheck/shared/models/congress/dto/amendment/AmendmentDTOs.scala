@@ -4,6 +4,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 import repcheck.shared.models.congress.dto.bill.{LatestActionDTO, SponsorDTO}
+import repcheck.shared.models.congress.dto.common.{PagedObject, PaginationInfoDTO}
 
 final case class AmendedBillDTO(
   congress: Option[Int],
@@ -55,4 +56,23 @@ final case class AmendmentDetailDTO(
 object AmendmentDetailDTO {
   implicit val encoder: Encoder[AmendmentDetailDTO] = deriveEncoder[AmendmentDetailDTO]
   implicit val decoder: Decoder[AmendmentDetailDTO] = deriveDecoder[AmendmentDetailDTO]
+}
+
+final case class AmendmentListResponseDTO(
+  items: List[AmendmentListItemDTO],
+  pagination: Option[PaginationInfoDTO],
+) extends PagedObject[AmendmentListItemDTO]
+
+object AmendmentListResponseDTO {
+  import cats.Semigroup
+
+  implicit val semigroup: Semigroup[AmendmentListResponseDTO] = Semigroup.instance { (a, b) =>
+    AmendmentListResponseDTO(
+      items = a.items ++ b.items,
+      pagination = b.pagination,
+    )
+  }
+
+  implicit val encoder: Encoder[AmendmentListResponseDTO] = deriveEncoder[AmendmentListResponseDTO]
+  implicit val decoder: Decoder[AmendmentListResponseDTO] = deriveDecoder[AmendmentListResponseDTO]
 }

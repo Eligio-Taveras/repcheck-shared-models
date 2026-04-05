@@ -240,6 +240,8 @@ final case class BillDetailDTO(
   cosponsors: Option[PaginationInfoDTO],
   subjects: Option[BillSubjectsDTO],
   summaries: Option[List[BillSummaryDTO]],
+  actions: Option[List[BillActionDTO]],
+  committees: Option[List[String]],
   textVersions: Option[List[TextVersionDTO]],
   titles: Option[List[TitleDTO]],
   constitutionalAuthorityStatementText: Option[String],

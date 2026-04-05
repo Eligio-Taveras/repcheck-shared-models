@@ -38,7 +38,7 @@ object BillType {
     }
 
   implicit val encoder: Encoder[BillType] =
-    Encoder.encodeString.contramap(_.toString)
+    Encoder.encodeString.contramap(_.apiValue)
 
   implicit val decoder: Decoder[BillType] = Decoder.decodeString.emap(str => fromString(str).left.map(_.getMessage))
 

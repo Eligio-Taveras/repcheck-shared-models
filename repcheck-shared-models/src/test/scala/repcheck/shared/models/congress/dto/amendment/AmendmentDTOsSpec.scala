@@ -80,4 +80,27 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
     result.map(_.textVersions) shouldBe Right(None)
   }
 
+  "AmendmentListResponseDTO" should "round-trip via Circe" in {
+    import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
+    val item = AmendmentListItemDTO(118, "100", None, None, None, None, None)
+    val resp = AmendmentListResponseDTO(List(item), Some(PaginationInfoDTO(Some(1), None)))
+    decode[AmendmentListResponseDTO](resp.asJson.noSpaces) shouldBe Right(resp)
+  }
+
+  it should "combine via Semigroup" in {
+    import cats.Semigroup
+    import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
+    val a = AmendmentListResponseDTO(
+      List(AmendmentListItemDTO(118, "1", None, None, None, None, None)),
+      Some(PaginationInfoDTO(Some(1), Some("p1"))),
+    )
+    val b = AmendmentListResponseDTO(
+      List(AmendmentListItemDTO(118, "2", None, None, None, None, None)),
+      Some(PaginationInfoDTO(Some(1), Some("p2"))),
+    )
+    val combined = Semigroup[AmendmentListResponseDTO].combine(a, b)
+    combined.items should have size 2
+    combined.pagination shouldBe b.pagination
+  }
+
 }

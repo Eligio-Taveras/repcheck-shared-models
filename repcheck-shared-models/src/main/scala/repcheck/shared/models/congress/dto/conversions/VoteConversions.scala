@@ -34,7 +34,7 @@ object VoteConversions {
           legislationNumber = dto.legislationNumber,
           legislationType = dto.legislationType,
           legislationUrl = dto.legislationUrl,
-          sourceDataUrl = dto.url,
+          sourceDataUrl = dto.sourceDataUrl.orElse(dto.url),
           updateDate = dto.updateDate,
           createdAt = None,
           updatedAt = None,
@@ -100,6 +100,8 @@ object VoteConversions {
             legislationType = None,
             legislationUrl = None,
             url = None,
+            identifier = None,
+            sourceDataUrl = None,
             voteQuestion = Some(dto.question),
             results = Some(results),
           )

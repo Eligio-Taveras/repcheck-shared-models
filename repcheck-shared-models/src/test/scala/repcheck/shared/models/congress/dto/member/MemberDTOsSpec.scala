@@ -194,6 +194,27 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
     decode[MemberListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
+  "MemberListResponseDTO" should "round-trip via Circe" in {
+    val item = MemberListItemDTO("P000197", Some("Pelosi"), None, None, None, None, None, None)
+    val resp = MemberListResponseDTO(List(item), Some(PaginationInfoDTO(Some(1), None)))
+    decode[MemberListResponseDTO](resp.asJson.noSpaces) shouldBe Right(resp)
+  }
+
+  it should "combine via Semigroup" in {
+    import cats.Semigroup
+    val a = MemberListResponseDTO(
+      List(MemberListItemDTO("A", None, None, None, None, None, None, None)),
+      Some(PaginationInfoDTO(Some(1), Some("p1"))),
+    )
+    val b = MemberListResponseDTO(
+      List(MemberListItemDTO("B", None, None, None, None, None, None, None)),
+      Some(PaginationInfoDTO(Some(1), Some("p2"))),
+    )
+    val combined = Semigroup[MemberListResponseDTO].combine(a, b)
+    combined.items.map(_.bioguideId) shouldBe List("A", "B")
+    combined.pagination shouldBe b.pagination
+  }
+
   "MemberDepictionDTO decodeAccumulating" should "succeed on valid JSON" in {
     decodeAccumulating[MemberDepictionDTO]("""{}""").isValid shouldBe true
   }

@@ -52,8 +52,14 @@ class BillTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "decode from JSON string" in {
-    val result = decode[BillType](""""HR"""")
-    result shouldBe Right(BillType.HR)
+    decode[BillType](""""hr"""") shouldBe Right(BillType.HR)
+    decode[BillType](""""HR"""") shouldBe Right(BillType.HR)
+  }
+
+  it should "encode to apiValue (lowercase)" in {
+    BillType.HR.asJson.noSpaces shouldBe """"hr""""
+    BillType.HJRES.asJson.noSpaces shouldBe """"hjres""""
+    BillType.SCONRES.asJson.noSpaces shouldBe """"sconres""""
   }
 
 }

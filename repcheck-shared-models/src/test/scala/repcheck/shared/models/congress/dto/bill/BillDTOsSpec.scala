@@ -185,6 +185,18 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       url = "https://api.congress.gov/v3/bill/118/s/5678",
       introducedDate = Some("2024-01-10"),
       policyArea = Some("Transportation"),
+      actions = Some(
+        List(
+          BillActionDTO(
+            actionCode = Some("10000"),
+            actionDate = "2024-01-10",
+            sourceSystem = Some(SourceSystemDTO(Some(9), Some("Library of Congress"))),
+            text = "Introduced in Senate",
+            actionType = Some("IntroReferral"),
+          )
+        )
+      ),
+      committees = Some(List("https://api.congress.gov/v3/bill/118/s/5678/committees")),
       sponsors = Some(
         List(
           SponsorDTO(
