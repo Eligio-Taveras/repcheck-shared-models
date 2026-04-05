@@ -3,7 +3,7 @@ package repcheck.shared.models.congress.dto.member
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, HCursor, Json}
 
-import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
+import repcheck.shared.models.congress.dto.common.{PagedObject, PaginationInfoDTO}
 
 final case class MemberDepictionDTO(
   imageUrl: Option[String],
@@ -112,4 +112,23 @@ final case class MemberDetailDTO(
 object MemberDetailDTO {
   implicit val encoder: Encoder[MemberDetailDTO] = deriveEncoder[MemberDetailDTO]
   implicit val decoder: Decoder[MemberDetailDTO] = deriveDecoder[MemberDetailDTO]
+}
+
+final case class MemberListResponseDTO(
+  items: List[MemberListItemDTO],
+  pagination: Option[PaginationInfoDTO],
+) extends PagedObject[MemberListItemDTO]
+
+object MemberListResponseDTO {
+  import cats.Semigroup
+
+  implicit val semigroup: Semigroup[MemberListResponseDTO] = Semigroup.instance { (a, b) =>
+    MemberListResponseDTO(
+      items = a.items ++ b.items,
+      pagination = b.pagination,
+    )
+  }
+
+  implicit val encoder: Encoder[MemberListResponseDTO] = deriveEncoder[MemberListResponseDTO]
+  implicit val decoder: Decoder[MemberListResponseDTO] = deriveDecoder[MemberListResponseDTO]
 }

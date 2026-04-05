@@ -58,6 +58,7 @@ object BillConversions {
         apiUrl = Some(dto.url),
         createdAt = None,
         updatedAt = None,
+        latestTextVersionId = None,
       )
 
   }
@@ -113,8 +114,12 @@ object BillConversions {
           apiUrl = Some(dto.url),
           createdAt = None,
           updatedAt = None,
+          latestTextVersionId = None,
         )
 
+        // Cosponsors are fetched separately via paginated cosponsor endpoint;
+        // BillDetailDTO only carries a PaginationInfoDTO with count/url.
+        // Pipeline populates cosponsors in a dedicated step after toDO conversion.
         val cosponsors: List[BillCosponsorDO] = List.empty
 
         val subjects: List[BillSubjectDO] = dto.subjects

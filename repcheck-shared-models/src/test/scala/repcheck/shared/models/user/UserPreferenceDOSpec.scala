@@ -43,4 +43,20 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
     samplePref.copy(importance = 10).importance shouldBe 10
   }
 
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    import repcheck.shared.models.codecs.VectorCodec._
+    implicitly[Read[UserPreferenceDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    import repcheck.shared.models.codecs.VectorCodec._
+    implicitly[Write[UserPreferenceDO]].shouldBe(a[AnyRef])
+  }
+
 }

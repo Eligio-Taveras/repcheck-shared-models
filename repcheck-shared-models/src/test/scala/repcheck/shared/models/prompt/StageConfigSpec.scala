@@ -75,11 +75,11 @@ class StageConfigSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating invalid field types" in {
     val json = """{"stage":123,"blockNames":"not-a-list","weight":"bad"}"""
-    decodeAccumulating[StageConfig](json).isInvalid shouldBe true
+    decodeAccumulating[StageConfig](json).isInvalid should be(true)
   }
 
   it should "decodeAccumulating missing required fields" in {
-    decodeAccumulating[StageConfig]("""{}""").isInvalid shouldBe true
+    decodeAccumulating[StageConfig]("""{}""").isInvalid should be(true)
   }
 
 }

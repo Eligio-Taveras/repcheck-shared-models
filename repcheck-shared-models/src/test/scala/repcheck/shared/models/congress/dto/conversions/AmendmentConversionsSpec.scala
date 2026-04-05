@@ -13,7 +13,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     number = "200",
     amendmentType = Some("SAMDT"),
     amendedBill =
-      Some(AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None)),
+      Some(AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None, None)),
     chamber = Some("Senate"),
     description = Some("Amendment description"),
     purpose = Some("To improve the bill"),
@@ -23,6 +23,8 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     submittedDate = Some("2024-02-15"),
     latestAction = Some(LatestActionDTO("2024-03-01", "Submitted")),
     updateDate = Some("2024-03-15"),
+    actions = None,
+    textVersions = None,
   )
 
   "AmendmentDetailDTO.toDO" should "produce AmendmentDO with correct natural key" in {
@@ -90,7 +92,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "handle partial amendedBill (missing fields)" in {
     val dto = validAmendmentDetail.copy(
-      amendedBill = Some(AmendedBillDTO(Some(118), None, None, None, None, Some("hr"), None))
+      amendedBill = Some(AmendedBillDTO(Some(118), None, None, None, None, Some("hr"), None, None))
     )
     val Right(a) = dto.toDO: @unchecked
     a.billId shouldBe None // number is None, so billId can't be constructed

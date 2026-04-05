@@ -15,4 +15,14 @@ object DoobieArrayCodecs {
   implicit val listStringPut: Put[List[String]] =
     Put[Array[String]].contramap(listToArray)
 
+  private[codecs] val intArrayToList: Array[Int] => List[Int] = _.toList
+
+  private[codecs] val intListToArray: List[Int] => Array[Int] = _.toArray
+
+  implicit val listIntGet: Get[List[Int]] =
+    Get[Array[Int]].map(intArrayToList)
+
+  implicit val listIntPut: Put[List[Int]] =
+    Put[Array[Int]].contramap(intListToArray)
+
 }

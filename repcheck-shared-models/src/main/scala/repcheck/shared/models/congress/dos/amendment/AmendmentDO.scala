@@ -2,6 +2,9 @@ package repcheck.shared.models.congress.dos.amendment
 
 import java.time.Instant
 
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
+
 final case class AmendmentDO(
   amendmentId: String,
   congress: Int,
@@ -20,3 +23,10 @@ final case class AmendmentDO(
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
 )
+
+object AmendmentDO {
+
+  implicit val encoder: Encoder[AmendmentDO] = deriveEncoder[AmendmentDO]
+  implicit val decoder: Decoder[AmendmentDO] = deriveDecoder[AmendmentDO]
+
+}

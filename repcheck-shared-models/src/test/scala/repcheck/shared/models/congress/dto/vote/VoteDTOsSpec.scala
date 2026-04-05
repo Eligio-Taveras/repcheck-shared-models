@@ -50,6 +50,8 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       legislationType = Some("HR"),
       legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
       url = Some("https://api.congress.gov/v3/vote/118/house/42"),
+      identifier = Some("118-H-42"),
+      sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll042.xml"),
     )
     decode[VoteListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -59,6 +61,8 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
     val result = decode[VoteListItemDTO](json)
     result.isRight shouldBe true
     result.map(_.sessionNumber) shouldBe Right(None)
+    result.map(_.identifier) shouldBe Right(None)
+    result.map(_.sourceDataUrl) shouldBe Right(None)
   }
 
   "VoteDetailDTO" should "round-trip" in {
@@ -75,6 +79,8 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       legislationType = None,
       legislationUrl = None,
       url = Some("https://api.congress.gov/v3/vote/118/senate/99"),
+      identifier = Some("118-S-99"),
+      sourceDataUrl = Some("https://senate.gov/legislative/LIS/roll_call_votes/vote1182/vote_118_2_00099.xml"),
       voteQuestion = Some("On the Motion"),
       votePartyTotal = Some(
         List(
@@ -99,6 +105,8 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       legislationType = Some("HR"),
       legislationUrl = None,
       url = Some("https://api.congress.gov/v3/vote/118/house/50"),
+      identifier = Some("118-H-50"),
+      sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll050.xml"),
       voteQuestion = Some("On Passage"),
       results = Some(
         List(
@@ -108,6 +116,28 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       ),
     )
     decode[VoteMembersDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  "VoteListResponseDTO" should "round-trip via Circe" in {
+    val item = VoteListItemDTO(118, "House", 1, None, None, None, None, None, None, None, None, None, None, None)
+    val resp = VoteListResponseDTO(List(item), None)
+    decode[VoteListResponseDTO](resp.asJson.noSpaces) shouldBe Right(resp)
+  }
+
+  it should "combine via Semigroup" in {
+    import cats.Semigroup
+    import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
+    val a = VoteListResponseDTO(
+      List(VoteListItemDTO(118, "House", 1, None, None, None, None, None, None, None, None, None, None, None)),
+      Some(PaginationInfoDTO(Some(1), Some("p1"))),
+    )
+    val b = VoteListResponseDTO(
+      List(VoteListItemDTO(118, "Senate", 2, None, None, None, None, None, None, None, None, None, None, None)),
+      Some(PaginationInfoDTO(Some(1), Some("p2"))),
+    )
+    val combined = Semigroup[VoteListResponseDTO].combine(a, b)
+    combined.items should have size 2
+    combined.pagination shouldBe b.pagination
   }
 
 }

@@ -33,4 +33,11 @@ class ChangeTypeSpec extends AnyFlatSpec with Matchers {
     }
   }
 
+  it should "encode to lowercase" in {
+    ChangeType.Added.asJson.noSpaces shouldBe """"added""""
+    ChangeType.Removed.asJson.noSpaces shouldBe """"removed""""
+    ChangeType.Modified.asJson.noSpaces shouldBe """"modified""""
+    ChangeType.Renumbered.asJson.noSpaces shouldBe """"renumbered""""
+  }
+
 }

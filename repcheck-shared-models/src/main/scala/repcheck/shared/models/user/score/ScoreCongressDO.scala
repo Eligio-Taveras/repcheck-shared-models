@@ -10,7 +10,8 @@ final case class ScoreCongressDO(
   memberId: String,
   congress: Int,
   overallScore: Float,
-  votesCounted: Option[Int],
+  billsConsidered: Option[Int],
+  votesAnalyzed: Option[Int],
 )
 
 object ScoreCongressDO {

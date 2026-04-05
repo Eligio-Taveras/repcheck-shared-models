@@ -7,9 +7,20 @@ val isScala212: Def.Initialize[Boolean] = Def.setting {
   VersionNumber(scalaVersion.value).matchesSemVer(SemanticSelector("2.12.x"))
 }
 
+ThisBuild / dynverSonatypeSnapshots := true
+
 lazy val commonSettings = Seq(
-  version := "0.1",
+  organization := "com.repcheck",
   scalaVersion := "3.4.1",
+  publishTo := Some(
+    "GitHub Packages" at s"https://maven.pkg.github.com/Eligio-Taveras/repcheck-shared-models"
+  ),
+  publishMavenStyle := true,
+  credentials += {
+    val ghUser  = sys.env.getOrElse("GITHUB_ACTOR", "")
+    val ghToken = sys.env.getOrElse("GITHUB_TOKEN", "")
+    Credentials("GitHub Package Registry", "maven.pkg.github.com", ghUser, ghToken)
+  },
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.18" % Test
   ),
@@ -49,7 +60,9 @@ lazy val root = (project in file("."))
 lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
   .settings(
     commonSettings,
-    libraryDependencies ++= circe ++ doobie
+    libraryDependencies ++= circe ++ doobie,
+    // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
+    scalacOptions += "-Xmax-inlines:64"
   )
 
 lazy val docGenerator = (project in file("doc-generator"))

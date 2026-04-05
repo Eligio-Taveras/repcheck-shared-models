@@ -12,6 +12,7 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
     memberId = "M000303",
     billId = "hr-1234-118",
     voteId = Some("vote-456"),
+    amendmentId = Some("amdt-789"),
     position = Some("Yea"),
     voteType = Some("recorded"),
     voteDate = Some("2024-03-15"),
@@ -33,6 +34,7 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
       memberId = "M000303",
       billId = "hr-1234-118",
       voteId = None,
+      amendmentId = None,
       position = None,
       voteType = None,
       voteDate = None,
@@ -53,6 +55,7 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
         memberId = "M000303",
         billId = "hr-1234-118",
         voteId = None,
+        amendmentId = None,
         position = None,
         voteType = None,
         voteDate = None,
@@ -62,11 +65,12 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
     )
   }
 
-  it should "round-trip with congress Some and other fields None" in {
+  it should "round-trip with amendmentId Some and voteId None" in {
     val stance = MemberBillStanceDO(
       memberId = "M000303",
       billId = "hr-5678-117",
       voteId = None,
+      amendmentId = Some("amdt-001"),
       position = None,
       voteType = None,
       voteDate = None,
@@ -83,11 +87,25 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating invalid field types" in {
     val json = """{"memberId":123,"billId":456,"topics":"not-a-list"}"""
-    decodeAccumulating[MemberBillStanceDO](json).isInvalid shouldBe true
+    decodeAccumulating[MemberBillStanceDO](json).isInvalid should be(true)
   }
 
   it should "decodeAccumulating missing required fields" in {
-    decodeAccumulating[MemberBillStanceDO]("""{}""").isInvalid shouldBe true
+    decodeAccumulating[MemberBillStanceDO]("""{}""").isInvalid should be(true)
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    implicitly[Read[MemberBillStanceDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    implicitly[Write[MemberBillStanceDO]].shouldBe(a[AnyRef])
   }
 
 }

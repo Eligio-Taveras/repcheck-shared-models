@@ -20,6 +20,8 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     legislationType = Some("HR"),
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
     url = Some("https://api.congress.gov/v3/vote/118/house/42"),
+    identifier = Some("118-H-42"),
+    sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll042.xml"),
     voteQuestion = Some("On Passage"),
     results = Some(
       List(
@@ -44,12 +46,13 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     v.sessionNumber shouldBe Some(1)
     v.question shouldBe Some("On Passage")
     v.voteType shouldBe Some("YEA-AND-NAY")
+    v.voteMethod shouldBe None
     v.result shouldBe Some("Passed")
     v.voteDate shouldBe Some("2024-01-15")
     v.legislationNumber shouldBe Some("HR 1234")
     v.legislationType shouldBe Some("HR")
     v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
-    v.sourceDataUrl shouldBe Some("https://api.congress.gov/v3/vote/118/house/42")
+    v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
     v.updateDate shouldBe Some("2024-01-16")
   }
 
