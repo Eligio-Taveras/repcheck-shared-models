@@ -12,13 +12,13 @@ enum TextVersionCode(val fullName: String) {
   case IS  extends TextVersionCode("Introduced in Senate")
   case RH  extends TextVersionCode("Reported in House")
   case RS  extends TextVersionCode("Reported in Senate")
-  case RFS extends TextVersionCode("Referred in Senate")
-  case RFH extends TextVersionCode("Referred in House")
+  case RFS extends TextVersionCode("Referred to Senate")
+  case RFH extends TextVersionCode("Referred to House")
   case EH  extends TextVersionCode("Engrossed in House")
   case ES  extends TextVersionCode("Engrossed in Senate")
   case ENR extends TextVersionCode("Enrolled Bill")
-  case CPH extends TextVersionCode("Considered and Passed House")
-  case CPS extends TextVersionCode("Considered and Passed Senate")
+  case CPH extends TextVersionCode("Committee Print (House)")
+  case CPS extends TextVersionCode("Committee Print (Senate)")
 }
 
 object TextVersionCode {

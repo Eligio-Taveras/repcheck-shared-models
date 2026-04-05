@@ -48,3 +48,31 @@ object SenateMemberContactDTO {
   implicit val encoder: Encoder[SenateMemberContactDTO] = deriveEncoder[SenateMemberContactDTO]
   implicit val decoder: Decoder[SenateMemberContactDTO] = deriveDecoder[SenateMemberContactDTO]
 }
+
+final case class ServicePeriodDTO(
+  congress: Option[Int],
+  startDate: Option[String],
+  endDate: Option[String],
+)
+
+object ServicePeriodDTO {
+  implicit val encoder: Encoder[ServicePeriodDTO] = deriveEncoder[ServicePeriodDTO]
+  implicit val decoder: Decoder[ServicePeriodDTO] = deriveDecoder[ServicePeriodDTO]
+}
+
+final case class SenatorLookupXmlDTO(
+  lisId: String,
+  bioguideId: String,
+  firstName: String,
+  lastName: String,
+  party: String,
+  state: String,
+  senateClass: Option[Int],
+  serviceDates: List[ServicePeriodDTO],
+  isCurrent: Boolean,
+)
+
+object SenatorLookupXmlDTO {
+  implicit val encoder: Encoder[SenatorLookupXmlDTO] = deriveEncoder[SenatorLookupXmlDTO]
+  implicit val decoder: Decoder[SenatorLookupXmlDTO] = deriveDecoder[SenatorLookupXmlDTO]
+}

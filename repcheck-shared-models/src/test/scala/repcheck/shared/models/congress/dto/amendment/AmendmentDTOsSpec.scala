@@ -18,12 +18,13 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
       title = Some("A bill to do something"),
       billType = Some("hr"),
       url = Some("https://api.congress.gov/v3/bill/118/hr/1234"),
+      updateDateIncludingText = Some("2024-03-15T10:00:00Z"),
     )
     decode[AmendedBillDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
   it should "decode with all None fields" in {
-    decode[AmendedBillDTO]("{}") shouldBe Right(AmendedBillDTO(None, None, None, None, None, None, None))
+    decode[AmendedBillDTO]("{}") shouldBe Right(AmendedBillDTO(None, None, None, None, None, None, None, None))
   }
 
   "AmendmentListItemDTO" should "round-trip" in {
@@ -51,8 +52,9 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
       congress = 118,
       number = "200",
       amendmentType = Some("SAMDT"),
-      amendedBill =
-        Some(AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None)),
+      amendedBill = Some(
+        AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None, None)
+      ),
       chamber = Some("Senate"),
       description = Some("Amendment description"),
       purpose = Some("To improve the bill"),
@@ -62,6 +64,8 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
       submittedDate = Some("2024-02-15"),
       latestAction = Some(LatestActionDTO("2024-03-01", "Submitted")),
       updateDate = Some("2024-03-15"),
+      actions = Some(List(LatestActionDTO("2024-03-01", "Submitted"), LatestActionDTO("2024-03-10", "Agreed to"))),
+      textVersions = Some(List("v1", "v2")),
     )
     decode[AmendmentDetailDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
@@ -72,6 +76,8 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
     result.isRight shouldBe true
     result.map(_.amendedBill) shouldBe Right(None)
     result.map(_.sponsors) shouldBe Right(None)
+    result.map(_.actions) shouldBe Right(None)
+    result.map(_.textVersions) shouldBe Right(None)
   }
 
 }

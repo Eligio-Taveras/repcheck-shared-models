@@ -26,13 +26,13 @@ class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
     TextVersionCode.fromString("Introduced in Senate") shouldBe Right(TextVersionCode.IS)
     TextVersionCode.fromString("Reported in House") shouldBe Right(TextVersionCode.RH)
     TextVersionCode.fromString("Reported in Senate") shouldBe Right(TextVersionCode.RS)
-    TextVersionCode.fromString("Referred in Senate") shouldBe Right(TextVersionCode.RFS)
-    TextVersionCode.fromString("Referred in House") shouldBe Right(TextVersionCode.RFH)
+    TextVersionCode.fromString("Referred to Senate") shouldBe Right(TextVersionCode.RFS)
+    TextVersionCode.fromString("Referred to House") shouldBe Right(TextVersionCode.RFH)
     TextVersionCode.fromString("Engrossed in House") shouldBe Right(TextVersionCode.EH)
     TextVersionCode.fromString("Engrossed in Senate") shouldBe Right(TextVersionCode.ES)
     TextVersionCode.fromString("Enrolled Bill") shouldBe Right(TextVersionCode.ENR)
-    TextVersionCode.fromString("Considered and Passed House") shouldBe Right(TextVersionCode.CPH)
-    TextVersionCode.fromString("Considered and Passed Senate") shouldBe Right(TextVersionCode.CPS)
+    TextVersionCode.fromString("Committee Print (House)") shouldBe Right(TextVersionCode.CPH)
+    TextVersionCode.fromString("Committee Print (Senate)") shouldBe Right(TextVersionCode.CPS)
   }
 
   it should "be case-insensitive for codes" in {

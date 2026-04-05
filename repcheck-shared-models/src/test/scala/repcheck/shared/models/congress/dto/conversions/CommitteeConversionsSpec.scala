@@ -75,28 +75,51 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     result shouldBe List.empty
   }
 
-  "SenatorCommitteeDataXmlDTO.toLisMemberMapping" should "produce mapping with correct bioguideId" in {
+  "SenatorCommitteeDataXmlDTO.toLisMemberMapping" should "produce Some with correct bioguideId" in {
     val result = senatorWithCommittees.toLisMemberMapping
-    result.memberId shouldBe "W000779"
+    result.map(_.memberId) shouldBe Some("W000779")
   }
 
-  it should "produce mapping with correct lisMemberId" in {
+  it should "produce Some with correct lisMemberId" in {
     val result = senatorWithCommittees.toLisMemberMapping
-    result.lisMemberId shouldBe "S123"
+    result.map(_.lisMemberId) shouldBe Some("S123")
   }
 
-  it should "produce mapping even for senator with no committees" in {
+  it should "produce Some even for senator with no committees" in {
     val result = senatorNoCommittees.toLisMemberMapping
-    result.memberId shouldBe "T000250"
-    result.lisMemberId shouldBe "S456"
+    result.map(_.memberId) shouldBe Some("T000250")
+    result.map(_.lisMemberId) shouldBe Some("S456")
   }
 
   it should "set lastVerified to approximately now" in {
     val before = java.time.Instant.now()
     val result = senatorNoCommittees.toLisMemberMapping
     val after  = java.time.Instant.now()
-    result.lastVerified.compareTo(before) should be >= 0
-    result.lastVerified.compareTo(after) should be <= 0
+    result.foreach { mapping =>
+      mapping.lastVerified.compareTo(before) should be >= 0
+      mapping.lastVerified.compareTo(after) should be <= 0
+    }
+    result.isDefined shouldBe true
+  }
+
+  it should "return None when lisMemberId is blank" in {
+    val dto = senatorWithCommittees.copy(lisMemberId = "")
+    dto.toLisMemberMapping shouldBe None
+  }
+
+  it should "return None when lisMemberId is whitespace only" in {
+    val dto = senatorWithCommittees.copy(lisMemberId = "   ")
+    dto.toLisMemberMapping shouldBe None
+  }
+
+  it should "return None when bioguideId is blank" in {
+    val dto = senatorWithCommittees.copy(bioguideId = "")
+    dto.toLisMemberMapping shouldBe None
+  }
+
+  it should "return None when bioguideId is whitespace only" in {
+    val dto = senatorWithCommittees.copy(bioguideId = "   ")
+    dto.toLisMemberMapping shouldBe None
   }
 
   "HouseMemberDataXmlDTO.toMemberCommittees" should "produce correct number of CommitteeMemberDOs" in {
