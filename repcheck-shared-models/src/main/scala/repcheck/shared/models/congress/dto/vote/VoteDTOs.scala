@@ -3,6 +3,8 @@ package repcheck.shared.models.congress.dto.vote
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.dto.common.{PagedObject, PaginationInfoDTO}
+
 final case class VoteResultDTO(
   memberId: Option[String],
   firstName: Option[String],
@@ -66,6 +68,8 @@ final case class VoteDetailDTO(
   legislationType: Option[String],
   legislationUrl: Option[String],
   url: Option[String],
+  identifier: Option[String],
+  sourceDataUrl: Option[String],
   voteQuestion: Option[String],
   votePartyTotal: Option[List[VotePartyTotalDTO]],
 )
@@ -88,6 +92,8 @@ final case class VoteMembersDTO(
   legislationType: Option[String],
   legislationUrl: Option[String],
   url: Option[String],
+  identifier: Option[String],
+  sourceDataUrl: Option[String],
   voteQuestion: Option[String],
   results: Option[List[VoteResultDTO]],
 )
@@ -95,4 +101,23 @@ final case class VoteMembersDTO(
 object VoteMembersDTO {
   implicit val encoder: Encoder[VoteMembersDTO] = deriveEncoder[VoteMembersDTO]
   implicit val decoder: Decoder[VoteMembersDTO] = deriveDecoder[VoteMembersDTO]
+}
+
+final case class VoteListResponseDTO(
+  items: List[VoteListItemDTO],
+  pagination: Option[PaginationInfoDTO],
+) extends PagedObject[VoteListItemDTO]
+
+object VoteListResponseDTO {
+  import cats.Semigroup
+
+  implicit val semigroup: Semigroup[VoteListResponseDTO] = Semigroup.instance { (a, b) =>
+    VoteListResponseDTO(
+      items = a.items ++ b.items,
+      pagination = b.pagination,
+    )
+  }
+
+  implicit val encoder: Encoder[VoteListResponseDTO] = deriveEncoder[VoteListResponseDTO]
+  implicit val decoder: Decoder[VoteListResponseDTO] = deriveDecoder[VoteListResponseDTO]
 }
