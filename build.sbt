@@ -8,8 +8,18 @@ val isScala212: Def.Initialize[Boolean] = Def.setting {
 }
 
 lazy val commonSettings = Seq(
-  version := "0.1",
+  version := "0.1.0-SNAPSHOT",
+  organization := "com.repcheck",
   scalaVersion := "3.4.1",
+  publishTo := Some(
+    "GitHub Packages" at s"https://maven.pkg.github.com/Eligio-Taveras/repcheck-shared-models"
+  ),
+  publishMavenStyle := true,
+  credentials += {
+    val ghUser  = sys.env.getOrElse("GITHUB_ACTOR", "")
+    val ghToken = sys.env.getOrElse("GITHUB_TOKEN", "")
+    Credentials("GitHub Package Registry", "maven.pkg.github.com", ghUser, ghToken)
+  },
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.18" % Test
   ),
