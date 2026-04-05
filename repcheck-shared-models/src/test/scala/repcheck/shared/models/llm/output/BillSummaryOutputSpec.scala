@@ -61,16 +61,16 @@ class BillSummaryOutputSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating invalid field type" in {
     val json = """{"summary":123,"readingLevel":"High School","keyPoints":[]}"""
-    decodeAccumulating[BillSummaryOutput](json).isInvalid shouldBe true
+    decodeAccumulating[BillSummaryOutput](json).isInvalid should be(true)
   }
 
   it should "decodeAccumulating multiple invalid fields" in {
     val json = """{"summary":123,"readingLevel":456,"keyPoints":"not-a-list"}"""
-    decodeAccumulating[BillSummaryOutput](json).isInvalid shouldBe true
+    decodeAccumulating[BillSummaryOutput](json).isInvalid should be(true)
   }
 
   it should "decodeAccumulating missing required fields" in {
-    decodeAccumulating[BillSummaryOutput]("""{}""").isInvalid shouldBe true
+    decodeAccumulating[BillSummaryOutput]("""{}""").isInvalid should be(true)
   }
 
 }

@@ -2,6 +2,9 @@ package repcheck.shared.models.congress.dos.bill
 
 import java.time.Instant
 
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
+
 final case class BillDO(
   billId: String,
   congress: Int,
@@ -32,3 +35,12 @@ final case class BillDO(
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
 )
+
+object BillDO {
+
+  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+
+  implicit val encoder: Encoder[BillDO] = deriveEncoder[BillDO]
+  implicit val decoder: Decoder[BillDO] = deriveDecoder[BillDO]
+
+}

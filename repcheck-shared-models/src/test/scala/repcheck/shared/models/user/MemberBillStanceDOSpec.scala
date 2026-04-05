@@ -83,11 +83,25 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating invalid field types" in {
     val json = """{"memberId":123,"billId":456,"topics":"not-a-list"}"""
-    decodeAccumulating[MemberBillStanceDO](json).isInvalid shouldBe true
+    decodeAccumulating[MemberBillStanceDO](json).isInvalid should be(true)
   }
 
   it should "decodeAccumulating missing required fields" in {
-    decodeAccumulating[MemberBillStanceDO]("""{}""").isInvalid shouldBe true
+    decodeAccumulating[MemberBillStanceDO]("""{}""").isInvalid should be(true)
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    implicitly[Read[MemberBillStanceDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    implicitly[Write[MemberBillStanceDO]].shouldBe(a[AnyRef])
   }
 
 }

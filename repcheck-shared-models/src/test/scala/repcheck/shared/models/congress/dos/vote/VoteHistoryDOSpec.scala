@@ -1,0 +1,161 @@
+package repcheck.shared.models.congress.dos.vote
+
+import java.time.Instant
+import java.util.UUID
+
+import io.circe.parser.decode
+import io.circe.syntax._
+
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
+class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
+
+  private val historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
+
+  private val sampleHistory = VoteHistoryDO(
+    historyId = historyId,
+    voteId = "rv118-house-123",
+    congress = 118,
+    chamber = "House",
+    rollNumber = 123,
+    sessionNumber = Some(1),
+    billId = Some("hr-1234-118"),
+    question = Some("On Passage"),
+    voteType = Some("YEA-AND-NAY"),
+    result = Some("Passed"),
+    voteDate = Some("2024-03-15"),
+    legislationNumber = Some("H.R. 1234"),
+    legislationType = Some("HR"),
+    legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
+    sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll123.xml"),
+    updateDate = Some("2024-03-16T10:00:00Z"),
+    archivedAt = Some(Instant.parse("2024-03-16T12:00:00Z")),
+  )
+
+  private val sampleHistoryPosition = VoteHistoryPositionDO(
+    historyId = historyId,
+    memberId = "M000303",
+    position = Some("Yea"),
+    partyAtVote = Some("D"),
+    stateAtVote = Some("NY"),
+  )
+
+  // --- VoteHistoryDO ---
+
+  "VoteHistoryDO Circe codec" should "round-trip with all fields populated" in {
+    val json    = sampleHistory.asJson
+    val decoded = json.as[VoteHistoryDO]
+    decoded shouldBe Right(sampleHistory)
+  }
+
+  it should "round-trip with optional fields as None" in {
+    val minimal = VoteHistoryDO(
+      historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
+      voteId = "rv118-senate-456",
+      congress = 118,
+      chamber = "Senate",
+      rollNumber = 456,
+      sessionNumber = None,
+      billId = None,
+      question = None,
+      voteType = None,
+      result = None,
+      voteDate = None,
+      legislationNumber = None,
+      legislationType = None,
+      legislationUrl = None,
+      sourceDataUrl = None,
+      updateDate = None,
+      archivedAt = None,
+    )
+    minimal.asJson.as[VoteHistoryDO] shouldBe Right(minimal)
+  }
+
+  it should "fail on missing required field historyId" in {
+    val json = """{"voteId":"rv118-house-1","congress":118,"chamber":"House","rollNumber":1}"""
+    decode[VoteHistoryDO](json).isLeft shouldBe true
+  }
+
+  it should "fail on missing required field voteId" in {
+    val json =
+      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","congress":118,"chamber":"House","rollNumber":1}"""
+    decode[VoteHistoryDO](json).isLeft shouldBe true
+  }
+
+  it should "fail on missing required field congress" in {
+    val json =
+      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":"rv118-house-1","chamber":"House","rollNumber":1}"""
+    decode[VoteHistoryDO](json).isLeft shouldBe true
+  }
+
+  it should "fail on missing required field chamber" in {
+    val json =
+      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":"rv118-house-1","congress":118,"rollNumber":1}"""
+    decode[VoteHistoryDO](json).isLeft shouldBe true
+  }
+
+  it should "fail on missing required field rollNumber" in {
+    val json =
+      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":"rv118-house-1","congress":118,"chamber":"House"}"""
+    decode[VoteHistoryDO](json).isLeft shouldBe true
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Read[VoteHistoryDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Write[VoteHistoryDO]].shouldBe(a[AnyRef])
+  }
+
+  // --- VoteHistoryPositionDO ---
+
+  "VoteHistoryPositionDO Circe codec" should "round-trip with all fields populated" in {
+    val json    = sampleHistoryPosition.asJson
+    val decoded = json.as[VoteHistoryPositionDO]
+    decoded shouldBe Right(sampleHistoryPosition)
+  }
+
+  it should "round-trip with optional fields as None" in {
+    val minimal = VoteHistoryPositionDO(
+      historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
+      memberId = "S000148",
+      position = None,
+      partyAtVote = None,
+      stateAtVote = None,
+    )
+    minimal.asJson.as[VoteHistoryPositionDO] shouldBe Right(minimal)
+  }
+
+  it should "fail on missing required field historyId" in {
+    val json = """{"memberId":"M000303"}"""
+    decode[VoteHistoryPositionDO](json).isLeft shouldBe true
+  }
+
+  it should "fail on missing required field memberId" in {
+    val json = """{"historyId":"550e8400-e29b-41d4-a716-446655440000"}"""
+    decode[VoteHistoryPositionDO](json).isLeft shouldBe true
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Read[VoteHistoryPositionDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Write[VoteHistoryPositionDO]].shouldBe(a[AnyRef])
+  }
+
+}
