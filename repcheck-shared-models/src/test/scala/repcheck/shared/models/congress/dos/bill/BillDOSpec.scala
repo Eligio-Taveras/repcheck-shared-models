@@ -39,6 +39,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     apiUrl = Some("https://api.congress.gov/v3/bill/118/hr/1234"),
     createdAt = Some(Instant.parse("2024-01-15T10:30:00Z")),
     updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),
+    latestTextVersionId = None,
   )
 
   "BillDO Circe codec" should "round-trip with all fields populated" in {
@@ -77,6 +78,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
       apiUrl = None,
       createdAt = None,
       updatedAt = None,
+      latestTextVersionId = None,
     )
     minimal.asJson.as[BillDO] shouldBe Right(minimal)
   }
