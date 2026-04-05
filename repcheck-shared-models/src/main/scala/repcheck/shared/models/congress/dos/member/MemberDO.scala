@@ -2,6 +2,9 @@ package repcheck.shared.models.congress.dos.member
 
 import java.time.Instant
 
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
+
 final case class MemberDO(
   memberId: String,
   firstName: Option[String],
@@ -20,3 +23,10 @@ final case class MemberDO(
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
 )
+
+object MemberDO {
+
+  implicit val encoder: Encoder[MemberDO] = deriveEncoder[MemberDO]
+  implicit val decoder: Decoder[MemberDO] = deriveDecoder[MemberDO]
+
+}

@@ -47,4 +47,60 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
     sct.asJson.as[ScoreCongressTopicDO] shouldBe Right(sct)
   }
 
+  "ScoreDO" should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Read[ScoreDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Write[ScoreDO]].shouldBe(a[AnyRef])
+  }
+
+  "ScoreTopicDO" should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Read[ScoreTopicDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Write[ScoreTopicDO]].shouldBe(a[AnyRef])
+  }
+
+  "ScoreCongressDO" should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Read[ScoreCongressDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Write[ScoreCongressDO]].shouldBe(a[AnyRef])
+  }
+
+  "ScoreCongressTopicDO" should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Read[ScoreCongressTopicDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.implicits._
+    import doobie.postgres.implicits._
+    implicitly[Write[ScoreCongressTopicDO]].shouldBe(a[AnyRef])
+  }
+
 }
