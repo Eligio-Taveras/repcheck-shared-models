@@ -7,8 +7,9 @@ val isScala212: Def.Initialize[Boolean] = Def.setting {
   VersionNumber(scalaVersion.value).matchesSemVer(SemanticSelector("2.12.x"))
 }
 
+ThisBuild / dynverSonatypeSnapshots := true
+
 lazy val commonSettings = Seq(
-  version := "0.1.0-SNAPSHOT",
   organization := "com.repcheck",
   scalaVersion := "3.4.1",
   publishTo := Some(
