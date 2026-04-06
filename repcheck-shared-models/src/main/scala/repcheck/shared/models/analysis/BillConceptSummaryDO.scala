@@ -9,7 +9,7 @@ import io.circe.{Decoder, Encoder}
 final case class BillConceptSummaryDO(
   conceptSummaryId: UUID,
   analysisId: UUID,
-  billId: String,
+  billId: Long,
   conceptGroupId: Option[UUID],
   passNumber: Int,
   topics: List[String],

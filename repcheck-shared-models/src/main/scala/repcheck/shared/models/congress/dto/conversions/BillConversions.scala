@@ -30,7 +30,8 @@ object BillConversions {
       for {
         _ <- validateBillFields(dto.congress, dto.number, dto.title)
       } yield BillDO(
-        billId = buildBillId(dto.congress, dto.billType, dto.number),
+        billId = 0L,
+        naturalKey = buildBillId(dto.congress, dto.billType, dto.number),
         congress = dto.congress,
         billType = dto.billType,
         number = dto.number,
@@ -42,7 +43,7 @@ object BillConversions {
         latestActionDate = dto.latestAction.map(_.actionDate),
         latestActionText = dto.latestAction.map(_.text),
         constitutionalAuthorityText = None,
-        sponsorBioguideId = None,
+        sponsorMemberId = None,
         textUrl = None,
         textFormat = None,
         textVersionType = None,
@@ -69,9 +70,7 @@ object BillConversions {
       for {
         _ <- validateBillFields(dto.congress, dto.number, dto.title)
       } yield {
-        val billId = buildBillId(dto.congress, dto.billType, dto.number)
-
-        val sponsorBioguideId = dto.sponsors.flatMap(_.headOption).map(_.bioguideId)
+        val naturalKey = buildBillId(dto.congress, dto.billType, dto.number)
 
         val firstTextVersion = dto.textVersions.flatMap(_.headOption)
         val firstFormat      = firstTextVersion.flatMap(_.formats).flatMap(_.headOption)
@@ -86,7 +85,8 @@ object BillConversions {
         val summaryActionDate = firstSummary.flatMap(_.actionDate)
 
         val bill = BillDO(
-          billId = billId,
+          billId = 0L,
+          naturalKey = naturalKey,
           congress = dto.congress,
           billType = dto.billType,
           number = dto.number,
@@ -98,7 +98,7 @@ object BillConversions {
           latestActionDate = dto.latestAction.map(_.actionDate),
           latestActionText = dto.latestAction.map(_.text),
           constitutionalAuthorityText = dto.constitutionalAuthorityStatementText,
-          sponsorBioguideId = sponsorBioguideId,
+          sponsorMemberId = None,
           textUrl = textUrl,
           textFormat = textFormat,
           textVersionType = textVersionType,
@@ -127,7 +127,7 @@ object BillConversions {
           .getOrElse(List.empty)
           .map { subj =>
             BillSubjectDO(
-              billId = billId,
+              billId = 0L,
               subjectName = subj.name,
               embedding = None,
               updateDate = subj.updateDate,

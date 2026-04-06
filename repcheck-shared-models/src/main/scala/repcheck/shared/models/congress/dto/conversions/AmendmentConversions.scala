@@ -27,23 +27,20 @@ object AmendmentConversions {
       } else if (dto.number.trim.isEmpty) {
         Left("number must not be empty")
       } else {
-        val amendmentId = buildAmendmentId(dto.congress, dto.amendmentType, dto.number)
-
-        val billId = dto.amendedBill.flatMap(ab => buildBillIdFromAmendedBill(ab.congress, ab.billType, ab.number))
-
-        val sponsorBioguideId = dto.sponsors.flatMap(_.headOption).map(_.bioguideId)
+        val naturalKey = buildAmendmentId(dto.congress, dto.amendmentType, dto.number)
 
         Right(
           AmendmentDO(
-            amendmentId = amendmentId,
+            amendmentId = 0L,
+            naturalKey = naturalKey,
             congress = dto.congress,
             amendmentType = dto.amendmentType,
             number = dto.number,
-            billId = billId,
+            billId = None,
             chamber = dto.chamber,
             description = dto.description,
             purpose = dto.purpose,
-            sponsorBioguideId = sponsorBioguideId,
+            sponsorMemberId = None,
             submittedDate = dto.submittedDate,
             latestActionDate = dto.latestAction.map(_.actionDate),
             latestActionText = dto.latestAction.map(_.text),

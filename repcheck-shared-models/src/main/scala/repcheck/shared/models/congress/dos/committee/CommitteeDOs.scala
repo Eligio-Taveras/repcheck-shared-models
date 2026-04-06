@@ -8,11 +8,12 @@ import io.circe.{Decoder, Encoder}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class CommitteeDO(
-  committeeCode: String,
+  committeeId: Long,
+  naturalKey: String,
   name: String,
   chamber: Option[String],
   committeeType: Option[String],
-  parentCommitteeCode: Option[String],
+  parentCommitteeId: Option[Long],
   isCurrent: Option[Boolean],
   updateDate: Option[String],
   createdAt: Option[Instant],
@@ -26,11 +27,12 @@ object CommitteeDO {
   implicit val hasPlaceholder: HasPlaceholder[CommitteeDO] = new HasPlaceholder[CommitteeDO] {
     def placeholder(naturalKey: String): CommitteeDO =
       CommitteeDO(
-        committeeCode = naturalKey,
+        committeeId = 0L,
+        naturalKey = naturalKey,
         name = "",
         chamber = None,
         committeeType = None,
-        parentCommitteeCode = None,
+        parentCommitteeId = None,
         isCurrent = None,
         updateDate = None,
         createdAt = None,
@@ -41,8 +43,8 @@ object CommitteeDO {
 }
 
 final case class CommitteeMemberDO(
-  committeeCode: String,
-  memberId: String,
+  committeeId: Long,
+  memberId: Long,
   position: Option[String],
   side: Option[String],
   rank: Option[Int],
@@ -59,8 +61,8 @@ object CommitteeMemberDO {
 }
 
 final case class BillCommitteeReferralDO(
-  billId: String,
-  committeeCode: String,
+  billId: Long,
+  committeeId: Long,
   referralDate: Option[String],
   reportDate: Option[String],
   activity: Option[String],

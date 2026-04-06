@@ -8,12 +8,13 @@ import io.circe.{Decoder, Encoder}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class VoteDO(
-  voteId: String,
+  voteId: Long,
+  naturalKey: String,
   congress: Int,
   chamber: String,
   rollNumber: Int,
   sessionNumber: Option[Int],
-  billId: Option[String],
+  billId: Option[Long],
   question: Option[String],
   voteType: Option[String],
   voteMethod: Option[String],
@@ -36,7 +37,8 @@ object VoteDO {
   implicit val hasPlaceholder: HasPlaceholder[VoteDO] = new HasPlaceholder[VoteDO] {
     def placeholder(naturalKey: String): VoteDO =
       VoteDO(
-        voteId = naturalKey,
+        voteId = 0L,
+        naturalKey = naturalKey,
         congress = 0,
         chamber = "",
         rollNumber = 0,

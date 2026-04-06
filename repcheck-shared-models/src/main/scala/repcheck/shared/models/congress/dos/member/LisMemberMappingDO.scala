@@ -7,7 +7,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class LisMemberMappingDO(
   lisMemberId: String,
-  memberId: String,
+  memberId: Long,
   lastVerified: Instant,
 )
 

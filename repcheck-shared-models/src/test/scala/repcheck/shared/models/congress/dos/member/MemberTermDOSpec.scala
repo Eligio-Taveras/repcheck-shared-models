@@ -14,7 +14,7 @@ class MemberTermDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleTerm = MemberTermDO(
     termId = sampleTermId,
-    memberId = "B001234",
+    memberId = 1L,
     chamber = Some("House"),
     congress = Some(118),
     startYear = Some(2023),
@@ -34,7 +34,7 @@ class MemberTermDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = MemberTermDO(
       termId = sampleTermId,
-      memberId = "M000999",
+      memberId = 2L,
       chamber = None,
       congress = None,
       startYear = None,

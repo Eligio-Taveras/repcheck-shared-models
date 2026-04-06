@@ -18,8 +18,8 @@ object CommitteeConversions {
     def toMemberCommittees: List[CommitteeMemberDO] =
       dto.committees.map { assignment =>
         CommitteeMemberDO(
-          committeeCode = assignment.committeeCode,
-          memberId = dto.bioguideId,
+          committeeId = 0L,
+          memberId = 0L,
           position = Some(assignment.position),
           side = None,
           rank = None,
@@ -38,7 +38,7 @@ object CommitteeConversions {
         Some(
           LisMemberMappingDO(
             lisMemberId = dto.lisMemberId,
-            memberId = dto.bioguideId,
+            memberId = 0L,
             lastVerified = Instant.now(),
           )
         )
@@ -51,8 +51,8 @@ object CommitteeConversions {
     def toMemberCommittees: List[CommitteeMemberDO] =
       dto.committees.map { assignment =>
         CommitteeMemberDO(
-          committeeCode = assignment.committeeCode,
-          memberId = dto.bioguideId,
+          committeeId = 0L,
+          memberId = 0L,
           position = None,
           side = Some(assignment.side),
           rank = assignment.rank,
@@ -74,11 +74,12 @@ object CommitteeConversions {
       } else {
         Right(
           CommitteeDO(
-            committeeCode = dto.systemCode,
+            committeeId = 0L,
+            naturalKey = dto.systemCode,
             name = dto.name,
             chamber = dto.chamber,
             committeeType = dto.committeeTypeCode,
-            parentCommitteeCode = dto.parent.map(_.systemCode),
+            parentCommitteeId = None,
             isCurrent = None,
             updateDate = dto.updateDate,
             createdAt = None,
@@ -91,7 +92,7 @@ object CommitteeConversions {
 
   implicit class BillCommitteeReferralDTOOps(private val dto: BillCommitteeReferralDTO) extends AnyVal {
 
-    def toDO(billId: String): Either[String, BillCommitteeReferralDO] =
+    def toDO(billId: Long): Either[String, BillCommitteeReferralDO] =
       if (dto.committeeCode.trim.isEmpty) {
         Left("committeeCode must not be blank")
       } else {
@@ -113,8 +114,8 @@ object CommitteeConversions {
 
         Right(
           BillCommitteeReferralDO(
-            billId = billId,
-            committeeCode = dto.committeeCode,
+            billId = 0L,
+            committeeId = 0L,
             referralDate = referralDate,
             reportDate = reportDate,
             activity = activity,

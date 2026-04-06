@@ -7,7 +7,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class MemberPartyHistoryDO(
   partyHistoryId: UUID,
-  memberId: String,
+  memberId: Long,
   partyName: Option[String],
   partyAbbreviation: Option[String],
   startYear: Option[Int],

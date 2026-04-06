@@ -11,11 +11,12 @@ import org.scalatest.matchers.should.Matchers
 class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
 
   private val sampleCommittee = CommitteeDO(
-    committeeCode = "SSFI00",
+    committeeId = 1L,
+    naturalKey = "SSFI00",
     name = "Committee on Finance",
     chamber = Some("Senate"),
     committeeType = Some("Standing"),
-    parentCommitteeCode = None,
+    parentCommitteeId = None,
     isCurrent = Some(true),
     updateDate = Some("2024-06-01"),
     createdAt = Some(Instant.parse("2024-01-15T10:30:00Z")),
@@ -23,8 +24,8 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
   )
 
   private val sampleCommitteeMember = CommitteeMemberDO(
-    committeeCode = "SSFI00",
-    memberId = "W000779",
+    committeeId = 1L,
+    memberId = 2L,
     position = Some("Chairman"),
     side = None,
     rank = None,
@@ -36,8 +37,8 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
   )
 
   private val sampleReferral = BillCommitteeReferralDO(
-    billId = "118-HR-1234",
-    committeeCode = "SSFI00",
+    billId = 3L,
+    committeeId = 1L,
     referralDate = Some("2024-01-10"),
     reportDate = Some("2024-03-20"),
     activity = Some("Referred to; Reported by"),
@@ -52,11 +53,12 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = CommitteeDO(
-      committeeCode = "TEST00",
+      committeeId = 4L,
+      naturalKey = "TEST00",
       name = "Test Committee",
       chamber = None,
       committeeType = None,
-      parentCommitteeCode = None,
+      parentCommitteeId = None,
       isCurrent = None,
       updateDate = None,
       createdAt = None,
@@ -91,8 +93,8 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = CommitteeMemberDO(
-      committeeCode = "HSJU00",
-      memberId = "P000197",
+      committeeId = 5L,
+      memberId = 6L,
       position = None,
       side = None,
       rank = None,
@@ -131,8 +133,8 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = BillCommitteeReferralDO(
-      billId = "118-S-5678",
-      committeeCode = "HSAP00",
+      billId = 7L,
+      committeeId = 8L,
       referralDate = None,
       reportDate = None,
       activity = None,

@@ -11,7 +11,7 @@ import repcheck.shared.models.codecs.VectorCodec._
 
 final case class ScoreDO(
   userId: UUID,
-  memberId: String,
+  memberId: Long,
   aggregateScore: Float,
   status: String,
   lastUpdated: Option[Instant],

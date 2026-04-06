@@ -11,8 +11,8 @@ import org.scalatest.matchers.should.Matchers
 class VotePositionDOSpec extends AnyFlatSpec with Matchers {
 
   private val samplePosition = VotePositionDO(
-    voteId = "rv118-house-123",
-    memberId = "M000303",
+    voteId = 1L,
+    memberId = 1L,
     position = Some("Yea"),
     partyAtVote = Some("D"),
     stateAtVote = Some("NY"),
@@ -27,8 +27,8 @@ class VotePositionDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = VotePositionDO(
-      voteId = "rv118-senate-456",
-      memberId = "S000148",
+      voteId = 2L,
+      memberId = 2L,
       position = None,
       partyAtVote = None,
       stateAtVote = None,
@@ -38,12 +38,12 @@ class VotePositionDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field voteId" in {
-    val json = """{"memberId":"M000303"}"""
+    val json = """{"memberId":1}"""
     decode[VotePositionDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field memberId" in {
-    val json = """{"voteId":"rv118-house-123"}"""
+    val json = """{"voteId":1}"""
     decode[VotePositionDO](json).isLeft shouldBe true
   }
 

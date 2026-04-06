@@ -15,12 +15,12 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleHistory = VoteHistoryDO(
     historyId = historyId,
-    voteId = "rv118-house-123",
+    voteId = 1L,
     congress = 118,
     chamber = "House",
     rollNumber = 123,
     sessionNumber = Some(1),
-    billId = Some("hr-1234-118"),
+    billId = Some(1L),
     question = Some("On Passage"),
     voteType = Some("YEA-AND-NAY"),
     voteMethod = Some("recorded vote"),
@@ -36,7 +36,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleHistoryPosition = VoteHistoryPositionDO(
     historyId = historyId,
-    memberId = "M000303",
+    memberId = 1L,
     position = Some("Yea"),
     partyAtVote = Some("D"),
     stateAtVote = Some("NY"),
@@ -53,7 +53,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = VoteHistoryDO(
       historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
-      voteId = "rv118-senate-456",
+      voteId = 2L,
       congress = 118,
       chamber = "Senate",
       rollNumber = 456,
@@ -75,7 +75,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field historyId" in {
-    val json = """{"voteId":"rv118-house-1","congress":118,"chamber":"House","rollNumber":1}"""
+    val json = """{"voteId":1,"congress":118,"chamber":"House","rollNumber":1}"""
     decode[VoteHistoryDO](json).isLeft shouldBe true
   }
 
@@ -87,19 +87,19 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   it should "fail on missing required field congress" in {
     val json =
-      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":"rv118-house-1","chamber":"House","rollNumber":1}"""
+      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":1,"chamber":"House","rollNumber":1}"""
     decode[VoteHistoryDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field chamber" in {
     val json =
-      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":"rv118-house-1","congress":118,"rollNumber":1}"""
+      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":1,"congress":118,"rollNumber":1}"""
     decode[VoteHistoryDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field rollNumber" in {
     val json =
-      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":"rv118-house-1","congress":118,"chamber":"House"}"""
+      """{"historyId":"550e8400-e29b-41d4-a716-446655440000","voteId":1,"congress":118,"chamber":"House"}"""
     decode[VoteHistoryDO](json).isLeft shouldBe true
   }
 
@@ -128,7 +128,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = VoteHistoryPositionDO(
       historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
-      memberId = "S000148",
+      memberId = 2L,
       position = None,
       partyAtVote = None,
       stateAtVote = None,
@@ -137,7 +137,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field historyId" in {
-    val json = """{"memberId":"M000303"}"""
+    val json = """{"memberId":1}"""
     decode[VoteHistoryPositionDO](json).isLeft shouldBe true
   }
 

@@ -24,7 +24,8 @@ object MemberConversions {
           .flatMap(_.district)
 
         val member = MemberDO(
-          memberId = dto.bioguideId,
+          memberId = 0L,
+          naturalKey = dto.bioguideId,
           firstName = dto.firstName,
           lastName = dto.lastName,
           directOrderName = dto.directOrderName,
@@ -47,7 +48,7 @@ object MemberConversions {
           .map { t =>
             MemberTermDO(
               termId = uuidGenerator(),
-              memberId = dto.bioguideId,
+              memberId = 0L,
               chamber = t.chamber,
               congress = t.congress,
               startYear = t.startYear,
@@ -64,7 +65,7 @@ object MemberConversions {
           .map { ph =>
             MemberPartyHistoryDO(
               partyHistoryId = uuidGenerator(),
-              memberId = dto.bioguideId,
+              memberId = 0L,
               partyName = ph.partyName,
               partyAbbreviation = ph.partyAbbreviation,
               startYear = ph.startYear,

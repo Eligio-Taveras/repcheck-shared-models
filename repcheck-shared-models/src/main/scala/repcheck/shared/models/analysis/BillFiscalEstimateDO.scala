@@ -9,7 +9,7 @@ import io.circe.{Decoder, Encoder}
 final case class BillFiscalEstimateDO(
   fiscalEstimateId: UUID,
   analysisId: UUID,
-  billId: String,
+  billId: Long,
   conceptGroupId: Option[UUID],
   passNumber: Int,
   estimatedCost: String,

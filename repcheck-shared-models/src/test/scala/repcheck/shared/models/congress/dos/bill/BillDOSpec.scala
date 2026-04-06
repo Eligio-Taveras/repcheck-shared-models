@@ -11,7 +11,8 @@ import org.scalatest.matchers.should.Matchers
 class BillDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleBill = BillDO(
-    billId = "118-hr-1234",
+    billId = 1L,
+    naturalKey = "118-hr-1234",
     congress = 118,
     billType = "hr",
     number = "1234",
@@ -23,7 +24,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     latestActionDate = Some("2024-03-01"),
     latestActionText = Some("Referred to committee"),
     constitutionalAuthorityText = Some("Article I, Section 8"),
-    sponsorBioguideId = Some("B001234"),
+    sponsorMemberId = Some(1L),
     textUrl = Some("https://congress.gov/bill/118/hr/1234/text"),
     textFormat = Some("xml"),
     textVersionType = Some("Introduced"),
@@ -50,7 +51,8 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = BillDO(
-      billId = "118-hr-5678",
+      billId = 2L,
+      naturalKey = "118-hr-5678",
       congress = 118,
       billType = "hr",
       number = "5678",
@@ -62,7 +64,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
       latestActionDate = None,
       latestActionText = None,
       constitutionalAuthorityText = None,
-      sponsorBioguideId = None,
+      sponsorMemberId = None,
       textUrl = None,
       textFormat = None,
       textVersionType = None,
@@ -84,7 +86,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillDO]("""{"billId":"118-hr-1234","congress":118}""").isLeft shouldBe true
+    decode[BillDO]("""{"billId":1,"naturalKey":"118-hr-1234","congress":118}""").isLeft shouldBe true
   }
 
   it should "have Doobie Read instance" in {

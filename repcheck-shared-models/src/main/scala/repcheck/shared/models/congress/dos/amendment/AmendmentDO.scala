@@ -8,15 +8,16 @@ import io.circe.{Decoder, Encoder}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class AmendmentDO(
-  amendmentId: String,
+  amendmentId: Long,
+  naturalKey: String,
   congress: Int,
   amendmentType: Option[String],
   number: String,
-  billId: Option[String],
+  billId: Option[Long],
   chamber: Option[String],
   description: Option[String],
   purpose: Option[String],
-  sponsorBioguideId: Option[String],
+  sponsorMemberId: Option[Long],
   submittedDate: Option[String],
   latestActionDate: Option[String],
   latestActionText: Option[String],
@@ -34,7 +35,8 @@ object AmendmentDO {
   implicit val hasPlaceholder: HasPlaceholder[AmendmentDO] = new HasPlaceholder[AmendmentDO] {
     def placeholder(naturalKey: String): AmendmentDO =
       AmendmentDO(
-        amendmentId = naturalKey,
+        amendmentId = 0L,
+        naturalKey = naturalKey,
         congress = 0,
         amendmentType = None,
         number = "",
@@ -42,7 +44,7 @@ object AmendmentDO {
         chamber = None,
         description = None,
         purpose = None,
-        sponsorBioguideId = None,
+        sponsorMemberId = None,
         submittedDate = None,
         latestActionDate = None,
         latestActionText = None,

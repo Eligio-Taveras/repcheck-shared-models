@@ -62,7 +62,8 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
   "MemberDetailDTO.toDO" should "produce MemberDO with correct fields" in {
     val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
     val m             = result.member
-    m.memberId shouldBe "S000033"
+    m.memberId shouldBe 0L
+    m.naturalKey shouldBe "S000033"
     m.firstName shouldBe Some("Bernard")
     m.lastName shouldBe Some("Sanders")
     m.directOrderName shouldBe Some("Bernard Sanders")
@@ -90,7 +91,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     result.terms.length shouldBe 2
     result.terms.foreach { t =>
       t.termId shouldBe fixedUuid
-      t.memberId shouldBe "S000033"
+      t.memberId shouldBe 0L
     }
     result.terms.map(_.chamber) shouldBe List(Some("House"), Some("Senate"))
   }
@@ -100,7 +101,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     result.partyHistory.length shouldBe 2
     result.partyHistory.foreach { ph =>
       ph.partyHistoryId shouldBe fixedUuid
-      ph.memberId shouldBe "S000033"
+      ph.memberId shouldBe 0L
     }
     result.partyHistory.map(_.partyAbbreviation) shouldBe List(Some("D"), Some("I"))
   }
@@ -136,7 +137,8 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     val result = validMemberDetail.toDO
     result.isRight shouldBe true
     val Right(conv) = result: @unchecked
-    conv.member.memberId shouldBe "S000033"
+    conv.member.memberId shouldBe 0L
+    conv.member.naturalKey shouldBe "S000033"
     conv.terms.length shouldBe 2
     conv.partyHistory.length shouldBe 2
   }

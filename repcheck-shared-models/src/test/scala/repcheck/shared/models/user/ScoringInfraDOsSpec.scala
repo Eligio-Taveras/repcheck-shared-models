@@ -21,7 +21,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   "UserLegislatorPairingDO Circe codec" should "round-trip with all fields" in {
     val pairing = UserLegislatorPairingDO(
       userId = uid,
-      memberId = "M000303",
+      memberId = 1L,
       state = "CA",
       district = Some(12),
       chamber = "House",
@@ -32,12 +32,12 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with None fields" in {
-    val pairing = UserLegislatorPairingDO(uid, "S000148", "NY", None, "Senate", None, None)
+    val pairing = UserLegislatorPairingDO(uid, 2L, "NY", None, "Senate", None, None)
     pairing.asJson.as[UserLegislatorPairingDO] shouldBe Right(pairing)
   }
 
   it should "decodeAccumulating valid JSON" in {
-    val json = s"""{"userId":"$uid","memberId":"M000303","state":"CA","chamber":"House"}"""
+    val json = s"""{"userId":"$uid","memberId":1,"state":"CA","chamber":"House"}"""
     decodeAccumulating[UserLegislatorPairingDO](json).isValid shouldBe true
   }
 
@@ -60,9 +60,9 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   "MemberBillStanceTopicDO Circe codec" should "round-trip with all fields" in {
     val topic = MemberBillStanceTopicDO(
       id = stanceId,
-      memberId = "M000303",
-      billId = "hr-1234-118",
-      voteId = Some("vote-456"),
+      memberId = 1L,
+      billId = 2L,
+      voteId = Some(3L),
       topic = "healthcare",
       stanceDirection = "Progressive",
       reasoning = Some("Voted in favor of expanded coverage"),
@@ -84,8 +84,8 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with None fields" in {
     val topic = MemberBillStanceTopicDO(
       stanceId,
-      "M000303",
-      "hr-1234-118",
+      1L,
+      2L,
       None,
       "defense",
       "Conservative",
@@ -101,7 +101,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      s"""{"id":"$stanceId","memberId":"M000303","billId":"hr-1234-118","topic":"health","stanceDirection":"Neutral"}"""
+      s"""{"id":"$stanceId","memberId":1,"billId":2,"topic":"health","stanceDirection":"Neutral"}"""
     decodeAccumulating[MemberBillStanceTopicDO](json).isValid shouldBe true
   }
 
@@ -126,7 +126,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   "UserBillAlignmentDO Circe codec" should "round-trip with all fields" in {
     val alignment = UserBillAlignmentDO(
       userId = uid,
-      billId = "hr-1234-118",
+      billId = 2L,
       topic = "healthcare",
       userStanceScore = 0.85,
       billStanceDirection = "Progressive",
@@ -145,13 +145,13 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with None fields" in {
-    val alignment = UserBillAlignmentDO(uid, "hr-1234-118", "defense", 0.5, "Conservative", 0.3, None, None, None, None)
+    val alignment = UserBillAlignmentDO(uid, 2L, "defense", 0.5, "Conservative", 0.3, None, None, None, None)
     alignment.asJson.as[UserBillAlignmentDO] shouldBe Right(alignment)
   }
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      s"""{"userId":"$uid","billId":"hr-1","topic":"t","userStanceScore":0.5,"billStanceDirection":"Neutral","alignmentScore":0.5}"""
+      s"""{"userId":"$uid","billId":2,"topic":"t","userStanceScore":0.5,"billStanceDirection":"Neutral","alignmentScore":0.5}"""
     decodeAccumulating[UserBillAlignmentDO](json).isValid shouldBe true
   }
 
@@ -176,8 +176,8 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   "UserAmendmentAlignmentDO Circe codec" should "round-trip with all fields" in {
     val alignment = UserAmendmentAlignmentDO(
       userId = uid,
-      amendmentId = "amdt-001-118",
-      billId = Some("hr-1234-118"),
+      amendmentId = 3L,
+      billId = Some(2L),
       topic = "healthcare",
       userStanceScore = 0.75,
       amendmentStanceDirection = "Progressive",
@@ -197,13 +197,13 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with None fields" in {
     val alignment =
-      UserAmendmentAlignmentDO(uid, "amdt-001", None, "defense", 0.5, "Conservative", 0.3, None, None, None, None)
+      UserAmendmentAlignmentDO(uid, 4L, None, "defense", 0.5, "Conservative", 0.3, None, None, None, None)
     alignment.asJson.as[UserAmendmentAlignmentDO] shouldBe Right(alignment)
   }
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      s"""{"userId":"$uid","amendmentId":"a1","topic":"t","userStanceScore":0.5,"amendmentStanceDirection":"Neutral","alignmentScore":0.5}"""
+      s"""{"userId":"$uid","amendmentId":3,"topic":"t","userStanceScore":0.5,"amendmentStanceDirection":"Neutral","alignmentScore":0.5}"""
     decodeAccumulating[UserAmendmentAlignmentDO](json).isValid shouldBe true
   }
 
@@ -227,7 +227,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   "StanceMaterializationStatusDO Circe codec" should "round-trip with all fields" in {
     val status = StanceMaterializationStatusDO(
-      billId = "hr-1234-118",
+      billId = 2L,
       hasVotes = true,
       hasAnalysis = true,
       allPassesCompleted = false,
@@ -240,13 +240,13 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with None fields" in {
-    val status = StanceMaterializationStatusDO("hr-1234-118", false, false, false, None, None, None, None)
+    val status = StanceMaterializationStatusDO(2L, false, false, false, None, None, None, None)
     status.asJson.as[StanceMaterializationStatusDO] shouldBe Right(status)
   }
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      """{"billId":"hr-1","hasVotes":true,"hasAnalysis":false,"allPassesCompleted":false}"""
+      """{"billId":2,"hasVotes":true,"hasAnalysis":false,"allPassesCompleted":false}"""
     decodeAccumulating[StanceMaterializationStatusDO](json).isValid shouldBe true
   }
 

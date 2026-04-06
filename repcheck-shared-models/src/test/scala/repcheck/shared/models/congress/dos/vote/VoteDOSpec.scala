@@ -11,12 +11,13 @@ import org.scalatest.matchers.should.Matchers
 class VoteDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleVote = VoteDO(
-    voteId = "rv118-house-123",
+    voteId = 1L,
+    naturalKey = "rv118-house-123",
     congress = 118,
     chamber = "House",
     rollNumber = 123,
     sessionNumber = Some(1),
-    billId = Some("hr-1234-118"),
+    billId = Some(1L),
     question = Some("On Passage"),
     voteType = Some("YEA-AND-NAY"),
     voteMethod = Some("recorded vote"),
@@ -39,7 +40,8 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = VoteDO(
-      voteId = "rv118-senate-456",
+      voteId = 2L,
+      naturalKey = "rv118-senate-456",
       congress = 118,
       chamber = "Senate",
       rollNumber = 456,
@@ -62,22 +64,27 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field voteId" in {
-    val json = """{"congress":118,"chamber":"House","rollNumber":123}"""
+    val json = """{"naturalKey":"rv118-house-1","congress":118,"chamber":"House","rollNumber":123}"""
+    decode[VoteDO](json).isLeft shouldBe true
+  }
+
+  it should "fail on missing required field naturalKey" in {
+    val json = """{"voteId":1,"congress":118,"chamber":"House","rollNumber":1}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field congress" in {
-    val json = """{"voteId":"rv118-house-1","chamber":"House","rollNumber":1}"""
+    val json = """{"voteId":1,"naturalKey":"rv118-house-1","chamber":"House","rollNumber":1}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field chamber" in {
-    val json = """{"voteId":"rv118-house-1","congress":118,"rollNumber":1}"""
+    val json = """{"voteId":1,"naturalKey":"rv118-house-1","congress":118,"rollNumber":1}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field rollNumber" in {
-    val json = """{"voteId":"rv118-house-1","congress":118,"chamber":"House"}"""
+    val json = """{"voteId":1,"naturalKey":"rv118-house-1","congress":118,"chamber":"House"}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 

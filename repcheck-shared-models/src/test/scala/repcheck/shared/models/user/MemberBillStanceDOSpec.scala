@@ -9,10 +9,10 @@ import org.scalatest.matchers.should.Matchers
 class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
 
   private val sample = MemberBillStanceDO(
-    memberId = "M000303",
-    billId = "hr-1234-118",
-    voteId = Some("vote-456"),
-    amendmentId = Some("amdt-789"),
+    memberId = 1L,
+    billId = 2L,
+    voteId = Some(3L),
+    amendmentId = Some(4L),
     position = Some("Yea"),
     voteType = Some("recorded"),
     voteDate = Some("2024-03-15"),
@@ -31,8 +31,8 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with all optional fields as None" in {
     val minimal = MemberBillStanceDO(
-      memberId = "M000303",
-      billId = "hr-1234-118",
+      memberId = 1L,
+      billId = 2L,
       voteId = None,
       amendmentId = None,
       position = None,
@@ -45,15 +45,15 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required fields" in {
-    decode[MemberBillStanceDO]("""{"memberId":"M000303"}""").isLeft shouldBe true
+    decode[MemberBillStanceDO]("""{"memberId":1}""").isLeft shouldBe true
   }
 
   it should "decode with absent optional fields" in {
-    val json = """{"memberId":"M000303","billId":"hr-1234-118","topics":[]}"""
+    val json = """{"memberId":1,"billId":2,"topics":[]}"""
     decode[MemberBillStanceDO](json) shouldBe Right(
       MemberBillStanceDO(
-        memberId = "M000303",
-        billId = "hr-1234-118",
+        memberId = 1L,
+        billId = 2L,
         voteId = None,
         amendmentId = None,
         position = None,
@@ -67,10 +67,10 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with amendmentId Some and voteId None" in {
     val stance = MemberBillStanceDO(
-      memberId = "M000303",
-      billId = "hr-5678-117",
+      memberId = 1L,
+      billId = 5L,
       voteId = None,
-      amendmentId = Some("amdt-001"),
+      amendmentId = Some(6L),
       position = None,
       voteType = None,
       voteDate = None,
@@ -81,12 +81,12 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "decodeAccumulating valid JSON" in {
-    val json = """{"memberId":"M000303","billId":"hr-1234-118","topics":[]}"""
+    val json = """{"memberId":1,"billId":2,"topics":[]}"""
     decodeAccumulating[MemberBillStanceDO](json).isValid shouldBe true
   }
 
   it should "decodeAccumulating invalid field types" in {
-    val json = """{"memberId":123,"billId":456,"topics":"not-a-list"}"""
+    val json = """{"memberId":"bad","billId":"bad","topics":"not-a-list"}"""
     decodeAccumulating[MemberBillStanceDO](json).isInvalid should be(true)
   }
 

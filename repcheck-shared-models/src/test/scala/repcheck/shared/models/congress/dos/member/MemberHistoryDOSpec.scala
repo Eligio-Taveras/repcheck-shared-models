@@ -15,7 +15,7 @@ class MemberHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleHistory = MemberHistoryDO(
     historyId = historyId,
-    memberId = "B001234",
+    memberId = 1L,
     firstName = Some("John"),
     lastName = Some("Smith"),
     directOrderName = Some("John Smith"),
@@ -41,7 +41,7 @@ class MemberHistoryDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = MemberHistoryDO(
       historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
-      memberId = "M000999",
+      memberId = 2L,
       firstName = None,
       lastName = None,
       directOrderName = None,
@@ -61,7 +61,7 @@ class MemberHistoryDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field historyId" in {
-    val json = """{"memberId":"B001234"}"""
+    val json = """{"memberId":1}"""
     decode[MemberHistoryDO](json).isLeft shouldBe true
   }
 

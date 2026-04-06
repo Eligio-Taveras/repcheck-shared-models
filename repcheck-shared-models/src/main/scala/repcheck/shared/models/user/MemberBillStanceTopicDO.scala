@@ -10,9 +10,9 @@ import repcheck.shared.models.codecs.VectorCodec._
 
 final case class MemberBillStanceTopicDO(
   id: UUID,
-  memberId: String,
-  billId: String,
-  voteId: Option[String],
+  memberId: Long,
+  billId: Long,
+  voteId: Option[Long],
   topic: String,
   stanceDirection: String,
   reasoning: Option[String],

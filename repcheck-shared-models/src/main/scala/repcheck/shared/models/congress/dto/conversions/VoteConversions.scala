@@ -17,10 +17,11 @@ object VoteConversions {
       } else if (dto.chamber.trim.isEmpty) {
         Left("chamber must not be empty")
       } else {
-        val voteId = buildVoteId(dto.congress, dto.chamber, dto.rollCallNumber)
+        val naturalKey = buildVoteId(dto.congress, dto.chamber, dto.rollCallNumber)
 
         val vote = VoteDO(
-          voteId = voteId,
+          voteId = 0L,
+          naturalKey = naturalKey,
           congress = dto.congress,
           chamber = dto.chamber,
           rollNumber = dto.rollCallNumber,
@@ -45,8 +46,8 @@ object VoteConversions {
           .flatMap { r =>
             r.memberId.map { mid =>
               VotePositionDO(
-                voteId = voteId,
-                memberId = mid,
+                voteId = 0L,
+                memberId = 0L,
                 position = r.voteCast,
                 partyAtVote = r.party,
                 stateAtVote = r.state,

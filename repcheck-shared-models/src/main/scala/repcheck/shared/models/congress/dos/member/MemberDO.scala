@@ -8,7 +8,8 @@ import io.circe.{Decoder, Encoder}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class MemberDO(
-  memberId: String,
+  memberId: Long,
+  naturalKey: String,
   firstName: Option[String],
   lastName: Option[String],
   directOrderName: Option[String],
@@ -34,7 +35,8 @@ object MemberDO {
   implicit val hasPlaceholder: HasPlaceholder[MemberDO] = new HasPlaceholder[MemberDO] {
     def placeholder(naturalKey: String): MemberDO =
       MemberDO(
-        memberId = naturalKey,
+        memberId = 0L,
+        naturalKey = naturalKey,
         firstName = None,
         lastName = None,
         directOrderName = None,

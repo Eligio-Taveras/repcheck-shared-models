@@ -11,7 +11,8 @@ import org.scalatest.matchers.should.Matchers
 class MemberDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleMember = MemberDO(
-    memberId = "B001234",
+    memberId = 1L,
+    naturalKey = "B001234",
     firstName = Some("John"),
     lastName = Some("Smith"),
     directOrderName = Some("John Smith"),
@@ -37,7 +38,8 @@ class MemberDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = MemberDO(
-      memberId = "M000999",
+      memberId = 2L,
+      naturalKey = "M000999",
       firstName = None,
       lastName = None,
       directOrderName = None,

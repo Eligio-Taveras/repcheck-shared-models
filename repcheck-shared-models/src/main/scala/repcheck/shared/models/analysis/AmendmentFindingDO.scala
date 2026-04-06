@@ -8,7 +8,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class AmendmentFindingDO(
   findingId: UUID,
-  amendmentId: String,
+  amendmentId: Long,
   findingTypeId: Int,
   summary: String,
   details: Option[String],

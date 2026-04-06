@@ -54,10 +54,10 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     result.length shouldBe 2
   }
 
-  it should "map committeeCode and memberId correctly" in {
+  it should "set committeeId and memberId to 0L (FK resolved at persistence time)" in {
     val result = senatorWithCommittees.toMemberCommittees
-    result.map(_.committeeCode) shouldBe List("SSFI00", "SSBK00")
-    result.foreach(_.memberId shouldBe "W000779")
+    result.foreach(_.committeeId shouldBe 0L)
+    result.foreach(_.memberId shouldBe 0L)
   }
 
   it should "map position from assignment" in {
@@ -75,9 +75,9 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     result shouldBe List.empty
   }
 
-  "SenatorCommitteeDataXmlDTO.toLisMemberMapping" should "produce Some with correct bioguideId" in {
+  "SenatorCommitteeDataXmlDTO.toLisMemberMapping" should "produce Some with memberId set to 0L (FK resolved at persistence time)" in {
     val result = senatorWithCommittees.toLisMemberMapping
-    result.map(_.memberId) shouldBe Some("W000779")
+    result.map(_.memberId) shouldBe Some(0L)
   }
 
   it should "produce Some with correct lisMemberId" in {
@@ -87,7 +87,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "produce Some even for senator with no committees" in {
     val result = senatorNoCommittees.toLisMemberMapping
-    result.map(_.memberId) shouldBe Some("T000250")
+    result.map(_.memberId) shouldBe Some(0L)
     result.map(_.lisMemberId) shouldBe Some("S456")
   }
 
@@ -147,7 +147,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     dto.toMemberCommittees shouldBe List.empty
   }
 
-  "CommitteeListItemDTO.toDO" should "map systemCode to committeeCode" in {
+  "CommitteeListItemDTO.toDO" should "map systemCode to naturalKey" in {
     val dto = CommitteeListItemDTO(
       chamber = Some("Senate"),
       committeeTypeCode = Some("Standing"),
@@ -159,13 +159,14 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       subcommittees = None,
     )
     val Right(result) = dto.toDO: @unchecked
-    result.committeeCode shouldBe "ssfi00"
+    result.committeeId shouldBe 0L
+    result.naturalKey shouldBe "ssfi00"
     result.name shouldBe "Committee on Finance"
     result.chamber shouldBe Some("Senate")
     result.committeeType shouldBe Some("Standing")
   }
 
-  it should "map parent systemCode to parentCommitteeCode" in {
+  it should "set parentCommitteeId to None (FK resolved at persistence time)" in {
     val parent = CommitteeListItemDTO(
       chamber = None,
       committeeTypeCode = None,
@@ -187,7 +188,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       subcommittees = None,
     )
     val Right(result) = dto.toDO: @unchecked
-    result.parentCommitteeCode shouldBe Some("ssfi00")
+    result.parentCommitteeId shouldBe None
   }
 
   it should "fail when systemCode is blank" in {
@@ -230,7 +231,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
         CommitteeActivityDTO("Hearings by", Some("2024-02-15")),
       ),
     )
-    val Right(result) = dto.toDO("118-HR-1234"): @unchecked
+    val Right(result) = dto.toDO(0L): @unchecked
     result.referralDate shouldBe Some("2024-01-10")
     result.reportDate shouldBe None
   }
@@ -245,7 +246,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
         CommitteeActivityDTO("Reported by", Some("2024-03-20")),
       ),
     )
-    val Right(result) = dto.toDO("118-HR-1234"): @unchecked
+    val Right(result) = dto.toDO(0L): @unchecked
     result.referralDate shouldBe Some("2024-01-10")
     result.reportDate shouldBe Some("2024-03-20")
   }
@@ -260,20 +261,20 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
         CommitteeActivityDTO("Referred to", Some("2024-01-15")),
       ),
     )
-    val Right(result) = dto.toDO("118-S-100"): @unchecked
+    val Right(result) = dto.toDO(0L): @unchecked
     result.referralDate shouldBe Some("2024-01-15")
   }
 
-  it should "set billId from parameter" in {
+  it should "set billId and committeeId to 0L (FK resolved at persistence time)" in {
     val dto = BillCommitteeReferralDTO(
       committeeCode = "HSJU00",
       committeeName = "Judiciary",
       chamber = None,
       activities = List.empty,
     )
-    val Right(result) = dto.toDO("118-HR-5678"): @unchecked
-    result.billId shouldBe "118-HR-5678"
-    result.committeeCode shouldBe "HSJU00"
+    val Right(result) = dto.toDO(0L): @unchecked
+    result.billId shouldBe 0L
+    result.committeeId shouldBe 0L
   }
 
   it should "set referralDate and reportDate to None when no matching activities" in {
@@ -285,7 +286,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
         CommitteeActivityDTO("Hearings by", Some("2024-02-01"))
       ),
     )
-    val Right(result) = dto.toDO("118-HR-1"): @unchecked
+    val Right(result) = dto.toDO(0L): @unchecked
     result.referralDate shouldBe None
     result.reportDate shouldBe None
   }
@@ -300,7 +301,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
         CommitteeActivityDTO("Reported by", Some("2024-03-20")),
       ),
     )
-    val Right(result) = dto.toDO("118-HR-1234"): @unchecked
+    val Right(result) = dto.toDO(0L): @unchecked
     result.activity shouldBe Some("Referred to; Reported by")
   }
 
@@ -311,7 +312,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       chamber = None,
       activities = List.empty,
     )
-    val Right(result) = dto.toDO("118-HR-1234"): @unchecked
+    val Right(result) = dto.toDO(0L): @unchecked
     result.activity shouldBe None
   }
 
@@ -322,7 +323,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       chamber = None,
       activities = List.empty,
     )
-    val result = dto.toDO("118-HR-1234")
+    val result = dto.toDO(0L)
     result.isLeft shouldBe true
     result.left.map(_.contains("committeeCode")) shouldBe Left(true)
   }
@@ -334,7 +335,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       chamber = None,
       activities = List.empty,
     )
-    dto.toDO("118-HR-1234").isLeft shouldBe true
+    dto.toDO(0L).isLeft shouldBe true
   }
 
 }

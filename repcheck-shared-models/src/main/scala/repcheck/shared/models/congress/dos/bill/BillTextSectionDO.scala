@@ -9,7 +9,7 @@ import io.circe.{Decoder, Encoder}
 final case class BillTextSectionDO(
   sectionId: UUID,
   versionId: UUID,
-  billId: String,
+  billId: Long,
   sectionIndex: Int,
   sectionIdentifier: Option[String],
   heading: Option[String],

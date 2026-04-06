@@ -22,7 +22,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   private val sampleConceptGroup = BillConceptGroupDO(
     conceptGroupId = uuid1,
     versionId = uuid2,
-    billId = "118-hr-1234",
+    billId = 1L,
     groupId = "group-1",
     title = "Healthcare Provisions",
     simplifiedText = "Simplified text about healthcare",
@@ -106,7 +106,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
   private val sampleAnalysis = BillAnalysisDO(
     analysisId = uuid1,
-    billId = "118-hr-1234",
+    billId = 2L,
     versionId = uuid2,
     status = "completed",
     summary = Some("A bill about healthcare reform"),
@@ -141,7 +141,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None and empty lists" in {
     val minimal = BillAnalysisDO(
       analysisId = uuid1,
-      billId = "118-hr-5678",
+      billId = 3L,
       versionId = uuid2,
       status = "pending",
       summary = None,
@@ -204,7 +204,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   private val sampleConceptSummary = BillConceptSummaryDO(
     conceptSummaryId = uuid1,
     analysisId = uuid2,
-    billId = "118-hr-1234",
+    billId = 4L,
     conceptGroupId = Some(uuid3),
     passNumber = 1,
     topics = List("healthcare"),
@@ -265,7 +265,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   private val sampleTopic = BillAnalysisTopicDO(
     topicId = uuid1,
     analysisId = uuid2,
-    billId = "118-hr-1234",
+    billId = 5L,
     conceptGroupId = Some("group-1"),
     passNumber = 1,
     topic = "healthcare",
@@ -309,7 +309,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
   private val sampleFinding = BillFindingDO(
     findingId = uuid1,
-    billId = "118-hr-1234",
+    billId = 6L,
     analysisId = Some(uuid2),
     findingTypeId = 1,
     passNumber = 1,
@@ -375,7 +375,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   private val sampleFiscalEstimate = BillFiscalEstimateDO(
     fiscalEstimateId = uuid1,
     analysisId = uuid2,
-    billId = "118-hr-1234",
+    billId = 7L,
     conceptGroupId = Some(uuid3),
     passNumber = 1,
     estimatedCost = "$1.5 billion",
@@ -429,7 +429,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
   private val sampleAmendmentFinding = AmendmentFindingDO(
     findingId = uuid1,
-    amendmentId = "118-hamdt-100",
+    amendmentId = 1L,
     findingTypeId = 2,
     summary = "Amendment changes scope of section 5",
     details = Some("Detailed amendment analysis"),

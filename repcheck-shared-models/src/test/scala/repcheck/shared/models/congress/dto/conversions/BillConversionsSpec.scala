@@ -24,7 +24,8 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
   "BillListItemDTO.toDO" should "convert with correct natural key" in {
     val result = validBillListItem.toDO
     result.isRight shouldBe true
-    result.map(_.billId) shouldBe Right("118-HR-1234")
+    result.map(_.billId) shouldBe Right(0L)
+    result.map(_.naturalKey) shouldBe Right("118-HR-1234")
   }
 
   it should "map all list-level fields correctly" in {
@@ -46,7 +47,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val Right(bill) = validBillListItem.toDO: @unchecked
     bill.introducedDate shouldBe None
     bill.policyArea shouldBe None
-    bill.sponsorBioguideId shouldBe None
+    bill.sponsorMemberId shouldBe None
     bill.textUrl shouldBe None
     bill.summaryText shouldBe None
     bill.legislationUrl shouldBe None
@@ -121,8 +122,9 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
 
   "BillDetailDTO.toDO" should "produce BillConversionResult with correct BillDO" in {
     val Right(result) = validBillDetail.toDO: @unchecked
-    result.bill.billId shouldBe "118-S-5678"
-    result.bill.sponsorBioguideId shouldBe Some("S000033")
+    result.bill.billId shouldBe 0L
+    result.bill.naturalKey shouldBe "118-S-5678"
+    result.bill.sponsorMemberId shouldBe None
     result.bill.introducedDate shouldBe Some("2024-01-10")
     result.bill.policyArea shouldBe Some("Transportation")
     result.bill.constitutionalAuthorityText shouldBe Some("Congress has the power...")
@@ -148,7 +150,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val Right(result) = validBillDetail.toDO: @unchecked
     result.subjects.length shouldBe 2
     result.subjects.map(_.subjectName) shouldBe List("Roads and highways", "Infrastructure development")
-    result.subjects.map(_.billId).distinct shouldBe List("118-S-5678")
+    result.subjects.map(_.billId).distinct shouldBe List(0L)
     result.subjects.headOption.flatMap(_.updateDate) shouldBe Some("2024-01-15")
   }
 

@@ -10,7 +10,7 @@ import repcheck.shared.models.codecs.VectorCodec._
 
 final case class UserBillAlignmentDO(
   userId: UUID,
-  billId: String,
+  billId: Long,
   topic: String,
   userStanceScore: Double,
   billStanceDirection: String,

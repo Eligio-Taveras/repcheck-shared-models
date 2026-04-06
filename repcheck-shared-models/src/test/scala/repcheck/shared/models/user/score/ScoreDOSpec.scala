@@ -16,7 +16,7 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
   "ScoreDO Circe codec" should "round-trip with all fields" in {
     val score = ScoreDO(
       userId = uid,
-      memberId = "M000303",
+      memberId = 1L,
       aggregateScore = 0.85f,
       status = "scored",
       lastUpdated = Some(Instant.parse("2024-06-01T14:00:00Z")),
@@ -47,7 +47,7 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with None fields and empty list" in {
     val score = ScoreDO(
       userId = uid,
-      memberId = "M000303",
+      memberId = 1L,
       aggregateScore = 0.5f,
       status = "no_overlap",
       lastUpdated = None,
@@ -63,50 +63,50 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      s"""{"userId":"$uid","memberId":"M000303","aggregateScore":0.8,"status":"scored","nonOverlappingTopics":[]}"""
+      s"""{"userId":"$uid","memberId":1,"aggregateScore":0.8,"status":"scored","nonOverlappingTopics":[]}"""
     decodeAccumulating[ScoreDO](json).isValid shouldBe true
   }
 
   it should "decodeAccumulating invalid field types" in {
-    val json = """{"userId":"bad","memberId":123,"aggregateScore":"bad","status":1,"nonOverlappingTopics":"bad"}"""
+    val json = """{"userId":"bad","memberId":"bad","aggregateScore":"bad","status":1,"nonOverlappingTopics":"bad"}"""
     decodeAccumulating[ScoreDO](json).isInvalid should be(true)
   }
 
   "ScoreTopicDO Circe codec" should "round-trip" in {
-    val st = ScoreTopicDO(uid, "M000303", "healthcare", 0.9f)
+    val st = ScoreTopicDO(uid, 1L, "healthcare", 0.9f)
     st.asJson.as[ScoreTopicDO] shouldBe Right(st)
   }
 
   it should "decodeAccumulating valid JSON" in {
     decodeAccumulating[ScoreTopicDO](
-      s"""{"userId":"$uid","memberId":"M000303","topic":"health","score":0.8}"""
+      s"""{"userId":"$uid","memberId":1,"topic":"health","score":0.8}"""
     ).isValid shouldBe true
   }
 
   "ScoreCongressDO Circe codec" should "round-trip" in {
-    val sc = ScoreCongressDO(uid, "M000303", 118, 0.82f, Some(42), Some(38))
+    val sc = ScoreCongressDO(uid, 1L, 118, 0.82f, Some(42), Some(38))
     sc.asJson.as[ScoreCongressDO] shouldBe Right(sc)
   }
 
   it should "round-trip with None fields" in {
-    val sc = ScoreCongressDO(uid, "M000303", 117, 0.6f, None, None)
+    val sc = ScoreCongressDO(uid, 1L, 117, 0.6f, None, None)
     sc.asJson.as[ScoreCongressDO] shouldBe Right(sc)
   }
 
   it should "decodeAccumulating valid JSON" in {
     decodeAccumulating[ScoreCongressDO](
-      s"""{"userId":"$uid","memberId":"M000303","congress":118,"overallScore":0.8}"""
+      s"""{"userId":"$uid","memberId":1,"congress":118,"overallScore":0.8}"""
     ).isValid shouldBe true
   }
 
   "ScoreCongressTopicDO Circe codec" should "round-trip" in {
-    val sct = ScoreCongressTopicDO(uid, "M000303", 118, "environment", 0.75f)
+    val sct = ScoreCongressTopicDO(uid, 1L, 118, "environment", 0.75f)
     sct.asJson.as[ScoreCongressTopicDO] shouldBe Right(sct)
   }
 
   it should "decodeAccumulating valid JSON" in {
     decodeAccumulating[ScoreCongressTopicDO](
-      s"""{"userId":"$uid","memberId":"M000303","congress":118,"topic":"health","score":0.8}"""
+      s"""{"userId":"$uid","memberId":1,"congress":118,"topic":"health","score":0.8}"""
     ).isValid shouldBe true
   }
 

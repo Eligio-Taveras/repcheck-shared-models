@@ -11,15 +11,16 @@ import org.scalatest.matchers.should.Matchers
 class AmendmentDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleAmendment = AmendmentDO(
-    amendmentId = "118-hamdt-1",
+    amendmentId = 1L,
+    naturalKey = "118-hamdt-1",
     congress = 118,
     amendmentType = Some("hamdt"),
     number = "1",
-    billId = Some("118-hr-1234"),
+    billId = Some(2L),
     chamber = Some("House"),
     description = Some("An amendment to improve section 3"),
     purpose = Some("To strike section 3 and replace with new language"),
-    sponsorBioguideId = Some("B001234"),
+    sponsorMemberId = Some(3L),
     submittedDate = Some("2024-02-15"),
     latestActionDate = Some("2024-03-01"),
     latestActionText = Some("Amendment agreed to by voice vote"),
@@ -37,7 +38,8 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = AmendmentDO(
-      amendmentId = "118-samdt-5",
+      amendmentId = 4L,
+      naturalKey = "118-samdt-5",
       congress = 118,
       amendmentType = None,
       number = "5",
@@ -45,7 +47,7 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
       chamber = None,
       description = None,
       purpose = None,
-      sponsorBioguideId = None,
+      sponsorMemberId = None,
       submittedDate = None,
       latestActionDate = None,
       latestActionText = None,

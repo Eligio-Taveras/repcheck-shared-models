@@ -9,7 +9,7 @@ import org.scalatest.matchers.should.Matchers
 class BillSubjectDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleSubject = BillSubjectDO(
-    billId = "118-hr-1234",
+    billId = 1L,
     subjectName = "Health Care",
     embedding = None,
     updateDate = Some("2024-03-01T12:00:00Z"),
@@ -23,7 +23,7 @@ class BillSubjectDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = BillSubjectDO(
-      billId = "118-hr-5678",
+      billId = 2L,
       subjectName = "Education",
       embedding = None,
       updateDate = None,
@@ -32,7 +32,7 @@ class BillSubjectDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillSubjectDO]("""{"billId":"118-hr-1234"}""").isLeft shouldBe true
+    decode[BillSubjectDO]("""{"billId":1}""").isLeft shouldBe true
   }
 
   it should "have Doobie Read instance" in {

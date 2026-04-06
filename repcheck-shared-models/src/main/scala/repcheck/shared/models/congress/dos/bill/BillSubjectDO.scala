@@ -4,7 +4,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class BillSubjectDO(
-  billId: String,
+  billId: Long,
   subjectName: String,
   embedding: Option[Array[Float]],
   updateDate: Option[String],

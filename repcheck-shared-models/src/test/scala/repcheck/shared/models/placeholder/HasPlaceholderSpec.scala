@@ -17,9 +17,14 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   // --- MemberDO ---
 
-  "HasPlaceholder[MemberDO]" should "create a placeholder with only memberId populated" in {
+  "HasPlaceholder[MemberDO]" should "have PK field set to 0L" in {
     val placeholder = HasPlaceholder[MemberDO].placeholder("B000944")
-    placeholder.memberId shouldBe "B000944"
+    placeholder.memberId shouldBe 0L
+  }
+
+  it should "set naturalKey to the provided key" in {
+    val placeholder = HasPlaceholder[MemberDO].placeholder("B000944")
+    placeholder.naturalKey shouldBe "B000944"
   }
 
   it should "have all optional fields set to None" in {
@@ -41,17 +46,22 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     placeholder.updatedAt shouldBe None
   }
 
-  it should "use the natural key as the memberId" in {
+  it should "use the natural key as the naturalKey field" in {
     val key         = "S000148"
     val placeholder = HasPlaceholder[MemberDO].placeholder(key)
-    placeholder.memberId shouldBe key
+    placeholder.naturalKey shouldBe key
   }
 
   // --- BillDO ---
 
-  "HasPlaceholder[BillDO]" should "create a placeholder with billId as the natural key" in {
+  "HasPlaceholder[BillDO]" should "have PK field set to 0L" in {
     val placeholder = HasPlaceholder[BillDO].placeholder("hr1234-118")
-    placeholder.billId shouldBe "hr1234-118"
+    placeholder.billId shouldBe 0L
+  }
+
+  it should "set naturalKey to the provided key" in {
+    val placeholder = HasPlaceholder[BillDO].placeholder("hr1234-118")
+    placeholder.naturalKey shouldBe "hr1234-118"
   }
 
   it should "have zero/empty defaults for required non-Option fields" in {
@@ -71,7 +81,7 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     placeholder.latestActionDate shouldBe None
     placeholder.latestActionText shouldBe None
     placeholder.constitutionalAuthorityText shouldBe None
-    placeholder.sponsorBioguideId shouldBe None
+    placeholder.sponsorMemberId shouldBe None
     placeholder.textUrl shouldBe None
     placeholder.textFormat shouldBe None
     placeholder.textVersionType shouldBe None
@@ -92,9 +102,14 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   // --- VoteDO ---
 
-  "HasPlaceholder[VoteDO]" should "create a placeholder with voteId as the natural key" in {
+  "HasPlaceholder[VoteDO]" should "have PK field set to 0L" in {
     val placeholder = HasPlaceholder[VoteDO].placeholder("118-senate-42")
-    placeholder.voteId shouldBe "118-senate-42"
+    placeholder.voteId shouldBe 0L
+  }
+
+  it should "set naturalKey to the provided key" in {
+    val placeholder = HasPlaceholder[VoteDO].placeholder("118-senate-42")
+    placeholder.naturalKey shouldBe "118-senate-42"
   }
 
   it should "have zero/empty defaults for required non-Option fields" in {
@@ -124,9 +139,14 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   // --- AmendmentDO ---
 
-  "HasPlaceholder[AmendmentDO]" should "create a placeholder with amendmentId as the natural key" in {
+  "HasPlaceholder[AmendmentDO]" should "have PK field set to 0L" in {
     val placeholder = HasPlaceholder[AmendmentDO].placeholder("hamdt-500-118")
-    placeholder.amendmentId shouldBe "hamdt-500-118"
+    placeholder.amendmentId shouldBe 0L
+  }
+
+  it should "set naturalKey to the provided key" in {
+    val placeholder = HasPlaceholder[AmendmentDO].placeholder("hamdt-500-118")
+    placeholder.naturalKey shouldBe "hamdt-500-118"
   }
 
   it should "have zero/empty defaults for required non-Option fields" in {
@@ -142,7 +162,7 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     placeholder.chamber shouldBe None
     placeholder.description shouldBe None
     placeholder.purpose shouldBe None
-    placeholder.sponsorBioguideId shouldBe None
+    placeholder.sponsorMemberId shouldBe None
     placeholder.submittedDate shouldBe None
     placeholder.latestActionDate shouldBe None
     placeholder.latestActionText shouldBe None
@@ -154,9 +174,14 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   // --- CommitteeDO ---
 
-  "HasPlaceholder[CommitteeDO]" should "create a placeholder with committeeCode as the natural key" in {
+  "HasPlaceholder[CommitteeDO]" should "have PK field set to 0L" in {
     val placeholder = HasPlaceholder[CommitteeDO].placeholder("SSFI")
-    placeholder.committeeCode shouldBe "SSFI"
+    placeholder.committeeId shouldBe 0L
+  }
+
+  it should "set naturalKey to the provided key" in {
+    val placeholder = HasPlaceholder[CommitteeDO].placeholder("SSFI")
+    placeholder.naturalKey shouldBe "SSFI"
   }
 
   it should "have empty string for required name field" in {
@@ -168,7 +193,7 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     val placeholder = HasPlaceholder[CommitteeDO].placeholder("SSFI")
     placeholder.chamber shouldBe None
     placeholder.committeeType shouldBe None
-    placeholder.parentCommitteeCode shouldBe None
+    placeholder.parentCommitteeId shouldBe None
     placeholder.isCurrent shouldBe None
     placeholder.updateDate shouldBe None
     placeholder.createdAt shouldBe None
@@ -180,25 +205,25 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
   "HasPlaceholder" should "produce different placeholders for different natural keys" in {
     val p1 = HasPlaceholder[MemberDO].placeholder("A000001")
     val p2 = HasPlaceholder[MemberDO].placeholder("B000002")
-    p1.memberId should not be p2.memberId
+    p1.naturalKey should not be p2.naturalKey
   }
 
   it should "handle empty string as natural key" in {
     val placeholder = HasPlaceholder[MemberDO].placeholder("")
-    placeholder.memberId shouldBe ""
+    placeholder.naturalKey shouldBe ""
   }
 
   it should "handle special characters in natural key" in {
     val key         = "member-with/special_chars.v2"
     val placeholder = HasPlaceholder[MemberDO].placeholder(key)
-    placeholder.memberId shouldBe key
+    placeholder.naturalKey shouldBe key
   }
 
   it should "be accessible via implicit resolution" in {
     def createPlaceholder[T](key: String)(implicit hp: HasPlaceholder[T]): T =
       hp.placeholder(key)
     val member = createPlaceholder[MemberDO]("X000001")
-    member.memberId shouldBe "X000001"
+    member.naturalKey shouldBe "X000001"
   }
 
 }
