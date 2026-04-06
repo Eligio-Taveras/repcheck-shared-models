@@ -8,7 +8,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class BillTextVersionDO(
   versionId: UUID,
-  billId: String,
+  billId: Long,
   versionCode: String,
   versionType: String,
   versionDate: Option[String],

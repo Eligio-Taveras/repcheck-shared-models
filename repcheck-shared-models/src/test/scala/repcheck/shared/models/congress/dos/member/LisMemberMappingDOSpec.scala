@@ -12,7 +12,7 @@ class LisMemberMappingDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleMapping = LisMemberMappingDO(
     lisMemberId = "S001",
-    memberId = "B001234",
+    memberId = 1L,
     lastVerified = Instant.parse("2024-06-15T08:30:00Z"),
   )
 
@@ -23,7 +23,7 @@ class LisMemberMappingDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field lisMemberId" in {
-    val json = """{"memberId":"B001234","lastVerified":"2024-06-15T08:30:00Z"}"""
+    val json = """{"memberId":1,"lastVerified":"2024-06-15T08:30:00Z"}"""
     decode[LisMemberMappingDO](json).isLeft shouldBe true
   }
 
@@ -33,7 +33,7 @@ class LisMemberMappingDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field lastVerified" in {
-    val json = """{"lisMemberId":"S001","memberId":"B001234"}"""
+    val json = """{"lisMemberId":"S001","memberId":1}"""
     decode[LisMemberMappingDO](json).isLeft shouldBe true
   }
 

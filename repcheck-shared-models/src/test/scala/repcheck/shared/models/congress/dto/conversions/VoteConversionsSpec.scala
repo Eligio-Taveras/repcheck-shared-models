@@ -34,7 +34,8 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
   "VoteMembersDTO.toDO" should "produce VoteDO with correct natural key" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
-    result.vote.voteId shouldBe "118-House-42"
+    result.vote.voteId shouldBe 0L
+    result.vote.naturalKey shouldBe "118-House-42"
   }
 
   it should "map all vote fields correctly" in {
@@ -56,17 +57,17 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     v.updateDate shouldBe Some("2024-01-16")
   }
 
-  it should "produce VotePositionDOs only for members with memberId" in {
+  it should "produce VotePositionDOs only for members with memberId in DTO" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
     result.positions.length shouldBe 2
-    result.positions.map(_.memberId) shouldBe List("A000370", "B001297")
+    result.positions.foreach(_.memberId shouldBe 0L)
   }
 
   it should "map position fields correctly" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
     val first         = result.positions.headOption
-    first.map(_.voteId) shouldBe Some("118-House-42")
-    first.map(_.memberId) shouldBe Some("A000370")
+    first.map(_.voteId) shouldBe Some(0L)
+    first.map(_.memberId) shouldBe Some(0L)
     first.flatMap(_.position) shouldBe Some("Yea")
     first.flatMap(_.partyAtVote) shouldBe Some("D")
     first.flatMap(_.stateAtVote) shouldBe Some("NC")

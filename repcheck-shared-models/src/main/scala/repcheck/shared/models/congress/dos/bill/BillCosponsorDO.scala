@@ -4,8 +4,8 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class BillCosponsorDO(
-  billId: String,
-  memberId: String,
+  billId: Long,
+  memberId: Long,
   isOriginalCosponsor: Option[Boolean],
   sponsorshipDate: Option[String],
 )

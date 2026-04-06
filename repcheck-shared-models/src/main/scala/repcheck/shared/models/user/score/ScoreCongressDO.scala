@@ -7,7 +7,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class ScoreCongressDO(
   userId: UUID,
-  memberId: String,
+  memberId: Long,
   congress: Int,
   overallScore: Float,
   billsConsidered: Option[Int],

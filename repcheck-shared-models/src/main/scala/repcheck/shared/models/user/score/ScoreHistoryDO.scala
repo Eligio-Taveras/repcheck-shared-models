@@ -11,7 +11,7 @@ import repcheck.shared.models.codecs.VectorCodec._
 final case class ScoreHistoryDO(
   scoreId: UUID,
   userId: UUID,
-  memberId: String,
+  memberId: Long,
   computedAt: Option[Instant],
   aggregateScore: Float,
   status: Option[String],

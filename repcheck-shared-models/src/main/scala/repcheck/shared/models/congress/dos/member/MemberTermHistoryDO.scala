@@ -8,7 +8,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class MemberTermHistoryDO(
   historyId: UUID,
-  memberId: String,
+  memberId: Long,
   chamber: Option[String],
   congress: Option[Int],
   startYear: Option[Int],

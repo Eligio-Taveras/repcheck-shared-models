@@ -14,7 +14,7 @@ class MemberPartyHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleHistory = MemberPartyHistoryDO(
     partyHistoryId = sampleHistoryId,
-    memberId = "B001234",
+    memberId = 1L,
     partyName = Some("Democratic"),
     partyAbbreviation = Some("D"),
     startYear = Some(2001),
@@ -29,7 +29,7 @@ class MemberPartyHistoryDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = MemberPartyHistoryDO(
       partyHistoryId = sampleHistoryId,
-      memberId = "M000999",
+      memberId = 2L,
       partyName = None,
       partyAbbreviation = None,
       startYear = None,

@@ -13,7 +13,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleVersion = BillTextVersionDO(
     versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
-    billId = "118-HR-1234",
+    billId = 1L,
     versionCode = "ih",
     versionType = "Introduced in House",
     versionDate = Some("2024-01-15"),
@@ -34,7 +34,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = BillTextVersionDO(
       versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
-      billId = "118-HR-1234",
+      billId = 1L,
       versionCode = "ih",
       versionType = "Introduced in House",
       versionDate = None,

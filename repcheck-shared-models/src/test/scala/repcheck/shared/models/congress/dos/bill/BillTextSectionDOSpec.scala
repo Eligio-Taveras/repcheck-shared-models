@@ -14,7 +14,7 @@ class BillTextSectionDOSpec extends AnyFlatSpec with Matchers {
   private val sampleSection = BillTextSectionDO(
     sectionId = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901"),
     versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
-    billId = "118-HR-1234",
+    billId = 1L,
     sectionIndex = 0,
     sectionIdentifier = Some("Sec. 1"),
     heading = Some("Short Title"),

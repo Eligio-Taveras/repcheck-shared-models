@@ -6,8 +6,8 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class VotePositionDO(
-  voteId: String,
-  memberId: String,
+  voteId: Long,
+  memberId: Long,
   position: Option[String],
   partyAtVote: Option[String],
   stateAtVote: Option[String],

@@ -8,7 +8,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class UserLegislatorPairingDO(
   userId: UUID,
-  memberId: String,
+  memberId: Long,
   state: String,
   district: Option[Int],
   chamber: String,

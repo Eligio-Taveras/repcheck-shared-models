@@ -8,7 +8,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class BillFindingDO(
   findingId: UUID,
-  billId: String,
+  billId: Long,
   analysisId: Option[UUID],
   findingTypeId: Int,
   passNumber: Int,

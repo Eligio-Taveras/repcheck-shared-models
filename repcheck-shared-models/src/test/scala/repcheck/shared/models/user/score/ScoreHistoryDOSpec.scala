@@ -19,7 +19,7 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
     val sh = ScoreHistoryDO(
       scoreId,
       uid,
-      "M000303",
+      1L,
       Some(instant),
       0.85f,
       Some("scored"),
@@ -37,38 +37,38 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with all optional fields None" in {
-    val sh = ScoreHistoryDO(scoreId, uid, "M000303", None, 0.5f, None, None, None, None)
+    val sh = ScoreHistoryDO(scoreId, uid, 1L, None, 0.5f, None, None, None, None)
     sh.asJson.as[ScoreHistoryDO] shouldBe Right(sh)
   }
 
   it should "round-trip with computedAt Some and triggerEvent None" in {
-    val sh = ScoreHistoryDO(scoreId, uid, "M000303", Some(instant), 0.7f, Some("scored"), None, Some("reasoning"), None)
+    val sh = ScoreHistoryDO(scoreId, uid, 1L, Some(instant), 0.7f, Some("scored"), None, Some("reasoning"), None)
     sh.asJson.as[ScoreHistoryDO] shouldBe Right(sh)
   }
 
   it should "round-trip with computedAt None and triggerEvent Some" in {
-    val sh = ScoreHistoryDO(scoreId, uid, "M000303", None, 0.6f, None, Some("bill_analyzed"), None, None)
+    val sh = ScoreHistoryDO(scoreId, uid, 1L, None, 0.6f, None, Some("bill_analyzed"), None, None)
     sh.asJson.as[ScoreHistoryDO] shouldBe Right(sh)
   }
 
   it should "decode with absent optional fields" in {
-    val json = s"""{"scoreId":"$scoreId","userId":"$uid","memberId":"M000303","aggregateScore":0.5}"""
+    val json = s"""{"scoreId":"$scoreId","userId":"$uid","memberId":1,"aggregateScore":0.5}"""
     decode[ScoreHistoryDO](json) shouldBe Right(
-      ScoreHistoryDO(scoreId, uid, "M000303", None, 0.5f, None, None, None, None)
+      ScoreHistoryDO(scoreId, uid, 1L, None, 0.5f, None, None, None, None)
     )
   }
 
   it should "fail to decode with missing required fields" in {
-    decode[ScoreHistoryDO]("""{"memberId":"M000303"}""").isLeft shouldBe true
+    decode[ScoreHistoryDO]("""{"memberId":1}""").isLeft shouldBe true
   }
 
   it should "decodeAccumulating valid JSON" in {
-    val json = s"""{"scoreId":"$scoreId","userId":"$uid","memberId":"M000303","aggregateScore":0.5}"""
+    val json = s"""{"scoreId":"$scoreId","userId":"$uid","memberId":1,"aggregateScore":0.5}"""
     decodeAccumulating[ScoreHistoryDO](json).isValid shouldBe true
   }
 
   it should "decodeAccumulating invalid field types" in {
-    val json = """{"scoreId":"not-a-uuid","userId":"bad","memberId":123,"aggregateScore":"bad"}"""
+    val json = """{"scoreId":"not-a-uuid","userId":"bad","memberId":"bad","aggregateScore":"bad"}"""
     decodeAccumulating[ScoreHistoryDO](json).isInvalid should be(true)
   }
 
@@ -104,13 +104,13 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
   }
 
   "ScoreHistoryHighlightDO Circe codec" should "round-trip" in {
-    val shh = ScoreHistoryHighlightDO(scoreId, "hr-1234-118", "healthcare", "progressive", "Yea", 0.95f)
+    val shh = ScoreHistoryHighlightDO(scoreId, 2L, "healthcare", "progressive", "Yea", 0.95f)
     shh.asJson.as[ScoreHistoryHighlightDO] shouldBe Right(shh)
   }
 
   it should "decodeAccumulating valid JSON" in {
     decodeAccumulating[ScoreHistoryHighlightDO](
-      s"""{"scoreId":"$scoreId","billId":"hr-1-118","topic":"health","stance":"progressive","vote":"Yea","alignment":0.9}"""
+      s"""{"scoreId":"$scoreId","billId":2,"topic":"health","stance":"progressive","vote":"Yea","alignment":0.9}"""
     ).isValid shouldBe true
   }
 

@@ -5,16 +5,19 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.placeholder.HasPlaceholder
+
 final case class AmendmentDO(
-  amendmentId: String,
+  amendmentId: Long,
+  naturalKey: String,
   congress: Int,
   amendmentType: Option[String],
   number: String,
-  billId: Option[String],
+  billId: Option[Long],
   chamber: Option[String],
   description: Option[String],
   purpose: Option[String],
-  sponsorBioguideId: Option[String],
+  sponsorMemberId: Option[Long],
   submittedDate: Option[String],
   latestActionDate: Option[String],
   latestActionText: Option[String],
@@ -28,5 +31,28 @@ object AmendmentDO {
 
   implicit val encoder: Encoder[AmendmentDO] = deriveEncoder[AmendmentDO]
   implicit val decoder: Decoder[AmendmentDO] = deriveDecoder[AmendmentDO]
+
+  implicit val hasPlaceholder: HasPlaceholder[AmendmentDO] = new HasPlaceholder[AmendmentDO] {
+    def placeholder(naturalKey: String): AmendmentDO =
+      AmendmentDO(
+        amendmentId = 0L,
+        naturalKey = naturalKey,
+        congress = 0,
+        amendmentType = None,
+        number = "",
+        billId = None,
+        chamber = None,
+        description = None,
+        purpose = None,
+        sponsorMemberId = None,
+        submittedDate = None,
+        latestActionDate = None,
+        latestActionText = None,
+        updateDate = None,
+        apiUrl = None,
+        createdAt = None,
+        updatedAt = None,
+      )
+  }
 
 }

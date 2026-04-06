@@ -10,8 +10,8 @@ import repcheck.shared.models.codecs.VectorCodec._
 
 final case class UserAmendmentAlignmentDO(
   userId: UUID,
-  amendmentId: String,
-  billId: Option[String],
+  amendmentId: Long,
+  billId: Option[Long],
   topic: String,
   userStanceScore: Double,
   amendmentStanceDirection: String,

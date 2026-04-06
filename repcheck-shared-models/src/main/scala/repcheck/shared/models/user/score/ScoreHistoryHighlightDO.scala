@@ -7,7 +7,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class ScoreHistoryHighlightDO(
   scoreId: UUID,
-  billId: String,
+  billId: Long,
   topic: String,
   stance: String,
   vote: String,

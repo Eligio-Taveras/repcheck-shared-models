@@ -8,12 +8,12 @@ import io.circe.{Decoder, Encoder}
 
 final case class VoteHistoryDO(
   historyId: UUID,
-  voteId: String,
+  voteId: Long,
   congress: Int,
   chamber: String,
   rollNumber: Int,
   sessionNumber: Option[Int],
-  billId: Option[String],
+  billId: Option[Long],
   question: Option[String],
   voteType: Option[String],
   voteMethod: Option[String],
@@ -36,7 +36,7 @@ object VoteHistoryDO {
 
 final case class VoteHistoryPositionDO(
   historyId: UUID,
-  memberId: String,
+  memberId: Long,
   position: Option[String],
   partyAtVote: Option[String],
   stateAtVote: Option[String],

@@ -7,7 +7,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class ScoreTopicDO(
   userId: UUID,
-  memberId: String,
+  memberId: Long,
   topic: String,
   score: Float,
 )

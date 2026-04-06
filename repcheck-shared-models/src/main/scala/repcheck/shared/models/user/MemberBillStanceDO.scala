@@ -4,10 +4,10 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class MemberBillStanceDO(
-  memberId: String,
-  billId: String,
-  voteId: Option[String],
-  amendmentId: Option[String],
+  memberId: Long,
+  billId: Long,
+  voteId: Option[Long],
+  amendmentId: Option[Long],
   position: Option[String],
   voteType: Option[String],
   voteDate: Option[String],
