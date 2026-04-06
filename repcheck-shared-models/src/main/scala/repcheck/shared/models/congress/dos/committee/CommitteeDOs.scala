@@ -5,6 +5,8 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.placeholder.HasPlaceholder
+
 final case class CommitteeDO(
   committeeCode: String,
   name: String,
@@ -20,6 +22,22 @@ final case class CommitteeDO(
 object CommitteeDO {
   implicit val encoder: Encoder[CommitteeDO] = deriveEncoder[CommitteeDO]
   implicit val decoder: Decoder[CommitteeDO] = deriveDecoder[CommitteeDO]
+
+  implicit val hasPlaceholder: HasPlaceholder[CommitteeDO] = new HasPlaceholder[CommitteeDO] {
+    def placeholder(naturalKey: String): CommitteeDO =
+      CommitteeDO(
+        committeeCode = naturalKey,
+        name = "",
+        chamber = None,
+        committeeType = None,
+        parentCommitteeCode = None,
+        isCurrent = None,
+        updateDate = None,
+        createdAt = None,
+        updatedAt = None,
+      )
+  }
+
 }
 
 final case class CommitteeMemberDO(

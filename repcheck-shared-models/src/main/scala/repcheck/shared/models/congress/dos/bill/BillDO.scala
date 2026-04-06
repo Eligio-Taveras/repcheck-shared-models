@@ -6,6 +6,8 @@ import java.util.UUID
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.placeholder.HasPlaceholder
+
 final case class BillDO(
   billId: String,
   congress: Int,
@@ -44,5 +46,40 @@ object BillDO {
 
   implicit val encoder: Encoder[BillDO] = deriveEncoder[BillDO]
   implicit val decoder: Decoder[BillDO] = deriveDecoder[BillDO]
+
+  implicit val hasPlaceholder: HasPlaceholder[BillDO] = new HasPlaceholder[BillDO] {
+    def placeholder(naturalKey: String): BillDO =
+      BillDO(
+        billId = naturalKey,
+        congress = 0,
+        billType = "",
+        number = "",
+        title = "",
+        originChamber = None,
+        originChamberCode = None,
+        introducedDate = None,
+        policyArea = None,
+        latestActionDate = None,
+        latestActionText = None,
+        constitutionalAuthorityText = None,
+        sponsorBioguideId = None,
+        textUrl = None,
+        textFormat = None,
+        textVersionType = None,
+        textDate = None,
+        textContent = None,
+        textEmbedding = None,
+        summaryText = None,
+        summaryActionDesc = None,
+        summaryActionDate = None,
+        updateDate = None,
+        updateDateIncludingText = None,
+        legislationUrl = None,
+        apiUrl = None,
+        createdAt = None,
+        updatedAt = None,
+        latestTextVersionId = None,
+      )
+  }
 
 }
