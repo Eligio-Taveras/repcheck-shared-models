@@ -41,13 +41,13 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
-    result.isRight shouldBe true
+    val _      = result.isRight shouldBe true
     result.foreach { assembled =>
       val sections = assembled.split("\n\n")
-      sections.length shouldBe 4
-      sections(0) should include("You MUST: You are an assistant.")
-      sections(1) should include("Act as a policy analyst.")
-      sections(2) should include("You MUST: Do not hallucinate.")
+      val _        = sections.length shouldBe 4
+      val _        = sections(0) should include("You MUST: You are an assistant.")
+      val _        = sections(1) should include("Act as a policy analyst.")
+      val _        = sections(2) should include("You MUST: Do not hallucinate.")
       sections(3) should include("You MUST: Return JSON.")
     }
   }
@@ -61,9 +61,9 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
-    result.isRight shouldBe true
+    val _      = result.isRight shouldBe true
     result.foreach { assembled =>
-      assembled should include("When possible: Focus on fiscal impact.")
+      val _ = assembled should include("When possible: Focus on fiscal impact.")
       assembled should include("When possible: Focus on social impact.")
     }
   }
@@ -77,9 +77,9 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.swap.foreach { error =>
-      error should include("nonexistent-block")
+      val _ = error should include("nonexistent-block")
       error should include("missing-lens")
     }
   }
@@ -93,7 +93,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
     )
     val context = Map("bill_text" -> "This is the actual bill text.")
     val result  = assembler.assemble(profile, allBlocks, context)
-    result.isRight shouldBe true
+    val _       = result.isRight shouldBe true
     result.foreach(assembled => assembled should include("Bill text: This is the actual bill text."))
   }
 
@@ -105,7 +105,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val result = assembler.assemble(profile, allBlocks, Map.empty)
-    result.isRight shouldBe true
+    val _      = result.isRight shouldBe true
     result.foreach(assembled => assembled should include("{{bill_text}}"))
   }
 
@@ -124,7 +124,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
     )
     val context = Map("bill_text" -> "Some bill")
     val result  = assembler.assemble(profile, allBlocks, context)
-    result.isRight shouldBe true
+    val _       = result.isRight shouldBe true
     result.foreach { assembled =>
       val sysIdx = assembled.indexOf("You are an assistant.")
       val perIdx = assembled.indexOf("Act as a policy analyst.")
@@ -133,11 +133,11 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
       val cusIdx = assembled.indexOf("Extra instruction.")
       val grdIdx = assembled.indexOf("Do not hallucinate.")
       val outIdx = assembled.indexOf("Return JSON.")
-      sysIdx should be < perIdx
-      perIdx should be < lnsIdx
-      lnsIdx should be < ctxIdx
-      ctxIdx should be < cusIdx
-      cusIdx should be < grdIdx
+      val _      = sysIdx should be < perIdx
+      val _      = perIdx should be < lnsIdx
+      val _      = lnsIdx should be < ctxIdx
+      val _      = ctxIdx should be < cusIdx
+      val _      = cusIdx should be < grdIdx
       grdIdx should be < outIdx
     }
   }

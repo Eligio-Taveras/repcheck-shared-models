@@ -54,7 +54,6 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
     implicitly[Read[BillTextVersionDO]].shouldBe(a[AnyRef])
@@ -62,7 +61,6 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
     implicitly[Write[BillTextVersionDO]].shouldBe(a[AnyRef])

@@ -29,22 +29,22 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
 
   "AmendmentDetailDTO.toDO" should "produce AmendmentDO with correct natural key" in {
     val Right(result) = validAmendmentDetail.toDO: @unchecked
-    result.amendmentId shouldBe 0L
+    val _             = result.amendmentId shouldBe 0L
     result.naturalKey shouldBe "118-SAMDT-200"
   }
 
   it should "map all fields correctly" in {
     val Right(a) = validAmendmentDetail.toDO: @unchecked
-    a.congress shouldBe 118
-    a.amendmentType shouldBe Some("SAMDT")
-    a.number shouldBe "200"
-    a.chamber shouldBe Some("Senate")
-    a.description shouldBe Some("Amendment description")
-    a.purpose shouldBe Some("To improve the bill")
-    a.sponsorMemberId shouldBe None
-    a.submittedDate shouldBe Some("2024-02-15")
-    a.latestActionDate shouldBe Some("2024-03-01")
-    a.latestActionText shouldBe Some("Submitted")
+    val _        = a.congress shouldBe 118
+    val _        = a.amendmentType shouldBe Some("SAMDT")
+    val _        = a.number shouldBe "200"
+    val _        = a.chamber shouldBe Some("Senate")
+    val _        = a.description shouldBe Some("Amendment description")
+    val _        = a.purpose shouldBe Some("To improve the bill")
+    val _        = a.sponsorMemberId shouldBe None
+    val _        = a.submittedDate shouldBe Some("2024-02-15")
+    val _        = a.latestActionDate shouldBe Some("2024-03-01")
+    val _        = a.latestActionText shouldBe Some("Submitted")
     a.updateDate shouldBe Some("2024-03-15")
   }
 
@@ -56,8 +56,8 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
   it should "use UNKNOWN when amendmentType is None" in {
     val dto      = validAmendmentDetail.copy(amendmentType = None)
     val Right(a) = dto.toDO: @unchecked
-    a.amendmentId shouldBe 0L
-    a.naturalKey shouldBe "118-UNKNOWN-200"
+    val _        = a.amendmentId shouldBe 0L
+    val _        = a.naturalKey shouldBe "118-UNKNOWN-200"
     a.amendmentType shouldBe None
   }
 
@@ -76,19 +76,19 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
   it should "handle None latestAction" in {
     val dto      = validAmendmentDetail.copy(latestAction = None)
     val Right(a) = dto.toDO: @unchecked
-    a.latestActionDate shouldBe None
+    val _        = a.latestActionDate shouldBe None
     a.latestActionText shouldBe None
   }
 
   it should "fail when congress <= 0" in {
     val result = validAmendmentDetail.copy(congress = 0).toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("congress")) shouldBe Left(true)
   }
 
   it should "fail when number is empty" in {
     val result = validAmendmentDetail.copy(number = "").toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("number")) shouldBe Left(true)
   }
 
@@ -101,7 +101,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   "buildAmendmentId" should "construct correct natural key" in {
-    AmendmentConversions.buildAmendmentId(118, Some("HAMDT"), "100") shouldBe "118-HAMDT-100"
+    val _ = AmendmentConversions.buildAmendmentId(118, Some("HAMDT"), "100") shouldBe "118-HAMDT-100"
     AmendmentConversions.buildAmendmentId(117, None, "50") shouldBe "117-UNKNOWN-50"
   }
 
@@ -110,8 +110,8 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "return None when any field is missing" in {
-    AmendmentConversions.buildBillIdFromAmendedBill(None, Some("hr"), Some(1234)) shouldBe None
-    AmendmentConversions.buildBillIdFromAmendedBill(Some(118), None, Some(1234)) shouldBe None
+    val _ = AmendmentConversions.buildBillIdFromAmendedBill(None, Some("hr"), Some(1234)) shouldBe None
+    val _ = AmendmentConversions.buildBillIdFromAmendedBill(Some(118), None, Some(1234)) shouldBe None
     AmendmentConversions.buildBillIdFromAmendedBill(Some(118), Some("hr"), None) shouldBe None
   }
 

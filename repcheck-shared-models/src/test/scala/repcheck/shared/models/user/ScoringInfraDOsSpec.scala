@@ -43,14 +43,12 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   "UserLegislatorPairingDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[UserLegislatorPairingDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[UserLegislatorPairingDO]].shouldBe(a[AnyRef])
   }
@@ -73,10 +71,10 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
       createdAt = Some(instant),
     )
     val decoded = topic.asJson.as[MemberBillStanceTopicDO]
-    decoded.isRight shouldBe true
+    val _       = decoded.isRight shouldBe true
     decoded.foreach { result =>
-      result.id shouldBe topic.id
-      result.stanceDirection shouldBe topic.stanceDirection
+      val _ = result.id shouldBe topic.id
+      val _ = result.stanceDirection shouldBe topic.stanceDirection
       result.reasoningEmbedding.map(_.toSeq) shouldBe topic.reasoningEmbedding.map(_.toSeq)
     }
   }
@@ -107,7 +105,6 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   "MemberBillStanceTopicDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Read[MemberBillStanceTopicDO]].shouldBe(a[AnyRef])
@@ -115,7 +112,6 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Write[MemberBillStanceTopicDO]].shouldBe(a[AnyRef])
@@ -137,9 +133,9 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
       computedAt = Some(instant),
     )
     val decoded = alignment.asJson.as[UserBillAlignmentDO]
-    decoded.isRight shouldBe true
+    val _       = decoded.isRight shouldBe true
     decoded.foreach { result =>
-      result.alignmentScore shouldBe alignment.alignmentScore
+      val _ = result.alignmentScore shouldBe alignment.alignmentScore
       result.reasoningEmbedding.map(_.toSeq) shouldBe alignment.reasoningEmbedding.map(_.toSeq)
     }
   }
@@ -157,7 +153,6 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   "UserBillAlignmentDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Read[UserBillAlignmentDO]].shouldBe(a[AnyRef])
@@ -165,7 +160,6 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Write[UserBillAlignmentDO]].shouldBe(a[AnyRef])
@@ -188,9 +182,9 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
       computedAt = Some(instant),
     )
     val decoded = alignment.asJson.as[UserAmendmentAlignmentDO]
-    decoded.isRight shouldBe true
+    val _       = decoded.isRight shouldBe true
     decoded.foreach { result =>
-      result.amendmentStanceDirection shouldBe alignment.amendmentStanceDirection
+      val _ = result.amendmentStanceDirection shouldBe alignment.amendmentStanceDirection
       result.reasoningEmbedding.map(_.toSeq) shouldBe alignment.reasoningEmbedding.map(_.toSeq)
     }
   }
@@ -209,7 +203,6 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   "UserAmendmentAlignmentDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Read[UserAmendmentAlignmentDO]].shouldBe(a[AnyRef])
@@ -217,7 +210,6 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Write[UserAmendmentAlignmentDO]].shouldBe(a[AnyRef])
@@ -252,14 +244,12 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   "StanceMaterializationStatusDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[StanceMaterializationStatusDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[StanceMaterializationStatusDO]].shouldBe(a[AnyRef])
   }

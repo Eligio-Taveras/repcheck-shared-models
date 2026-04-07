@@ -96,14 +96,12 @@ class MemberBillStanceDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import repcheck.shared.models.codecs.DoobieArrayCodecs._
     implicitly[Read[MemberBillStanceDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import repcheck.shared.models.codecs.DoobieArrayCodecs._
     implicitly[Write[MemberBillStanceDO]].shouldBe(a[AnyRef])
   }

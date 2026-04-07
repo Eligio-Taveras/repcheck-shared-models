@@ -102,7 +102,7 @@ class LlmOutputSpec extends AnyFlatSpec with Matchers {
     val json =
       """{"stances":[{"topic":"healthcare","stance":"progressive","confidence":0.92,"reasoning":"Expands programs"}]}"""
     val result = decode[StanceClassificationOutput](json)
-    result.isRight shouldBe true
+    val _      = result.isRight shouldBe true
     result.foreach(output => output.stances.headOption.map(_.stance) shouldBe Some(StanceType.Progressive))
   }
 

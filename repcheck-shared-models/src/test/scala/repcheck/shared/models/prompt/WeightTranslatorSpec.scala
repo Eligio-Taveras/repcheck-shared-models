@@ -10,21 +10,21 @@ class WeightTranslatorSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "return content as-is for weight >= 0.7" in {
-    WeightTranslator.translate(0.7, "Analyze the bill") shouldBe "Analyze the bill"
-    WeightTranslator.translate(0.8, "Be thorough") shouldBe "Be thorough"
+    val _ = WeightTranslator.translate(0.7, "Analyze the bill") shouldBe "Analyze the bill"
+    val _ = WeightTranslator.translate(0.8, "Be thorough") shouldBe "Be thorough"
     WeightTranslator.translate(0.99, "Almost must") shouldBe "Almost must"
   }
 
   it should "wrap with 'When possible:' for weight >= 0.3 and < 0.7" in {
-    WeightTranslator.translate(0.5, "Include examples") shouldBe "When possible: Include examples"
-    WeightTranslator.translate(0.3, "Cite sources") shouldBe "When possible: Cite sources"
+    val _ = WeightTranslator.translate(0.5, "Include examples") shouldBe "When possible: Include examples"
+    val _ = WeightTranslator.translate(0.3, "Cite sources") shouldBe "When possible: Cite sources"
     WeightTranslator.translate(0.69, "Check references") shouldBe "When possible: Check references"
   }
 
   it should "wrap with 'Consider:' for weight < 0.3" in {
-    WeightTranslator.translate(0.2, "Add humor") shouldBe "Consider: Add humor"
-    WeightTranslator.translate(0.1, "Use analogies") shouldBe "Consider: Use analogies"
-    WeightTranslator.translate(0.0, "Optional detail") shouldBe "Consider: Optional detail"
+    val _ = WeightTranslator.translate(0.2, "Add humor") shouldBe "Consider: Add humor"
+    val _ = WeightTranslator.translate(0.1, "Use analogies") shouldBe "Consider: Use analogies"
+    val _ = WeightTranslator.translate(0.0, "Optional detail") shouldBe "Consider: Optional detail"
     WeightTranslator.translate(0.29, "Edge case") shouldBe "Consider: Edge case"
   }
 

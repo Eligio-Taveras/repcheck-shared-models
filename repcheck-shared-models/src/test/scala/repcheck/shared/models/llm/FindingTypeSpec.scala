@@ -8,16 +8,16 @@ import org.scalatest.matchers.should.Matchers
 class FindingTypeSpec extends AnyFlatSpec with Matchers {
 
   "FindingType.fromString" should "parse all 11 values" in {
-    FindingType.fromString("TopicExtraction") shouldBe Right(FindingType.TopicExtraction)
-    FindingType.fromString("BillSummary") shouldBe Right(FindingType.BillSummary)
-    FindingType.fromString("PolicyAnalysis") shouldBe Right(FindingType.PolicyAnalysis)
-    FindingType.fromString("StanceDetection") shouldBe Right(FindingType.StanceDetection)
-    FindingType.fromString("Pork") shouldBe Right(FindingType.Pork)
-    FindingType.fromString("Rider") shouldBe Right(FindingType.Rider)
-    FindingType.fromString("Lobbying") shouldBe Right(FindingType.Lobbying)
-    FindingType.fromString("Constitutional") shouldBe Right(FindingType.Constitutional)
-    FindingType.fromString("TextVersionDiff") shouldBe Right(FindingType.TextVersionDiff)
-    FindingType.fromString("Impact") shouldBe Right(FindingType.Impact)
+    val _ = FindingType.fromString("TopicExtraction") shouldBe Right(FindingType.TopicExtraction)
+    val _ = FindingType.fromString("BillSummary") shouldBe Right(FindingType.BillSummary)
+    val _ = FindingType.fromString("PolicyAnalysis") shouldBe Right(FindingType.PolicyAnalysis)
+    val _ = FindingType.fromString("StanceDetection") shouldBe Right(FindingType.StanceDetection)
+    val _ = FindingType.fromString("Pork") shouldBe Right(FindingType.Pork)
+    val _ = FindingType.fromString("Rider") shouldBe Right(FindingType.Rider)
+    val _ = FindingType.fromString("Lobbying") shouldBe Right(FindingType.Lobbying)
+    val _ = FindingType.fromString("Constitutional") shouldBe Right(FindingType.Constitutional)
+    val _ = FindingType.fromString("TextVersionDiff") shouldBe Right(FindingType.TextVersionDiff)
+    val _ = FindingType.fromString("Impact") shouldBe Right(FindingType.Impact)
     FindingType.fromString("FiscalEstimate") shouldBe Right(FindingType.FiscalEstimate)
   }
 
@@ -26,8 +26,8 @@ class FindingTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    FindingType.fromString("topicextraction") shouldBe Right(FindingType.TopicExtraction)
-    FindingType.fromString("BILLSUMMARY") shouldBe Right(FindingType.BillSummary)
+    val _ = FindingType.fromString("topicextraction") shouldBe Right(FindingType.TopicExtraction)
+    val _ = FindingType.fromString("BILLSUMMARY") shouldBe Right(FindingType.BillSummary)
     FindingType.fromString("pork") shouldBe Right(FindingType.Pork)
   }
 

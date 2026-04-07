@@ -62,17 +62,17 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
   "MemberDetailDTO.toDO" should "produce MemberDO with correct fields" in {
     val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
     val m             = result.member
-    m.memberId shouldBe 0L
-    m.naturalKey shouldBe "S000033"
-    m.firstName shouldBe Some("Bernard")
-    m.lastName shouldBe Some("Sanders")
-    m.directOrderName shouldBe Some("Bernard Sanders")
-    m.invertedOrderName shouldBe Some("Sanders, Bernard")
-    m.honorificName shouldBe Some("Sen.")
-    m.birthYear shouldBe Some("1941")
-    m.state shouldBe Some("Vermont")
-    m.imageUrl shouldBe Some("https://photo.url")
-    m.imageAttribution shouldBe Some("Senate photo")
+    val _             = m.memberId shouldBe 0L
+    val _             = m.naturalKey shouldBe "S000033"
+    val _             = m.firstName shouldBe Some("Bernard")
+    val _             = m.lastName shouldBe Some("Sanders")
+    val _             = m.directOrderName shouldBe Some("Bernard Sanders")
+    val _             = m.invertedOrderName shouldBe Some("Sanders, Bernard")
+    val _             = m.honorificName shouldBe Some("Sen.")
+    val _             = m.birthYear shouldBe Some("1941")
+    val _             = m.state shouldBe Some("Vermont")
+    val _             = m.imageUrl shouldBe Some("https://photo.url")
+    val _             = m.imageAttribution shouldBe Some("Senate photo")
     m.updateDate shouldBe Some("2024-06-15")
   }
 
@@ -88,9 +88,9 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "produce terms list with generated UUIDs" in {
     val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
-    result.terms.length shouldBe 2
+    val _             = result.terms.length shouldBe 2
     result.terms.foreach { t =>
-      t.termId shouldBe fixedUuid
+      val _ = t.termId shouldBe fixedUuid
       t.memberId shouldBe 0L
     }
     result.terms.map(_.chamber) shouldBe List(Some("House"), Some("Senate"))
@@ -98,9 +98,9 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "produce partyHistory list" in {
     val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
-    result.partyHistory.length shouldBe 2
+    val _             = result.partyHistory.length shouldBe 2
     result.partyHistory.foreach { ph =>
-      ph.partyHistoryId shouldBe fixedUuid
+      val _ = ph.partyHistoryId shouldBe fixedUuid
       ph.memberId shouldBe 0L
     }
     result.partyHistory.map(_.partyAbbreviation) shouldBe List(Some("D"), Some("I"))
@@ -108,7 +108,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "fail when bioguideId is empty" in {
     val result = validMemberDetail.copy(bioguideId = "").toDO(uuidGen)
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("bioguideId")) shouldBe Left(true)
   }
 
@@ -120,26 +120,26 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
   it should "handle None terms and partyHistory" in {
     val dto           = validMemberDetail.copy(terms = None, partyHistory = None)
     val Right(result) = dto.toDO(uuidGen): @unchecked
-    result.terms shouldBe List.empty
-    result.partyHistory shouldBe List.empty
-    result.member.currentParty shouldBe None
+    val _             = result.terms shouldBe List.empty
+    val _             = result.partyHistory shouldBe List.empty
+    val _             = result.member.currentParty shouldBe None
     result.member.district shouldBe None
   }
 
   it should "handle None depiction" in {
     val dto           = validMemberDetail.copy(depiction = None)
     val Right(result) = dto.toDO(uuidGen): @unchecked
-    result.member.imageUrl shouldBe None
+    val _             = result.member.imageUrl shouldBe None
     result.member.imageAttribution shouldBe None
   }
 
   it should "succeed using default UUID generator" in {
-    val result = validMemberDetail.toDO
-    result.isRight shouldBe true
+    val result      = validMemberDetail.toDO
+    val _           = result.isRight shouldBe true
     val Right(conv) = result: @unchecked
-    conv.member.memberId shouldBe 0L
-    conv.member.naturalKey shouldBe "S000033"
-    conv.terms.length shouldBe 2
+    val _           = conv.member.memberId shouldBe 0L
+    val _           = conv.member.naturalKey shouldBe "S000033"
+    val _           = conv.terms.length shouldBe 2
     conv.partyHistory.length shouldBe 2
   }
 

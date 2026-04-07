@@ -46,14 +46,12 @@ class UserDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[UserDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[UserDO]].shouldBe(a[AnyRef])
   }

@@ -54,8 +54,8 @@ class SenateVoteXmlDTOsSpec extends AnyFlatSpec with Matchers {
   it should "decode with missing optional fields" in {
     val json   = """{"bioguideId":"T000001","firstName":"Test","lastName":"Person","party":"D","state":"NY"}"""
     val result = decode[SenateMemberContactDTO](json)
-    result.isRight shouldBe true
-    result.map(_.senateClass) shouldBe Right(None)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.senateClass) shouldBe Right(None)
     result.map(_.address) shouldBe Right(None)
   }
 

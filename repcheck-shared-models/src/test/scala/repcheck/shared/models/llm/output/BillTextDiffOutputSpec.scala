@@ -74,12 +74,12 @@ class BillTextDiffOutputSpec extends AnyFlatSpec with Matchers {
         |}""".stripMargin
 
     val result = decode[BillTextDiffOutput](llmJson)
-    result.isRight shouldBe true
-    val diff = result.toOption.flatMap(Option(_))
-    diff.isDefined shouldBe true
+    val _      = result.isRight shouldBe true
+    val diff   = result.toOption.flatMap(Option(_))
+    val _      = diff.isDefined shouldBe true
     diff.foreach { d =>
-      d.billId shouldBe "118-HR-5678"
-      d.sections.length shouldBe 1
+      val _ = d.billId shouldBe "118-HR-5678"
+      val _ = d.sections.length shouldBe 1
       d.sections.headOption.foreach(_.changeType shouldBe ChangeType.Removed)
     }
   }

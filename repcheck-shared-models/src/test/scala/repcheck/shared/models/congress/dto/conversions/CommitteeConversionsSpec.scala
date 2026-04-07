@@ -87,7 +87,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "produce Some even for senator with no committees" in {
     val result = senatorNoCommittees.toLisMemberMapping
-    result.map(_.memberId) shouldBe Some(0L)
+    val _      = result.map(_.memberId) shouldBe Some(0L)
     result.map(_.lisMemberId) shouldBe Some("S456")
   }
 
@@ -96,7 +96,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     val result = senatorNoCommittees.toLisMemberMapping
     val after  = java.time.Instant.now()
     result.foreach { mapping =>
-      mapping.lastVerified.compareTo(before) should be >= 0
+      val _ = mapping.lastVerified.compareTo(before) should be >= 0
       mapping.lastVerified.compareTo(after) should be <= 0
     }
     result.isDefined shouldBe true
@@ -159,10 +159,10 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       subcommittees = None,
     )
     val Right(result) = dto.toDO: @unchecked
-    result.committeeId shouldBe 0L
-    result.naturalKey shouldBe "ssfi00"
-    result.name shouldBe "Committee on Finance"
-    result.chamber shouldBe Some("Senate")
+    val _             = result.committeeId shouldBe 0L
+    val _             = result.naturalKey shouldBe "ssfi00"
+    val _             = result.name shouldBe "Committee on Finance"
+    val _             = result.chamber shouldBe Some("Senate")
     result.committeeType shouldBe Some("Standing")
   }
 
@@ -203,7 +203,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       subcommittees = None,
     )
     val result = dto.toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(_.contains("systemCode")) shouldBe Left(true)
   }
 
@@ -232,7 +232,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val Right(result) = dto.toDO(0L): @unchecked
-    result.referralDate shouldBe Some("2024-01-10")
+    val _             = result.referralDate shouldBe Some("2024-01-10")
     result.reportDate shouldBe None
   }
 
@@ -247,7 +247,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val Right(result) = dto.toDO(0L): @unchecked
-    result.referralDate shouldBe Some("2024-01-10")
+    val _             = result.referralDate shouldBe Some("2024-01-10")
     result.reportDate shouldBe Some("2024-03-20")
   }
 
@@ -273,7 +273,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       activities = List.empty,
     )
     val Right(result) = dto.toDO(0L): @unchecked
-    result.billId shouldBe 0L
+    val _             = result.billId shouldBe 0L
     result.committeeId shouldBe 0L
   }
 
@@ -287,7 +287,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val Right(result) = dto.toDO(0L): @unchecked
-    result.referralDate shouldBe None
+    val _             = result.referralDate shouldBe None
     result.reportDate shouldBe None
   }
 
@@ -324,7 +324,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       activities = List.empty,
     )
     val result = dto.toDO(0L)
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(_.contains("committeeCode")) shouldBe Left(true)
   }
 

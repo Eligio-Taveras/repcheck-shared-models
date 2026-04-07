@@ -21,10 +21,10 @@ class InstructionBlockSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with weight at boundaries" in {
-    val w0 = sampleBlock.copy(weight = 0.0)
-    w0.asJson.as[InstructionBlock] shouldBe Right(w0)
-    val w1 = sampleBlock.copy(weight = 1.0)
-    w1.asJson.as[InstructionBlock] shouldBe Right(w1)
+    val w0   = sampleBlock.copy(weight = 0.0)
+    val _    = w0.asJson.as[InstructionBlock] shouldBe Right(w0)
+    val w1   = sampleBlock.copy(weight = 1.0)
+    val _    = w1.asJson.as[InstructionBlock] shouldBe Right(w1)
     val wMid = sampleBlock.copy(weight = 0.5)
     wMid.asJson.as[InstructionBlock] shouldBe Right(wMid)
   }

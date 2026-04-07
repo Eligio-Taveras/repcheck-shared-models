@@ -28,10 +28,10 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
       Some(Array(0.1f, 0.2f, 0.3f)),
     )
     val decoded = sh.asJson.as[ScoreHistoryDO]
-    decoded.isRight shouldBe true
+    val _       = decoded.isRight shouldBe true
     decoded.foreach { result =>
-      result.scoreId shouldBe sh.scoreId
-      result.status shouldBe sh.status
+      val _ = result.scoreId shouldBe sh.scoreId
+      val _ = result.status shouldBe sh.status
       result.reasoningEmbedding.map(_.toSeq) shouldBe sh.reasoningEmbedding.map(_.toSeq)
     }
   }
@@ -116,7 +116,6 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   "ScoreHistoryDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Read[ScoreHistoryDO]].shouldBe(a[AnyRef])
@@ -124,7 +123,6 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Write[ScoreHistoryDO]].shouldBe(a[AnyRef])
@@ -132,42 +130,36 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   "ScoreHistoryCongressDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[ScoreHistoryCongressDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[ScoreHistoryCongressDO]].shouldBe(a[AnyRef])
   }
 
   "ScoreHistoryCongressTopicDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[ScoreHistoryCongressTopicDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[ScoreHistoryCongressTopicDO]].shouldBe(a[AnyRef])
   }
 
   "ScoreHistoryHighlightDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[ScoreHistoryHighlightDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[ScoreHistoryHighlightDO]].shouldBe(a[AnyRef])
   }

@@ -8,8 +8,8 @@ import org.scalatest.matchers.should.Matchers
 class ImpactSeveritySpec extends AnyFlatSpec with Matchers {
 
   "ImpactSeverity.fromString" should "parse all values" in {
-    ImpactSeverity.fromString("High") shouldBe Right(ImpactSeverity.High)
-    ImpactSeverity.fromString("Medium") shouldBe Right(ImpactSeverity.Medium)
+    val _ = ImpactSeverity.fromString("High") shouldBe Right(ImpactSeverity.High)
+    val _ = ImpactSeverity.fromString("Medium") shouldBe Right(ImpactSeverity.Medium)
     ImpactSeverity.fromString("Low") shouldBe Right(ImpactSeverity.Low)
   }
 
@@ -18,9 +18,9 @@ class ImpactSeveritySpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    ImpactSeverity.fromString("HIGH") shouldBe Right(ImpactSeverity.High)
-    ImpactSeverity.fromString("high") shouldBe Right(ImpactSeverity.High)
-    ImpactSeverity.fromString("medium") shouldBe Right(ImpactSeverity.Medium)
+    val _ = ImpactSeverity.fromString("HIGH") shouldBe Right(ImpactSeverity.High)
+    val _ = ImpactSeverity.fromString("high") shouldBe Right(ImpactSeverity.High)
+    val _ = ImpactSeverity.fromString("medium") shouldBe Right(ImpactSeverity.Medium)
     ImpactSeverity.fromString("LOW") shouldBe Right(ImpactSeverity.Low)
   }
 
@@ -33,8 +33,8 @@ class ImpactSeveritySpec extends AnyFlatSpec with Matchers {
   }
 
   it should "serialize to lowercase" in {
-    ImpactSeverity.High.asJson.asString shouldBe Some("high")
-    ImpactSeverity.Medium.asJson.asString shouldBe Some("medium")
+    val _ = ImpactSeverity.High.asJson.asString shouldBe Some("high")
+    val _ = ImpactSeverity.Medium.asJson.asString shouldBe Some("medium")
     ImpactSeverity.Low.asJson.asString shouldBe Some("low")
   }
 

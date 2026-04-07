@@ -8,10 +8,10 @@ import org.scalatest.matchers.should.Matchers
 class VoteCastSpec extends AnyFlatSpec with Matchers {
 
   "VoteCast.fromString" should "parse canonical values" in {
-    VoteCast.fromString("Yea") shouldBe Right(VoteCast.Yea)
-    VoteCast.fromString("Nay") shouldBe Right(VoteCast.Nay)
-    VoteCast.fromString("Present") shouldBe Right(VoteCast.Present)
-    VoteCast.fromString("Not Voting") shouldBe Right(VoteCast.NotVoting)
+    val _ = VoteCast.fromString("Yea") shouldBe Right(VoteCast.Yea)
+    val _ = VoteCast.fromString("Nay") shouldBe Right(VoteCast.Nay)
+    val _ = VoteCast.fromString("Present") shouldBe Right(VoteCast.Present)
+    val _ = VoteCast.fromString("Not Voting") shouldBe Right(VoteCast.NotVoting)
     VoteCast.fromString("Absent") shouldBe Right(VoteCast.Absent)
   }
 
@@ -32,9 +32,9 @@ class VoteCastSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    VoteCast.fromString("YEA") shouldBe Right(VoteCast.Yea)
-    VoteCast.fromString("yea") shouldBe Right(VoteCast.Yea)
-    VoteCast.fromString("NAY") shouldBe Right(VoteCast.Nay)
+    val _ = VoteCast.fromString("YEA") shouldBe Right(VoteCast.Yea)
+    val _ = VoteCast.fromString("yea") shouldBe Right(VoteCast.Yea)
+    val _ = VoteCast.fromString("NAY") shouldBe Right(VoteCast.Nay)
     VoteCast.fromString("absent") shouldBe Right(VoteCast.Absent)
   }
 

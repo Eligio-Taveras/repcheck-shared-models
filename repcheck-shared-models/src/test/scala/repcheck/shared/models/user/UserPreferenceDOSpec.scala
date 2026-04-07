@@ -22,11 +22,11 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
 
   "UserPreferenceDO Circe codec" should "round-trip with all fields" in {
     val decoded = samplePref.asJson.as[UserPreferenceDO]
-    decoded.isRight shouldBe true
+    val _       = decoded.isRight shouldBe true
     decoded.foreach { result =>
-      result.preferenceId shouldBe samplePref.preferenceId
-      result.topic shouldBe samplePref.topic
-      result.importance shouldBe samplePref.importance
+      val _ = result.preferenceId shouldBe samplePref.preferenceId
+      val _ = result.topic shouldBe samplePref.topic
+      val _ = result.importance shouldBe samplePref.importance
       result.embedding.map(_.toSeq) shouldBe samplePref.embedding.map(_.toSeq)
     }
   }
@@ -34,18 +34,17 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with embedding as None" in {
     val noEmbed = samplePref.copy(embedding = None)
     val decoded = noEmbed.asJson.as[UserPreferenceDO]
-    decoded.isRight shouldBe true
+    val _       = decoded.isRight shouldBe true
     decoded.foreach(result => result.embedding shouldBe None)
   }
 
   "importance" should "accept values 1-10 at the model level (DB-enforced constraint)" in {
-    samplePref.copy(importance = 1).importance shouldBe 1
+    val _ = samplePref.copy(importance = 1).importance shouldBe 1
     samplePref.copy(importance = 10).importance shouldBe 10
   }
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Read[UserPreferenceDO]].shouldBe(a[AnyRef])
@@ -53,7 +52,6 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec._
     implicitly[Write[UserPreferenceDO]].shouldBe(a[AnyRef])

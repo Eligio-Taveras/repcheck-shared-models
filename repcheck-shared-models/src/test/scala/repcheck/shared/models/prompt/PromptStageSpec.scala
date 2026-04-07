@@ -8,12 +8,12 @@ import org.scalatest.matchers.should.Matchers
 class PromptStageSpec extends AnyFlatSpec with Matchers {
 
   "PromptStage.fromString" should "parse all values" in {
-    PromptStage.fromString("System") shouldBe Right(PromptStage.System)
-    PromptStage.fromString("Persona") shouldBe Right(PromptStage.Persona)
-    PromptStage.fromString("Lens") shouldBe Right(PromptStage.Lens)
-    PromptStage.fromString("Context") shouldBe Right(PromptStage.Context)
-    PromptStage.fromString("Custom") shouldBe Right(PromptStage.Custom)
-    PromptStage.fromString("Guardrails") shouldBe Right(PromptStage.Guardrails)
+    val _ = PromptStage.fromString("System") shouldBe Right(PromptStage.System)
+    val _ = PromptStage.fromString("Persona") shouldBe Right(PromptStage.Persona)
+    val _ = PromptStage.fromString("Lens") shouldBe Right(PromptStage.Lens)
+    val _ = PromptStage.fromString("Context") shouldBe Right(PromptStage.Context)
+    val _ = PromptStage.fromString("Custom") shouldBe Right(PromptStage.Custom)
+    val _ = PromptStage.fromString("Guardrails") shouldBe Right(PromptStage.Guardrails)
     PromptStage.fromString("Output") shouldBe Right(PromptStage.Output)
   }
 
@@ -22,8 +22,8 @@ class PromptStageSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    PromptStage.fromString("system") shouldBe Right(PromptStage.System)
-    PromptStage.fromString("PERSONA") shouldBe Right(PromptStage.Persona)
+    val _ = PromptStage.fromString("system") shouldBe Right(PromptStage.System)
+    val _ = PromptStage.fromString("PERSONA") shouldBe Right(PromptStage.Persona)
     PromptStage.fromString("lens") shouldBe Right(PromptStage.Lens)
   }
 
@@ -32,12 +32,12 @@ class PromptStageSpec extends AnyFlatSpec with Matchers {
   }
 
   "PromptStage stageOrder" should "follow correct ordering" in {
-    PromptStage.System.stageOrder shouldBe 0
-    PromptStage.Persona.stageOrder shouldBe 1
-    PromptStage.Lens.stageOrder shouldBe 2
-    PromptStage.Context.stageOrder shouldBe 3
-    PromptStage.Custom.stageOrder shouldBe 4
-    PromptStage.Guardrails.stageOrder shouldBe 5
+    val _ = PromptStage.System.stageOrder shouldBe 0
+    val _ = PromptStage.Persona.stageOrder shouldBe 1
+    val _ = PromptStage.Lens.stageOrder shouldBe 2
+    val _ = PromptStage.Context.stageOrder shouldBe 3
+    val _ = PromptStage.Custom.stageOrder shouldBe 4
+    val _ = PromptStage.Guardrails.stageOrder shouldBe 5
     PromptStage.Output.stageOrder shouldBe 6
   }
 
@@ -46,7 +46,7 @@ class PromptStageSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "serialize to lowercase" in {
-    PromptStage.System.asJson.asString shouldBe Some("system")
+    val _ = PromptStage.System.asJson.asString shouldBe Some("system")
     PromptStage.Output.asJson.asString shouldBe Some("output")
   }
 

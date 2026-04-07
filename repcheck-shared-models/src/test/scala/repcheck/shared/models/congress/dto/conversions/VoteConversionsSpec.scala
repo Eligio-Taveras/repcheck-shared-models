@@ -34,54 +34,54 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
   "VoteMembersDTO.toDO" should "produce VoteDO with correct natural key" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
-    result.vote.voteId shouldBe 0L
+    val _             = result.vote.voteId shouldBe 0L
     result.vote.naturalKey shouldBe "118-House-42"
   }
 
   it should "map all vote fields correctly" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
     val v             = result.vote
-    v.congress shouldBe 118
-    v.chamber shouldBe "House"
-    v.rollNumber shouldBe 42
-    v.sessionNumber shouldBe Some(1)
-    v.question shouldBe Some("On Passage")
-    v.voteType shouldBe Some("YEA-AND-NAY")
-    v.voteMethod shouldBe None
-    v.result shouldBe Some("Passed")
-    v.voteDate shouldBe Some("2024-01-15")
-    v.legislationNumber shouldBe Some("HR 1234")
-    v.legislationType shouldBe Some("HR")
-    v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
-    v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
+    val _             = v.congress shouldBe 118
+    val _             = v.chamber shouldBe "House"
+    val _             = v.rollNumber shouldBe 42
+    val _             = v.sessionNumber shouldBe Some(1)
+    val _             = v.question shouldBe Some("On Passage")
+    val _             = v.voteType shouldBe Some("YEA-AND-NAY")
+    val _             = v.voteMethod shouldBe None
+    val _             = v.result shouldBe Some("Passed")
+    val _             = v.voteDate shouldBe Some("2024-01-15")
+    val _             = v.legislationNumber shouldBe Some("HR 1234")
+    val _             = v.legislationType shouldBe Some("HR")
+    val _             = v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
+    val _             = v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
     v.updateDate shouldBe Some("2024-01-16")
   }
 
   it should "produce VotePositionDOs only for members with memberId in DTO" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
-    result.positions.length shouldBe 2
+    val _             = result.positions.length shouldBe 2
     result.positions.foreach(_.memberId shouldBe 0L)
   }
 
   it should "map position fields correctly" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
     val first         = result.positions.headOption
-    first.map(_.voteId) shouldBe Some(0L)
-    first.map(_.memberId) shouldBe Some(0L)
-    first.flatMap(_.position) shouldBe Some("Yea")
-    first.flatMap(_.partyAtVote) shouldBe Some("D")
+    val _             = first.map(_.voteId) shouldBe Some(0L)
+    val _             = first.map(_.memberId) shouldBe Some(0L)
+    val _             = first.flatMap(_.position) shouldBe Some("Yea")
+    val _             = first.flatMap(_.partyAtVote) shouldBe Some("D")
     first.flatMap(_.stateAtVote) shouldBe Some("NC")
   }
 
   it should "fail when congress <= 0" in {
     val result = validVoteMembers.copy(congress = 0).toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("congress")) shouldBe Left(true)
   }
 
   it should "fail when chamber is empty" in {
     val result = validVoteMembers.copy(chamber = "").toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("chamber")) shouldBe Left(true)
   }
 
@@ -109,40 +109,40 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
   "SenateVoteXmlDTO.toDO" should "convert with complete mapping" in {
     val Right(result) = senateVoteXml.toDO(completeMapping): @unchecked
-    result.congress shouldBe 118
-    result.chamber shouldBe "Senate"
-    result.rollCallNumber shouldBe 99
-    result.sessionNumber shouldBe Some(1)
-    result.voteQuestion shouldBe Some("On the Motion")
-    result.result shouldBe Some("Motion Agreed to")
+    val _             = result.congress shouldBe 118
+    val _             = result.chamber shouldBe "Senate"
+    val _             = result.rollCallNumber shouldBe 99
+    val _             = result.sessionNumber shouldBe Some(1)
+    val _             = result.voteQuestion shouldBe Some("On the Motion")
+    val _             = result.result shouldBe Some("Motion Agreed to")
     result.startDate shouldBe Some("2024-06-01")
   }
 
   it should "resolve lisMemberIds to bioguideIds in results" in {
     val Right(result) = senateVoteXml.toDO(completeMapping): @unchecked
     val members       = result.results.getOrElse(List.empty)
-    members.length shouldBe 2
-    members.flatMap(_.memberId) shouldBe List("B001001", "B002002")
-    members.flatMap(_.firstName) shouldBe List("John", "Jane")
+    val _             = members.length shouldBe 2
+    val _             = members.flatMap(_.memberId) shouldBe List("B001001", "B002002")
+    val _             = members.flatMap(_.firstName) shouldBe List("John", "Jane")
     members.flatMap(_.voteCast) shouldBe List("Yea", "Nay")
   }
 
   it should "fail with missing mappings listing unresolved IDs" in {
     val partialMapping = Map("S0001" -> "B001001")
     val result         = senateVoteXml.toDO(partialMapping)
-    result.isLeft shouldBe true
+    val _              = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("S0002")) shouldBe Left(true)
   }
 
   it should "fail with empty mapping" in {
     val result = senateVoteXml.toDO(Map.empty)
-    result.isLeft shouldBe true
-    result.left.map(msg => msg.contains("S0001")) shouldBe Left(true)
+    val _      = result.isLeft shouldBe true
+    val _      = result.left.map(msg => msg.contains("S0001")) shouldBe Left(true)
     result.left.map(msg => msg.contains("S0002")) shouldBe Left(true)
   }
 
   "buildVoteId" should "construct correct natural key" in {
-    VoteConversions.buildVoteId(118, "House", 42) shouldBe "118-House-42"
+    val _ = VoteConversions.buildVoteId(118, "House", 42) shouldBe "118-House-42"
     VoteConversions.buildVoteId(117, "Senate", 100) shouldBe "117-Senate-100"
   }
 

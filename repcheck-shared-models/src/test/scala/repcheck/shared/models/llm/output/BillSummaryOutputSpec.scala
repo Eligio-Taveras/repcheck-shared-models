@@ -49,8 +49,8 @@ class BillSummaryOutputSpec extends AnyFlatSpec with Matchers {
   it should "encode to JSON with correct field names" in {
     val output = BillSummaryOutput("A summary.", "Elementary", List("key point"))
     val json   = output.asJson
-    json.hcursor.downField("summary").as[String] shouldBe Right("A summary.")
-    json.hcursor.downField("readingLevel").as[String] shouldBe Right("Elementary")
+    val _      = json.hcursor.downField("summary").as[String] shouldBe Right("A summary.")
+    val _      = json.hcursor.downField("readingLevel").as[String] shouldBe Right("Elementary")
     json.hcursor.downField("keyPoints").as[List[String]] shouldBe Right(List("key point"))
   }
 

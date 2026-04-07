@@ -8,8 +8,8 @@ import org.scalatest.matchers.should.Matchers
 class PorkTypeSpec extends AnyFlatSpec with Matchers {
 
   "PorkType.fromString" should "parse all values" in {
-    PorkType.fromString("Earmark") shouldBe Right(PorkType.Earmark)
-    PorkType.fromString("Rider") shouldBe Right(PorkType.Rider)
+    val _ = PorkType.fromString("Earmark") shouldBe Right(PorkType.Earmark)
+    val _ = PorkType.fromString("Rider") shouldBe Right(PorkType.Rider)
     PorkType.fromString("UnrelatedProvision") shouldBe Right(PorkType.UnrelatedProvision)
   }
 
@@ -18,15 +18,15 @@ class PorkTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    PorkType.fromString("EARMARK") shouldBe Right(PorkType.Earmark)
-    PorkType.fromString("earmark") shouldBe Right(PorkType.Earmark)
+    val _ = PorkType.fromString("EARMARK") shouldBe Right(PorkType.Earmark)
+    val _ = PorkType.fromString("earmark") shouldBe Right(PorkType.Earmark)
     PorkType.fromString("rider") shouldBe Right(PorkType.Rider)
   }
 
   it should "accept aliases for UnrelatedProvision" in {
-    PorkType.fromString("unrelated_provision") shouldBe Right(PorkType.UnrelatedProvision)
-    PorkType.fromString("unrelated-provision") shouldBe Right(PorkType.UnrelatedProvision)
-    PorkType.fromString("UNRELATED_PROVISION") shouldBe Right(PorkType.UnrelatedProvision)
+    val _ = PorkType.fromString("unrelated_provision") shouldBe Right(PorkType.UnrelatedProvision)
+    val _ = PorkType.fromString("unrelated-provision") shouldBe Right(PorkType.UnrelatedProvision)
+    val _ = PorkType.fromString("UNRELATED_PROVISION") shouldBe Right(PorkType.UnrelatedProvision)
     PorkType.fromString("UNRELATED-PROVISION") shouldBe Right(PorkType.UnrelatedProvision)
   }
 
@@ -39,8 +39,8 @@ class PorkTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "serialize to lowercase" in {
-    PorkType.Earmark.asJson.asString shouldBe Some("earmark")
-    PorkType.Rider.asJson.asString shouldBe Some("rider")
+    val _ = PorkType.Earmark.asJson.asString shouldBe Some("earmark")
+    val _ = PorkType.Rider.asJson.asString shouldBe Some("rider")
     PorkType.UnrelatedProvision.asJson.asString shouldBe Some("unrelatedprovision")
   }
 

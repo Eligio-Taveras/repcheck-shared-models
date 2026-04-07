@@ -9,35 +9,35 @@ import org.scalatest.matchers.should.Matchers
 class BillTypeSpec extends AnyFlatSpec with Matchers {
 
   "BillType.fromString" should "parse all 13 canonical values" in {
-    BillType.fromString("HR") shouldBe Right(BillType.HR)
-    BillType.fromString("S") shouldBe Right(BillType.S)
-    BillType.fromString("HJRES") shouldBe Right(BillType.HJRES)
-    BillType.fromString("SJRES") shouldBe Right(BillType.SJRES)
-    BillType.fromString("HCONRES") shouldBe Right(BillType.HCONRES)
-    BillType.fromString("SCONRES") shouldBe Right(BillType.SCONRES)
-    BillType.fromString("HRES") shouldBe Right(BillType.HRES)
-    BillType.fromString("SRES") shouldBe Right(BillType.SRES)
-    BillType.fromString("PL") shouldBe Right(BillType.PL)
-    BillType.fromString("STAT") shouldBe Right(BillType.STAT)
-    BillType.fromString("USC") shouldBe Right(BillType.USC)
-    BillType.fromString("SRPT") shouldBe Right(BillType.SRPT)
+    val _ = BillType.fromString("HR") shouldBe Right(BillType.HR)
+    val _ = BillType.fromString("S") shouldBe Right(BillType.S)
+    val _ = BillType.fromString("HJRES") shouldBe Right(BillType.HJRES)
+    val _ = BillType.fromString("SJRES") shouldBe Right(BillType.SJRES)
+    val _ = BillType.fromString("HCONRES") shouldBe Right(BillType.HCONRES)
+    val _ = BillType.fromString("SCONRES") shouldBe Right(BillType.SCONRES)
+    val _ = BillType.fromString("HRES") shouldBe Right(BillType.HRES)
+    val _ = BillType.fromString("SRES") shouldBe Right(BillType.SRES)
+    val _ = BillType.fromString("PL") shouldBe Right(BillType.PL)
+    val _ = BillType.fromString("STAT") shouldBe Right(BillType.STAT)
+    val _ = BillType.fromString("USC") shouldBe Right(BillType.USC)
+    val _ = BillType.fromString("SRPT") shouldBe Right(BillType.SRPT)
     BillType.fromString("HRPT") shouldBe Right(BillType.HRPT)
   }
 
   it should "be case-insensitive" in {
-    BillType.fromString("hr") shouldBe Right(BillType.HR)
-    BillType.fromString("Hr") shouldBe Right(BillType.HR)
+    val _ = BillType.fromString("hr") shouldBe Right(BillType.HR)
+    val _ = BillType.fromString("Hr") shouldBe Right(BillType.HR)
     BillType.fromString("hJrEs") shouldBe Right(BillType.HJRES)
   }
 
   it should "accept apiValue aliases" in {
-    BillType.fromString("hjres") shouldBe Right(BillType.HJRES)
+    val _ = BillType.fromString("hjres") shouldBe Right(BillType.HJRES)
     BillType.fromString("sconres") shouldBe Right(BillType.SCONRES)
   }
 
   it should "return Left for unknown values" in {
     val result = BillType.fromString("UNKNOWN")
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(_.getMessage) should matchPattern {
       case Left(msg: String) if msg.contains("UNKNOWN") =>
     }
@@ -52,13 +52,13 @@ class BillTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "decode from JSON string" in {
-    decode[BillType](""""hr"""") shouldBe Right(BillType.HR)
+    val _ = decode[BillType](""""hr"""") shouldBe Right(BillType.HR)
     decode[BillType](""""HR"""") shouldBe Right(BillType.HR)
   }
 
   it should "encode to apiValue (lowercase)" in {
-    BillType.HR.asJson.noSpaces shouldBe """"hr""""
-    BillType.HJRES.asJson.noSpaces shouldBe """"hjres""""
+    val _ = BillType.HR.asJson.noSpaces shouldBe """"hr""""
+    val _ = BillType.HJRES.asJson.noSpaces shouldBe """"hjres""""
     BillType.SCONRES.asJson.noSpaces shouldBe """"sconres""""
   }
 

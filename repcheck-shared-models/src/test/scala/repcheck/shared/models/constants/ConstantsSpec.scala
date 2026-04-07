@@ -28,22 +28,22 @@ class ConstantsSpec extends AnyFlatSpec with Matchers {
   }
 
   "ChamberDataPaths" should "have correct Senate member data XML URL" in {
-    ChamberDataPaths.SenateMemberDataXml should include("senate.gov")
+    val _ = ChamberDataPaths.SenateMemberDataXml should include("senate.gov")
     ChamberDataPaths.SenateMemberDataXml should include("cvc_member_data.xml")
   }
 
   it should "have correct Senate roll call votes URL" in {
-    ChamberDataPaths.SenateRollCallVotesBase should include("senate.gov")
+    val _ = ChamberDataPaths.SenateRollCallVotesBase should include("senate.gov")
     ChamberDataPaths.SenateRollCallVotesBase should include("roll_call_votes")
   }
 
   it should "have correct House member data XML URL" in {
-    ChamberDataPaths.HouseMemberDataXml should include("clerk.house.gov")
+    val _ = ChamberDataPaths.HouseMemberDataXml should include("clerk.house.gov")
     ChamberDataPaths.HouseMemberDataXml should include("memberdata.xml")
   }
 
   "PaginationDefaults" should "have reasonable page sizes" in {
-    PaginationDefaults.defaultPageSize should be > 0
+    val _ = PaginationDefaults.defaultPageSize should be > 0
     PaginationDefaults.maxPageSize should be >= PaginationDefaults.defaultPageSize
   }
 

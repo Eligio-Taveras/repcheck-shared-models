@@ -77,20 +77,20 @@ class PagedObjectSpec extends AnyFlatSpec with Matchers {
 
   "BillListResponseDTO Semigroup" should "concatenate items and keep second pagination" in {
     val combined = Semigroup[BillListResponseDTO].combine(response1, response2)
-    combined.items shouldBe List(item1, item2)
+    val _        = combined.items shouldBe List(item1, item2)
     combined.pagination shouldBe pagination2
   }
 
   it should "work with cats |+| syntax" in {
     import cats.syntax.semigroup._
     val combined = response1 |+| response2
-    combined.items should have size 2
+    val _        = combined.items should have size 2
     combined.pagination shouldBe pagination2
   }
 
   "BillListResponseDTO" should "extend PagedObject" in {
     val paged: PagedObject[BillListItemDTO] = response1
-    paged.items shouldBe List(item1)
+    val _                                   = paged.items shouldBe List(item1)
     paged.pagination shouldBe pagination1
   }
 
