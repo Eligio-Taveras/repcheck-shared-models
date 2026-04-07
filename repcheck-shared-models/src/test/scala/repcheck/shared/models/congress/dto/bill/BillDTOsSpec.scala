@@ -63,7 +63,7 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       actionType = Some("IntroReferral"),
     )
     val json = dto.asJson
-    json.hcursor.downField("type").as[String] shouldBe Right("IntroReferral")
+    val _    = json.hcursor.downField("type").as[String] shouldBe Right("IntroReferral")
     json.as[BillActionDTO] shouldBe Right(dto)
   }
 
@@ -100,7 +100,7 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
   "RelationshipDetailDTO" should "encode 'type' field and round-trip" in {
     val dto  = RelationshipDetailDTO(identifiedBy = Some("CRS"), relationshipType = Some("Related bill"))
     val json = dto.asJson
-    json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Related bill"))
+    val _    = json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Related bill"))
     json.as[RelationshipDetailDTO] shouldBe Right(dto)
   }
 
@@ -166,8 +166,8 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       "url": "https://example.com"
     }"""
     val result = decode[BillListItemDTO](json)
-    result.isRight shouldBe true
-    result.map(_.latestAction) shouldBe Right(None)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.latestAction) shouldBe Right(None)
     result.map(_.originChamber) shouldBe Right(None)
   }
 
@@ -249,9 +249,9 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       "url": "https://example.com"
     }"""
     val result = decode[BillDetailDTO](json)
-    result.isRight shouldBe true
-    result.map(_.sponsors) shouldBe Right(None)
-    result.map(_.summaries) shouldBe Right(None)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.sponsors) shouldBe Right(None)
+    val _      = result.map(_.summaries) shouldBe Right(None)
     result.map(_.textVersions) shouldBe Right(None)
   }
 
@@ -264,17 +264,17 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       actionType = None,
     )
     val json = dto.asJson
-    json.hcursor.downField("actionCode").failed shouldBe true
-    json.hcursor.downField("sourceSystem").failed shouldBe true
-    json.hcursor.downField("type").failed shouldBe true
+    val _    = json.hcursor.downField("actionCode").failed shouldBe true
+    val _    = json.hcursor.downField("sourceSystem").failed shouldBe true
+    val _    = json.hcursor.downField("type").failed shouldBe true
     json.as[BillActionDTO] shouldBe Right(dto)
   }
 
   "RelationshipDetailDTO" should "encode and decode with all fields None" in {
     val dto  = RelationshipDetailDTO(identifiedBy = None, relationshipType = None)
     val json = dto.asJson
-    json.hcursor.downField("identifiedBy").failed shouldBe true
-    json.hcursor.downField("type").failed shouldBe true
+    val _    = json.hcursor.downField("identifiedBy").failed shouldBe true
+    val _    = json.hcursor.downField("type").failed shouldBe true
     json.as[RelationshipDetailDTO] shouldBe Right(dto)
   }
 

@@ -43,7 +43,7 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
   it should "decode with only required fields" in {
     val json   = """{"congress":118,"number":"50"}"""
     val result = decode[AmendmentListItemDTO](json)
-    result.isRight shouldBe true
+    val _      = result.isRight shouldBe true
     result.map(_.amendmentType) shouldBe Right(None)
   }
 
@@ -73,10 +73,10 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
   it should "decode with only required fields" in {
     val json   = """{"congress":118,"number":"300"}"""
     val result = decode[AmendmentDetailDTO](json)
-    result.isRight shouldBe true
-    result.map(_.amendedBill) shouldBe Right(None)
-    result.map(_.sponsors) shouldBe Right(None)
-    result.map(_.actions) shouldBe Right(None)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.amendedBill) shouldBe Right(None)
+    val _      = result.map(_.sponsors) shouldBe Right(None)
+    val _      = result.map(_.actions) shouldBe Right(None)
     result.map(_.textVersions) shouldBe Right(None)
   }
 
@@ -99,7 +99,7 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
       Some(PaginationInfoDTO(Some(1), Some("p2"))),
     )
     val combined = Semigroup[AmendmentListResponseDTO].combine(a, b)
-    combined.items should have size 2
+    val _        = combined.items should have size 2
     combined.pagination shouldBe b.pagination
   }
 

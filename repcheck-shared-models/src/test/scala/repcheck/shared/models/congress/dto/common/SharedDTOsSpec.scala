@@ -62,7 +62,7 @@ class SharedDTOsSpec extends AnyFlatSpec with Matchers {
     val dto  = ApiListResponseDTO[PaginationInfoDTO](items = List.empty, pagination = None)
     val json = dto.asJson
     json.asObject.fold(fail("expected JSON object")) { obj =>
-      obj.contains("pagination") shouldBe false
+      val _ = obj.contains("pagination") shouldBe false
       obj.contains("items") shouldBe true
     }
   }

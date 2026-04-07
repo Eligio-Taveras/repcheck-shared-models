@@ -8,13 +8,13 @@ import org.scalatest.matchers.should.Matchers
 class AmendmentTypeSpec extends AnyFlatSpec with Matchers {
 
   "AmendmentType.fromString" should "parse all canonical values" in {
-    AmendmentType.fromString("HAMDT") shouldBe Right(AmendmentType.HAMDT)
-    AmendmentType.fromString("SAMDT") shouldBe Right(AmendmentType.SAMDT)
+    val _ = AmendmentType.fromString("HAMDT") shouldBe Right(AmendmentType.HAMDT)
+    val _ = AmendmentType.fromString("SAMDT") shouldBe Right(AmendmentType.SAMDT)
     AmendmentType.fromString("SUAMDT") shouldBe Right(AmendmentType.SUAMDT)
   }
 
   it should "be case-insensitive" in {
-    AmendmentType.fromString("hamdt") shouldBe Right(AmendmentType.HAMDT)
+    val _ = AmendmentType.fromString("hamdt") shouldBe Right(AmendmentType.HAMDT)
     AmendmentType.fromString("Samdt") shouldBe Right(AmendmentType.SAMDT)
   }
 

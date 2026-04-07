@@ -8,9 +8,9 @@ import org.scalatest.matchers.should.Matchers
 class CommitteePositionSpec extends AnyFlatSpec with Matchers {
 
   "CommitteePosition.fromString" should "parse canonical values" in {
-    CommitteePosition.fromString("Chairman") shouldBe Right(CommitteePosition.Chairman)
-    CommitteePosition.fromString("Ranking Member") shouldBe Right(CommitteePosition.RankingMember)
-    CommitteePosition.fromString("Vice Chairman") shouldBe Right(CommitteePosition.ViceChairman)
+    val _ = CommitteePosition.fromString("Chairman") shouldBe Right(CommitteePosition.Chairman)
+    val _ = CommitteePosition.fromString("Ranking Member") shouldBe Right(CommitteePosition.RankingMember)
+    val _ = CommitteePosition.fromString("Vice Chairman") shouldBe Right(CommitteePosition.ViceChairman)
     CommitteePosition.fromString("Member") shouldBe Right(CommitteePosition.Member)
   }
 
@@ -43,7 +43,7 @@ class CommitteePositionSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    CommitteePosition.fromString("chairman") shouldBe Right(CommitteePosition.Chairman)
+    val _ = CommitteePosition.fromString("chairman") shouldBe Right(CommitteePosition.Chairman)
     CommitteePosition.fromString("MEMBER") shouldBe Right(CommitteePosition.Member)
   }
 

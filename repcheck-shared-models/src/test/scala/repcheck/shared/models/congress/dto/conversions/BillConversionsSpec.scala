@@ -23,51 +23,51 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
 
   "BillListItemDTO.toDO" should "convert with correct natural key" in {
     val result = validBillListItem.toDO
-    result.isRight shouldBe true
-    result.map(_.billId) shouldBe Right(0L)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.billId) shouldBe Right(0L)
     result.map(_.naturalKey) shouldBe Right("118-HR-1234")
   }
 
   it should "map all list-level fields correctly" in {
     val Right(bill) = validBillListItem.toDO: @unchecked
-    bill.congress shouldBe 118
-    bill.billType shouldBe "hr"
-    bill.number shouldBe "1234"
-    bill.title shouldBe "A bill to do something"
-    bill.originChamber shouldBe Some("House")
-    bill.originChamberCode shouldBe Some("H")
-    bill.latestActionDate shouldBe Some("2024-01-15")
-    bill.latestActionText shouldBe Some("Referred to committee")
-    bill.updateDate shouldBe Some("2024-02-01")
-    bill.updateDateIncludingText shouldBe Some("2024-02-15")
+    val _           = bill.congress shouldBe 118
+    val _           = bill.billType shouldBe "hr"
+    val _           = bill.number shouldBe "1234"
+    val _           = bill.title shouldBe "A bill to do something"
+    val _           = bill.originChamber shouldBe Some("House")
+    val _           = bill.originChamberCode shouldBe Some("H")
+    val _           = bill.latestActionDate shouldBe Some("2024-01-15")
+    val _           = bill.latestActionText shouldBe Some("Referred to committee")
+    val _           = bill.updateDate shouldBe Some("2024-02-01")
+    val _           = bill.updateDateIncludingText shouldBe Some("2024-02-15")
     bill.apiUrl shouldBe Some("https://api.congress.gov/v3/bill/118/hr/1234")
   }
 
   it should "set detail-only fields to None" in {
     val Right(bill) = validBillListItem.toDO: @unchecked
-    bill.introducedDate shouldBe None
-    bill.policyArea shouldBe None
-    bill.sponsorMemberId shouldBe None
-    bill.textUrl shouldBe None
-    bill.summaryText shouldBe None
+    val _           = bill.introducedDate shouldBe None
+    val _           = bill.policyArea shouldBe None
+    val _           = bill.sponsorMemberId shouldBe None
+    val _           = bill.textUrl shouldBe None
+    val _           = bill.summaryText shouldBe None
     bill.legislationUrl shouldBe None
   }
 
   it should "fail when congress <= 0" in {
     val result = validBillListItem.copy(congress = 0).toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("congress")) shouldBe Left(true)
   }
 
   it should "fail when number is empty" in {
     val result = validBillListItem.copy(number = "").toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("number")) shouldBe Left(true)
   }
 
   it should "fail when title is empty" in {
     val result = validBillListItem.copy(title = "  ").toDO
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("title")) shouldBe Left(true)
   }
 
@@ -122,35 +122,35 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
 
   "BillDetailDTO.toDO" should "produce BillConversionResult with correct BillDO" in {
     val Right(result) = validBillDetail.toDO: @unchecked
-    result.bill.billId shouldBe 0L
-    result.bill.naturalKey shouldBe "118-S-5678"
-    result.bill.sponsorMemberId shouldBe None
-    result.bill.introducedDate shouldBe Some("2024-01-10")
-    result.bill.policyArea shouldBe Some("Transportation")
-    result.bill.constitutionalAuthorityText shouldBe Some("Congress has the power...")
+    val _             = result.bill.billId shouldBe 0L
+    val _             = result.bill.naturalKey shouldBe "118-S-5678"
+    val _             = result.bill.sponsorMemberId shouldBe None
+    val _             = result.bill.introducedDate shouldBe Some("2024-01-10")
+    val _             = result.bill.policyArea shouldBe Some("Transportation")
+    val _             = result.bill.constitutionalAuthorityText shouldBe Some("Congress has the power...")
     result.bill.legislationUrl shouldBe Some("https://congress.gov/bill/118/s/5678")
   }
 
   it should "extract text info from first textVersion" in {
     val Right(result) = validBillDetail.toDO: @unchecked
-    result.bill.textUrl shouldBe Some("https://example.com/text")
-    result.bill.textFormat shouldBe Some("Formatted Text")
-    result.bill.textVersionType shouldBe Some("Introduced in Senate")
+    val _             = result.bill.textUrl shouldBe Some("https://example.com/text")
+    val _             = result.bill.textFormat shouldBe Some("Formatted Text")
+    val _             = result.bill.textVersionType shouldBe Some("Introduced in Senate")
     result.bill.textDate shouldBe Some("2024-01-10")
   }
 
   it should "extract summary from first summary" in {
     val Right(result) = validBillDetail.toDO: @unchecked
-    result.bill.summaryText shouldBe Some("Summary text")
-    result.bill.summaryActionDesc shouldBe Some("Introduced in Senate")
+    val _             = result.bill.summaryText shouldBe Some("Summary text")
+    val _             = result.bill.summaryActionDesc shouldBe Some("Introduced in Senate")
     result.bill.summaryActionDate shouldBe Some("2024-01-10")
   }
 
   it should "produce subjects list from legislativeSubjects" in {
     val Right(result) = validBillDetail.toDO: @unchecked
-    result.subjects.length shouldBe 2
-    result.subjects.map(_.subjectName) shouldBe List("Roads and highways", "Infrastructure development")
-    result.subjects.map(_.billId).distinct shouldBe List(0L)
+    val _             = result.subjects.length shouldBe 2
+    val _ = result.subjects.map(_.subjectName) shouldBe List("Roads and highways", "Infrastructure development")
+    val _ = result.subjects.map(_.billId).distinct shouldBe List(0L)
     result.subjects.headOption.flatMap(_.updateDate) shouldBe Some("2024-01-15")
   }
 
@@ -171,7 +171,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "handle None text versions" in {
     val Right(result) = validBillDetail.copy(textVersions = None).toDO: @unchecked
-    result.bill.textUrl shouldBe None
+    val _             = result.bill.textUrl shouldBe None
     result.bill.textFormat shouldBe None
   }
 
@@ -181,7 +181,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   "buildBillId" should "construct correct natural key" in {
-    BillConversions.buildBillId(118, "hr", "1234") shouldBe "118-HR-1234"
+    val _ = BillConversions.buildBillId(118, "hr", "1234") shouldBe "118-HR-1234"
     BillConversions.buildBillId(117, "sjres", "10") shouldBe "117-SJRES-10"
   }
 

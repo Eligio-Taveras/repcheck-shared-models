@@ -114,7 +114,7 @@ object CommitteeConversions {
 
         Right(
           BillCommitteeReferralDO(
-            billId = 0L,
+            billId = billId,
             committeeId = 0L,
             referralDate = referralDate,
             reportDate = reportDate,

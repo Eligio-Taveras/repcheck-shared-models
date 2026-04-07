@@ -59,9 +59,9 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
   it should "decode with only required fields" in {
     val json   = """{"congress":118,"chamber":"Senate","rollCallNumber":10}"""
     val result = decode[VoteListItemDTO](json)
-    result.isRight shouldBe true
-    result.map(_.sessionNumber) shouldBe Right(None)
-    result.map(_.identifier) shouldBe Right(None)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.sessionNumber) shouldBe Right(None)
+    val _      = result.map(_.identifier) shouldBe Right(None)
     result.map(_.sourceDataUrl) shouldBe Right(None)
   }
 
@@ -136,7 +136,7 @@ class VoteDTOsSpec extends AnyFlatSpec with Matchers {
       Some(PaginationInfoDTO(Some(1), Some("p2"))),
     )
     val combined = Semigroup[VoteListResponseDTO].combine(a, b)
-    combined.items should have size 2
+    val _        = combined.items should have size 2
     combined.pagination shouldBe b.pagination
   }
 

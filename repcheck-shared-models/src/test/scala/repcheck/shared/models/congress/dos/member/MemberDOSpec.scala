@@ -65,14 +65,12 @@ class MemberDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[MemberDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[MemberDO]].shouldBe(a[AnyRef])
   }

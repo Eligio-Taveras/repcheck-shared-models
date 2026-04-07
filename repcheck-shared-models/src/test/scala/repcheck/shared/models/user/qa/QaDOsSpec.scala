@@ -49,14 +49,12 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
 
   "QaQuestionDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._ // Instant requires JavaTimeInstantMeta
     implicitly[Read[QaQuestionDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._ // Instant requires JavaTimeInstantMeta
     implicitly[Write[QaQuestionDO]].shouldBe(a[AnyRef])
   }
@@ -75,13 +73,11 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
 
   "QaQuestionTopicDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     implicitly[Read[QaQuestionTopicDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     implicitly[Write[QaQuestionTopicDO]].shouldBe(a[AnyRef])
   }
 
@@ -107,13 +103,11 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
 
   "QaAnswerOptionDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     implicitly[Read[QaAnswerOptionDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     implicitly[Write[QaAnswerOptionDO]].shouldBe(a[AnyRef])
   }
 
@@ -148,14 +142,12 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
 
   "QaUserResponseDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._ // Instant requires JavaTimeInstantMeta
     implicitly[Read[QaUserResponseDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._ // Instant requires JavaTimeInstantMeta
     implicitly[Write[QaUserResponseDO]].shouldBe(a[AnyRef])
   }

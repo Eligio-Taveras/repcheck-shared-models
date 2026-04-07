@@ -11,8 +11,8 @@ class TextVersionDTOsSpec extends AnyFlatSpec with Matchers {
   "FormatDTO" should "round-trip encoding 'type' field" in {
     val dto  = FormatDTO(type_ = "Formatted Text", url = "https://example.com/text.htm")
     val json = dto.asJson
-    json.hcursor.downField("type").as[String] shouldBe Right("Formatted Text")
-    json.hcursor.downField("url").as[String] shouldBe Right("https://example.com/text.htm")
+    val _    = json.hcursor.downField("type").as[String] shouldBe Right("Formatted Text")
+    val _    = json.hcursor.downField("url").as[String] shouldBe Right("https://example.com/text.htm")
     json.as[FormatDTO] shouldBe Right(dto)
   }
 
@@ -34,7 +34,7 @@ class TextVersionDTOsSpec extends AnyFlatSpec with Matchers {
       type_ = Some("Introduced in House"),
     )
     val json = dto.asJson
-    json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Introduced in House"))
+    val _    = json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Introduced in House"))
     json.as[TextVersionDTO] shouldBe Right(dto)
   }
 

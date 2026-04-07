@@ -6,7 +6,6 @@ import java.util.UUID
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.codecs.DoobieArrayCodecs._
 import repcheck.shared.models.codecs.VectorCodec._
 
 final case class ScoreDO(

@@ -29,20 +29,20 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   it should "have all optional fields set to None" in {
     val placeholder = HasPlaceholder[MemberDO].placeholder("B000944")
-    placeholder.firstName shouldBe None
-    placeholder.lastName shouldBe None
-    placeholder.directOrderName shouldBe None
-    placeholder.invertedOrderName shouldBe None
-    placeholder.honorificName shouldBe None
-    placeholder.birthYear shouldBe None
-    placeholder.currentParty shouldBe None
-    placeholder.state shouldBe None
-    placeholder.district shouldBe None
-    placeholder.imageUrl shouldBe None
-    placeholder.imageAttribution shouldBe None
-    placeholder.officialUrl shouldBe None
-    placeholder.updateDate shouldBe None
-    placeholder.createdAt shouldBe None
+    val _           = placeholder.firstName shouldBe None
+    val _           = placeholder.lastName shouldBe None
+    val _           = placeholder.directOrderName shouldBe None
+    val _           = placeholder.invertedOrderName shouldBe None
+    val _           = placeholder.honorificName shouldBe None
+    val _           = placeholder.birthYear shouldBe None
+    val _           = placeholder.currentParty shouldBe None
+    val _           = placeholder.state shouldBe None
+    val _           = placeholder.district shouldBe None
+    val _           = placeholder.imageUrl shouldBe None
+    val _           = placeholder.imageAttribution shouldBe None
+    val _           = placeholder.officialUrl shouldBe None
+    val _           = placeholder.updateDate shouldBe None
+    val _           = placeholder.createdAt shouldBe None
     placeholder.updatedAt shouldBe None
   }
 
@@ -66,37 +66,37 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   it should "have zero/empty defaults for required non-Option fields" in {
     val placeholder = HasPlaceholder[BillDO].placeholder("hr1234-118")
-    placeholder.congress shouldBe 0
-    placeholder.billType shouldBe ""
-    placeholder.number shouldBe ""
+    val _           = placeholder.congress shouldBe 0
+    val _           = placeholder.billType shouldBe ""
+    val _           = placeholder.number shouldBe ""
     placeholder.title shouldBe ""
   }
 
   it should "have all optional fields set to None" in {
     val placeholder = HasPlaceholder[BillDO].placeholder("hr1234-118")
-    placeholder.originChamber shouldBe None
-    placeholder.originChamberCode shouldBe None
-    placeholder.introducedDate shouldBe None
-    placeholder.policyArea shouldBe None
-    placeholder.latestActionDate shouldBe None
-    placeholder.latestActionText shouldBe None
-    placeholder.constitutionalAuthorityText shouldBe None
-    placeholder.sponsorMemberId shouldBe None
-    placeholder.textUrl shouldBe None
-    placeholder.textFormat shouldBe None
-    placeholder.textVersionType shouldBe None
-    placeholder.textDate shouldBe None
-    placeholder.textContent shouldBe None
-    placeholder.textEmbedding shouldBe None
-    placeholder.summaryText shouldBe None
-    placeholder.summaryActionDesc shouldBe None
-    placeholder.summaryActionDate shouldBe None
-    placeholder.updateDate shouldBe None
-    placeholder.updateDateIncludingText shouldBe None
-    placeholder.legislationUrl shouldBe None
-    placeholder.apiUrl shouldBe None
-    placeholder.createdAt shouldBe None
-    placeholder.updatedAt shouldBe None
+    val _           = placeholder.originChamber shouldBe None
+    val _           = placeholder.originChamberCode shouldBe None
+    val _           = placeholder.introducedDate shouldBe None
+    val _           = placeholder.policyArea shouldBe None
+    val _           = placeholder.latestActionDate shouldBe None
+    val _           = placeholder.latestActionText shouldBe None
+    val _           = placeholder.constitutionalAuthorityText shouldBe None
+    val _           = placeholder.sponsorMemberId shouldBe None
+    val _           = placeholder.textUrl shouldBe None
+    val _           = placeholder.textFormat shouldBe None
+    val _           = placeholder.textVersionType shouldBe None
+    val _           = placeholder.textDate shouldBe None
+    val _           = placeholder.textContent shouldBe None
+    val _           = placeholder.textEmbedding shouldBe None
+    val _           = placeholder.summaryText shouldBe None
+    val _           = placeholder.summaryActionDesc shouldBe None
+    val _           = placeholder.summaryActionDate shouldBe None
+    val _           = placeholder.updateDate shouldBe None
+    val _           = placeholder.updateDateIncludingText shouldBe None
+    val _           = placeholder.legislationUrl shouldBe None
+    val _           = placeholder.apiUrl shouldBe None
+    val _           = placeholder.createdAt shouldBe None
+    val _           = placeholder.updatedAt shouldBe None
     placeholder.latestTextVersionId shouldBe None
   }
 
@@ -114,26 +114,26 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   it should "have zero/empty defaults for required non-Option fields" in {
     val placeholder = HasPlaceholder[VoteDO].placeholder("118-senate-42")
-    placeholder.congress shouldBe 0
-    placeholder.chamber shouldBe ""
+    val _           = placeholder.congress shouldBe 0
+    val _           = placeholder.chamber shouldBe ""
     placeholder.rollNumber shouldBe 0
   }
 
   it should "have all optional fields set to None" in {
     val placeholder = HasPlaceholder[VoteDO].placeholder("118-senate-42")
-    placeholder.sessionNumber shouldBe None
-    placeholder.billId shouldBe None
-    placeholder.question shouldBe None
-    placeholder.voteType shouldBe None
-    placeholder.voteMethod shouldBe None
-    placeholder.result shouldBe None
-    placeholder.voteDate shouldBe None
-    placeholder.legislationNumber shouldBe None
-    placeholder.legislationType shouldBe None
-    placeholder.legislationUrl shouldBe None
-    placeholder.sourceDataUrl shouldBe None
-    placeholder.updateDate shouldBe None
-    placeholder.createdAt shouldBe None
+    val _           = placeholder.sessionNumber shouldBe None
+    val _           = placeholder.billId shouldBe None
+    val _           = placeholder.question shouldBe None
+    val _           = placeholder.voteType shouldBe None
+    val _           = placeholder.voteMethod shouldBe None
+    val _           = placeholder.result shouldBe None
+    val _           = placeholder.voteDate shouldBe None
+    val _           = placeholder.legislationNumber shouldBe None
+    val _           = placeholder.legislationType shouldBe None
+    val _           = placeholder.legislationUrl shouldBe None
+    val _           = placeholder.sourceDataUrl shouldBe None
+    val _           = placeholder.updateDate shouldBe None
+    val _           = placeholder.createdAt shouldBe None
     placeholder.updatedAt shouldBe None
   }
 
@@ -151,24 +151,24 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   it should "have zero/empty defaults for required non-Option fields" in {
     val placeholder = HasPlaceholder[AmendmentDO].placeholder("hamdt-500-118")
-    placeholder.congress shouldBe 0
+    val _           = placeholder.congress shouldBe 0
     placeholder.number shouldBe ""
   }
 
   it should "have all optional fields set to None" in {
     val placeholder = HasPlaceholder[AmendmentDO].placeholder("hamdt-500-118")
-    placeholder.amendmentType shouldBe None
-    placeholder.billId shouldBe None
-    placeholder.chamber shouldBe None
-    placeholder.description shouldBe None
-    placeholder.purpose shouldBe None
-    placeholder.sponsorMemberId shouldBe None
-    placeholder.submittedDate shouldBe None
-    placeholder.latestActionDate shouldBe None
-    placeholder.latestActionText shouldBe None
-    placeholder.updateDate shouldBe None
-    placeholder.apiUrl shouldBe None
-    placeholder.createdAt shouldBe None
+    val _           = placeholder.amendmentType shouldBe None
+    val _           = placeholder.billId shouldBe None
+    val _           = placeholder.chamber shouldBe None
+    val _           = placeholder.description shouldBe None
+    val _           = placeholder.purpose shouldBe None
+    val _           = placeholder.sponsorMemberId shouldBe None
+    val _           = placeholder.submittedDate shouldBe None
+    val _           = placeholder.latestActionDate shouldBe None
+    val _           = placeholder.latestActionText shouldBe None
+    val _           = placeholder.updateDate shouldBe None
+    val _           = placeholder.apiUrl shouldBe None
+    val _           = placeholder.createdAt shouldBe None
     placeholder.updatedAt shouldBe None
   }
 
@@ -191,12 +191,12 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
 
   it should "have all optional fields set to None" in {
     val placeholder = HasPlaceholder[CommitteeDO].placeholder("SSFI")
-    placeholder.chamber shouldBe None
-    placeholder.committeeType shouldBe None
-    placeholder.parentCommitteeId shouldBe None
-    placeholder.isCurrent shouldBe None
-    placeholder.updateDate shouldBe None
-    placeholder.createdAt shouldBe None
+    val _           = placeholder.chamber shouldBe None
+    val _           = placeholder.committeeType shouldBe None
+    val _           = placeholder.parentCommitteeId shouldBe None
+    val _           = placeholder.isCurrent shouldBe None
+    val _           = placeholder.updateDate shouldBe None
+    val _           = placeholder.createdAt shouldBe None
     placeholder.updatedAt shouldBe None
   }
 

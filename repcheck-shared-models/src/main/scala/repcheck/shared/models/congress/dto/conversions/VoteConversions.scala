@@ -43,17 +43,18 @@ object VoteConversions {
 
         val positions: List[VotePositionDO] = dto.results
           .getOrElse(List.empty)
-          .flatMap { r =>
-            r.memberId.map { mid =>
-              VotePositionDO(
-                voteId = 0L,
-                memberId = 0L,
-                position = r.voteCast,
-                partyAtVote = r.party,
-                stateAtVote = r.state,
-                createdAt = None,
-              )
-            }
+          .filter(_.memberId.isDefined)
+          .map { r =>
+            VotePositionDO(
+              voteId = 0L,
+              // Resolved to the AlloyDB-generated member PK in a downstream
+              // step that joins on the Congress.gov member id (r.memberId).
+              memberId = 0L,
+              position = r.voteCast,
+              partyAtVote = r.party,
+              stateAtVote = r.state,
+              createdAt = None,
+            )
           }
 
         Right(

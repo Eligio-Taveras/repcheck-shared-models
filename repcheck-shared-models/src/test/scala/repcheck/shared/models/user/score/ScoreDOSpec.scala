@@ -28,18 +28,18 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
       reasoningEmbedding = Some(Array(0.1f, 0.2f, 0.3f)),
     )
     val decoded = score.asJson.as[ScoreDO]
-    decoded.isRight shouldBe true
+    val _       = decoded.isRight shouldBe true
     decoded.foreach { result =>
-      result.userId shouldBe score.userId
-      result.memberId shouldBe score.memberId
-      result.aggregateScore shouldBe score.aggregateScore
-      result.status shouldBe score.status
-      result.lastUpdated shouldBe score.lastUpdated
-      result.llmModel shouldBe score.llmModel
-      result.totalBills shouldBe score.totalBills
-      result.totalVotes shouldBe score.totalVotes
-      result.nonOverlappingTopics shouldBe score.nonOverlappingTopics
-      result.reasoning shouldBe score.reasoning
+      val _ = result.userId shouldBe score.userId
+      val _ = result.memberId shouldBe score.memberId
+      val _ = result.aggregateScore shouldBe score.aggregateScore
+      val _ = result.status shouldBe score.status
+      val _ = result.lastUpdated shouldBe score.lastUpdated
+      val _ = result.llmModel shouldBe score.llmModel
+      val _ = result.totalBills shouldBe score.totalBills
+      val _ = result.totalVotes shouldBe score.totalVotes
+      val _ = result.nonOverlappingTopics shouldBe score.nonOverlappingTopics
+      val _ = result.reasoning shouldBe score.reasoning
       result.reasoningEmbedding.map(_.toSeq) shouldBe score.reasoningEmbedding.map(_.toSeq)
     }
   }
@@ -112,7 +112,6 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
 
   "ScoreDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.DoobieArrayCodecs._
     import repcheck.shared.models.codecs.VectorCodec._
@@ -121,7 +120,6 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.DoobieArrayCodecs._
     import repcheck.shared.models.codecs.VectorCodec._
@@ -130,42 +128,36 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
 
   "ScoreTopicDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[ScoreTopicDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[ScoreTopicDO]].shouldBe(a[AnyRef])
   }
 
   "ScoreCongressDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[ScoreCongressDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[ScoreCongressDO]].shouldBe(a[AnyRef])
   }
 
   "ScoreCongressTopicDO" should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Read[ScoreCongressTopicDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     import doobie.postgres.implicits._
     implicitly[Write[ScoreCongressTopicDO]].shouldBe(a[AnyRef])
   }

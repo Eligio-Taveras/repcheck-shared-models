@@ -37,13 +37,11 @@ class BillCosponsorDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.implicits._
     implicitly[Read[BillCosponsorDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.implicits._
     implicitly[Write[BillCosponsorDO]].shouldBe(a[AnyRef])
   }
 

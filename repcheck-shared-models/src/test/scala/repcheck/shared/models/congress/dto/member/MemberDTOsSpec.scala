@@ -52,7 +52,7 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
   "LeadershipDTO" should "encode 'type' field and round-trip" in {
     val dto  = LeadershipDTO(congress = Some(118), type_ = Some("Majority Leader"))
     val json = dto.asJson
-    json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Majority Leader"))
+    val _    = json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Majority Leader"))
     json.as[LeadershipDTO] shouldBe Right(dto)
   }
 
@@ -117,33 +117,33 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
   it should "decode with only required field" in {
     val json   = """{"bioguideId":"T000001"}"""
     val result = decode[MemberDetailDTO](json)
-    result.isRight shouldBe true
-    result.map(_.bioguideId) shouldBe Right("T000001")
-    result.map(_.firstName) shouldBe Right(None)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.bioguideId) shouldBe Right("T000001")
+    val _      = result.map(_.firstName) shouldBe Right(None)
     result.map(_.terms) shouldBe Right(None)
   }
 
   "LeadershipDTO" should "encode with both fields None producing empty object" in {
     val dto  = LeadershipDTO(congress = None, type_ = None)
     val json = dto.asJson
-    json.hcursor.downField("congress").failed shouldBe true
-    json.hcursor.downField("type").failed shouldBe true
+    val _    = json.hcursor.downField("congress").failed shouldBe true
+    val _    = json.hcursor.downField("type").failed shouldBe true
     json.as[LeadershipDTO] shouldBe Right(dto)
   }
 
   it should "encode with only congress Some" in {
     val dto  = LeadershipDTO(congress = Some(115), type_ = None)
     val json = dto.asJson
-    json.hcursor.downField("congress").as[Option[Int]] shouldBe Right(Some(115))
-    json.hcursor.downField("type").failed shouldBe true
+    val _    = json.hcursor.downField("congress").as[Option[Int]] shouldBe Right(Some(115))
+    val _    = json.hcursor.downField("type").failed shouldBe true
     json.as[LeadershipDTO] shouldBe Right(dto)
   }
 
   it should "encode with only type_ Some" in {
     val dto  = LeadershipDTO(congress = None, type_ = Some("Whip"))
     val json = dto.asJson
-    json.hcursor.downField("congress").failed shouldBe true
-    json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Whip"))
+    val _    = json.hcursor.downField("congress").failed shouldBe true
+    val _    = json.hcursor.downField("type").as[Option[String]] shouldBe Right(Some("Whip"))
     json.as[LeadershipDTO] shouldBe Right(dto)
   }
 
@@ -211,7 +211,7 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
       Some(PaginationInfoDTO(Some(1), Some("p2"))),
     )
     val combined = Semigroup[MemberListResponseDTO].combine(a, b)
-    combined.items.map(_.bioguideId) shouldBe List("A", "B")
+    val _        = combined.items.map(_.bioguideId) shouldBe List("A", "B")
     combined.pagination shouldBe b.pagination
   }
 

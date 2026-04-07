@@ -63,8 +63,8 @@ class StageConfigSpec extends AnyFlatSpec with Matchers {
   it should "encode stage using apiValue" in {
     val config = StageConfig(stage = PromptStage.Output, blockNames = List("result"), weight = 1.0)
     val json   = config.asJson
-    json.hcursor.downField("stage").as[String] shouldBe Right("output")
-    json.hcursor.downField("weight").as[Double] shouldBe Right(1.0)
+    val _      = json.hcursor.downField("stage").as[String] shouldBe Right("output")
+    val _      = json.hcursor.downField("weight").as[Double] shouldBe Right(1.0)
     json.hcursor.downField("blockNames").as[List[String]] shouldBe Right(List("result"))
   }
 

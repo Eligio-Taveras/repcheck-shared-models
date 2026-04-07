@@ -8,8 +8,8 @@ import org.scalatest.matchers.should.Matchers
 class PartySpec extends AnyFlatSpec with Matchers {
 
   "Party.fromString" should "parse canonical values" in {
-    Party.fromString("Democrat") shouldBe Right(Party.Democrat)
-    Party.fromString("Republican") shouldBe Right(Party.Republican)
+    val _ = Party.fromString("Democrat") shouldBe Right(Party.Democrat)
+    val _ = Party.fromString("Republican") shouldBe Right(Party.Republican)
     Party.fromString("Independent") shouldBe Right(Party.Independent)
   }
 
@@ -34,8 +34,8 @@ class PartySpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    Party.fromString("democrat") shouldBe Right(Party.Democrat)
-    Party.fromString("DEMOCRAT") shouldBe Right(Party.Democrat)
+    val _ = Party.fromString("democrat") shouldBe Right(Party.Democrat)
+    val _ = Party.fromString("DEMOCRAT") shouldBe Right(Party.Democrat)
     Party.fromString("republican") shouldBe Right(Party.Republican)
   }
 

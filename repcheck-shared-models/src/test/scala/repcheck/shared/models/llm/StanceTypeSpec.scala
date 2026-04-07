@@ -8,9 +8,9 @@ import org.scalatest.matchers.should.Matchers
 class StanceTypeSpec extends AnyFlatSpec with Matchers {
 
   "StanceType.fromString" should "parse all values" in {
-    StanceType.fromString("Conservative") shouldBe Right(StanceType.Conservative)
-    StanceType.fromString("Progressive") shouldBe Right(StanceType.Progressive)
-    StanceType.fromString("Bipartisan") shouldBe Right(StanceType.Bipartisan)
+    val _ = StanceType.fromString("Conservative") shouldBe Right(StanceType.Conservative)
+    val _ = StanceType.fromString("Progressive") shouldBe Right(StanceType.Progressive)
+    val _ = StanceType.fromString("Bipartisan") shouldBe Right(StanceType.Bipartisan)
     StanceType.fromString("Neutral") shouldBe Right(StanceType.Neutral)
   }
 
@@ -19,10 +19,10 @@ class StanceTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "be case-insensitive" in {
-    StanceType.fromString("CONSERVATIVE") shouldBe Right(StanceType.Conservative)
-    StanceType.fromString("conservative") shouldBe Right(StanceType.Conservative)
-    StanceType.fromString("Conservative") shouldBe Right(StanceType.Conservative)
-    StanceType.fromString("progressive") shouldBe Right(StanceType.Progressive)
+    val _ = StanceType.fromString("CONSERVATIVE") shouldBe Right(StanceType.Conservative)
+    val _ = StanceType.fromString("conservative") shouldBe Right(StanceType.Conservative)
+    val _ = StanceType.fromString("Conservative") shouldBe Right(StanceType.Conservative)
+    val _ = StanceType.fromString("progressive") shouldBe Right(StanceType.Progressive)
     StanceType.fromString("BIPARTISAN") shouldBe Right(StanceType.Bipartisan)
   }
 
@@ -40,9 +40,9 @@ class StanceTypeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "serialize to lowercase" in {
-    StanceType.Conservative.asJson.asString shouldBe Some("conservative")
-    StanceType.Progressive.asJson.asString shouldBe Some("progressive")
-    StanceType.Bipartisan.asJson.asString shouldBe Some("bipartisan")
+    val _ = StanceType.Conservative.asJson.asString shouldBe Some("conservative")
+    val _ = StanceType.Progressive.asJson.asString shouldBe Some("progressive")
+    val _ = StanceType.Bipartisan.asJson.asString shouldBe Some("bipartisan")
     StanceType.Neutral.asJson.asString shouldBe Some("neutral")
   }
 

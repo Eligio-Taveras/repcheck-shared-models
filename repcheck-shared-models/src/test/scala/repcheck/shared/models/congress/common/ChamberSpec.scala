@@ -8,15 +8,15 @@ import org.scalatest.matchers.should.Matchers
 class ChamberSpec extends AnyFlatSpec with Matchers {
 
   "Chamber.fromString" should "parse canonical values" in {
-    Chamber.fromString("House") shouldBe Right(Chamber.House)
+    val _ = Chamber.fromString("House") shouldBe Right(Chamber.House)
     Chamber.fromString("Senate") shouldBe Right(Chamber.Senate)
   }
 
   it should "be case-insensitive" in {
-    Chamber.fromString("HOUSE") shouldBe Right(Chamber.House)
-    Chamber.fromString("house") shouldBe Right(Chamber.House)
-    Chamber.fromString("House") shouldBe Right(Chamber.House)
-    Chamber.fromString("SENATE") shouldBe Right(Chamber.Senate)
+    val _ = Chamber.fromString("HOUSE") shouldBe Right(Chamber.House)
+    val _ = Chamber.fromString("house") shouldBe Right(Chamber.House)
+    val _ = Chamber.fromString("House") shouldBe Right(Chamber.House)
+    val _ = Chamber.fromString("SENATE") shouldBe Right(Chamber.Senate)
     Chamber.fromString("senate") shouldBe Right(Chamber.Senate)
   }
 
@@ -26,7 +26,7 @@ class ChamberSpec extends AnyFlatSpec with Matchers {
 
   it should "return Left for unknown values" in {
     val result = Chamber.fromString("Unknown")
-    result.isLeft shouldBe true
+    val _      = result.isLeft shouldBe true
     result.left.map(_.getMessage) should matchPattern {
       case Left(msg: String) if msg.contains("Unknown") =>
     }
@@ -41,7 +41,7 @@ class ChamberSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "encode to apiValue" in {
-    Chamber.House.asJson.asString shouldBe Some("House")
+    val _ = Chamber.House.asJson.asString shouldBe Some("House")
     Chamber.Senate.asJson.asString shouldBe Some("Senate")
   }
 
