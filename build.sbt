@@ -2,16 +2,13 @@ import org.typelevel.scalacoptions.ScalacOption
 import sbt.Keys.libraryDependencies
 import sbt.Def
 import Dependencies.*
+import com.repcheck.sbt.ExceptionUniquenessPlugin.autoImport.exceptionUniquenessRootPackages
 
 val isScala212: Def.Initialize[Boolean] = Def.setting {
   VersionNumber(scalaVersion.value).matchesSemVer(SemanticSelector("2.12.x"))
 }
 
 ThisBuild / dynverSonatypeSnapshots := true
-
-lazy val checkExceptionUniqueness = taskKey[Unit](
-  "Fail if two Throwable subclasses under the project's root package share a simple name."
-)
 
 lazy val commonSettings = Seq(
   organization := "com.repcheck",
@@ -62,23 +59,13 @@ lazy val root = (project in file("."))
   )
 
 lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
+  .enablePlugins(com.repcheck.sbt.ExceptionUniquenessPlugin)
   .settings(
     commonSettings,
     libraryDependencies ++= circe ++ doobie,
     // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
     scalacOptions += "-Xmax-inlines:64",
-    checkExceptionUniqueness := Def
-      .task {
-        ExceptionUniquenessCheck.run(
-          (Compile / classDirectory).value,
-          (Test / classDirectory).value,
-          (Test / fullClasspath).value.files,
-          projectRootPackages = Seq("repcheck.shared")
-        )
-      }
-      .dependsOn(Compile / compile, Test / compile)
-      .value,
-    (Test / test) := ((Test / test) dependsOn checkExceptionUniqueness).value
+    exceptionUniquenessRootPackages := Seq("repcheck.shared")
   )
 
 lazy val docGenerator = (project in file("doc-generator"))
