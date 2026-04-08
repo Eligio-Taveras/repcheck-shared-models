@@ -9,6 +9,10 @@ val isScala212: Def.Initialize[Boolean] = Def.setting {
 
 ThisBuild / dynverSonatypeSnapshots := true
 
+lazy val checkExceptionUniqueness = taskKey[Unit](
+  "Fail if two Throwable subclasses under the project's root package share a simple name."
+)
+
 lazy val commonSettings = Seq(
   organization := "com.repcheck",
   scalaVersion := "3.7.3",
@@ -62,7 +66,19 @@ lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
     commonSettings,
     libraryDependencies ++= circe ++ doobie,
     // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
-    scalacOptions += "-Xmax-inlines:64"
+    scalacOptions += "-Xmax-inlines:64",
+    checkExceptionUniqueness := Def
+      .task {
+        ExceptionUniquenessCheck.run(
+          (Compile / classDirectory).value,
+          (Test / classDirectory).value,
+          (Test / fullClasspath).value.files,
+          projectRootPackages = Seq("repcheck.shared")
+        )
+      }
+      .dependsOn(Compile / compile, Test / compile)
+      .value,
+    (Test / test) := ((Test / test) dependsOn checkExceptionUniqueness).value
   )
 
 lazy val docGenerator = (project in file("doc-generator"))
