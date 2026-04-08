@@ -25,15 +25,31 @@ jobs:
 
       - name: Check formatting (Scalafmt)
         run: sbt scalafmtCheckAll
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_USERNAME: ${{ github.actor }}
 
       - name: Compile (includes WartRemover + tpolecat checks)
         run: sbt compile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_USERNAME: ${{ github.actor }}
 
       - name: Check Scalafix rules
         run: sbt "scalafixAll --check"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_USERNAME: ${{ github.actor }}
 
       - name: Run tests with coverage
         run: sbt coverage test coverageReport
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_USERNAME: ${{ github.actor }}
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -128,6 +144,14 @@ jobs:
 
       - name: Compile doc generator
         run: sbt docGenerator/compile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_USERNAME: ${{ github.actor }}
 
       - name: Run doc generator tests
         run: sbt docGenerator/test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_USERNAME: ${{ github.actor }}

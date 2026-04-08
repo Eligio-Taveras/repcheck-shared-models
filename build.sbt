@@ -2,6 +2,7 @@ import org.typelevel.scalacoptions.ScalacOption
 import sbt.Keys.libraryDependencies
 import sbt.Def
 import Dependencies.*
+import com.repcheck.sbt.ExceptionUniquenessPlugin.autoImport.exceptionUniquenessRootPackages
 
 val isScala212: Def.Initialize[Boolean] = Def.setting {
   VersionNumber(scalaVersion.value).matchesSemVer(SemanticSelector("2.12.x"))
@@ -58,11 +59,13 @@ lazy val root = (project in file("."))
   )
 
 lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
+  .enablePlugins(com.repcheck.sbt.ExceptionUniquenessPlugin)
   .settings(
     commonSettings,
     libraryDependencies ++= circe ++ doobie,
     // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
-    scalacOptions += "-Xmax-inlines:64"
+    scalacOptions += "-Xmax-inlines:64",
+    exceptionUniquenessRootPackages := Seq("repcheck.shared")
   )
 
 lazy val docGenerator = (project in file("doc-generator"))
