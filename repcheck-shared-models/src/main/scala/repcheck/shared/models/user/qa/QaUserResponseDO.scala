@@ -7,9 +7,9 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class QaUserResponseDO(
-  responseId: UUID,
+  id: Long,
   userId: UUID,
-  questionId: String,
+  questionId: Long,
   selectedOption: Option[String],
   customText: Option[String],
   respondedAt: Option[Instant],

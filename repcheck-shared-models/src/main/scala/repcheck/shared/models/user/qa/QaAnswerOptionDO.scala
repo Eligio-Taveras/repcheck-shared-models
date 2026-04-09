@@ -4,7 +4,8 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class QaAnswerOptionDO(
-  questionId: String,
+  id: Long,
+  questionId: Long,
   optionValue: String,
   displayText: String,
   stanceMultiplier: Float,
