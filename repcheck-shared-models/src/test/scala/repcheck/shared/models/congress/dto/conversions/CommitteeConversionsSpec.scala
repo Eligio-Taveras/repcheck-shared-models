@@ -75,51 +75,36 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     result shouldBe List.empty
   }
 
-  "SenatorCommitteeDataXmlDTO.toLisMemberMapping" should "produce Some with memberId set to 0L (FK resolved at persistence time)" in {
-    val result = senatorWithCommittees.toLisMemberMapping
-    result.map(_.memberId) shouldBe Some(0L)
+  "SenatorCommitteeDataXmlDTO.toLisMember" should "produce Some with id set to 0L (DB-generated)" in {
+    val result = senatorWithCommittees.toLisMember
+    result.map(_.id) shouldBe Some(0L)
   }
 
-  it should "produce Some with correct lisMemberId" in {
-    val result = senatorWithCommittees.toLisMemberMapping
-    result.map(_.lisMemberId) shouldBe Some("S123")
+  it should "produce Some with correct naturalKey" in {
+    val result = senatorWithCommittees.toLisMember
+    result.map(_.naturalKey) shouldBe Some("S123")
   }
 
   it should "produce Some even for senator with no committees" in {
-    val result = senatorNoCommittees.toLisMemberMapping
-    val _      = result.map(_.memberId) shouldBe Some(0L)
-    result.map(_.lisMemberId) shouldBe Some("S456")
+    val result = senatorNoCommittees.toLisMember
+    val _      = result.map(_.id) shouldBe Some(0L)
+    result.map(_.naturalKey) shouldBe Some("S456")
   }
 
-  it should "set lastVerified to approximately now" in {
-    val before = java.time.Instant.now()
-    val result = senatorNoCommittees.toLisMemberMapping
-    val after  = java.time.Instant.now()
-    result.foreach { mapping =>
-      val _ = mapping.lastVerified.compareTo(before) should be >= 0
-      mapping.lastVerified.compareTo(after) should be <= 0
-    }
+  it should "set createdAt to None (DB-generated)" in {
+    val result = senatorNoCommittees.toLisMember
+    result.foreach(lisMember => lisMember.createdAt shouldBe None)
     result.isDefined shouldBe true
   }
 
   it should "return None when lisMemberId is blank" in {
     val dto = senatorWithCommittees.copy(lisMemberId = "")
-    dto.toLisMemberMapping shouldBe None
+    dto.toLisMember shouldBe None
   }
 
   it should "return None when lisMemberId is whitespace only" in {
     val dto = senatorWithCommittees.copy(lisMemberId = "   ")
-    dto.toLisMemberMapping shouldBe None
-  }
-
-  it should "return None when bioguideId is blank" in {
-    val dto = senatorWithCommittees.copy(bioguideId = "")
-    dto.toLisMemberMapping shouldBe None
-  }
-
-  it should "return None when bioguideId is whitespace only" in {
-    val dto = senatorWithCommittees.copy(bioguideId = "   ")
-    dto.toLisMemberMapping shouldBe None
+    dto.toLisMember shouldBe None
   }
 
   "HouseMemberDataXmlDTO.toMemberCommittees" should "produce correct number of CommitteeMemberDOs" in {

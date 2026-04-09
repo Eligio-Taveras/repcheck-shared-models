@@ -96,10 +96,17 @@ class MemberDOSpec extends AnyFlatSpec with Matchers {
     result.isInvalid should be(true)
   }
 
-  it should "accumulate decode errors for LisMemberMappingDO" in {
+  it should "accumulate decode errors for LisMemberDO" in {
     import io.circe.Decoder
     val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
-    val result = Decoder[LisMemberMappingDO].decodeAccumulating(bad.hcursor)
+    val result = Decoder[LisMemberDO].decodeAccumulating(bad.hcursor)
+    result.isInvalid should be(true)
+  }
+
+  it should "accumulate decode errors for MemberLisMappingDO" in {
+    import io.circe.Decoder
+    val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
+    val result = Decoder[MemberLisMappingDO].decodeAccumulating(bad.hcursor)
     result.isInvalid should be(true)
   }
 

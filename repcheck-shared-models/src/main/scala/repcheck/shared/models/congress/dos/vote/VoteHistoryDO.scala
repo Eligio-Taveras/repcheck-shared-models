@@ -1,13 +1,12 @@
 package repcheck.shared.models.congress.dos.vote
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class VoteHistoryDO(
-  historyId: UUID,
+  id: Long,
   voteId: Long,
   congress: Int,
   chamber: String,
@@ -35,7 +34,7 @@ object VoteHistoryDO {
 }
 
 final case class VoteHistoryPositionDO(
-  historyId: UUID,
+  historyId: Long,
   memberId: Long,
   position: Option[String],
   partyAtVote: Option[String],

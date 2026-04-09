@@ -18,7 +18,7 @@ final case class UserAmendmentAlignmentDO(
   alignmentScore: Double,
   reasoning: Option[String],
   reasoningEmbedding: Option[Array[Float]],
-  findingId: Option[UUID],
+  findingId: Option[Long],
   computedAt: Option[Instant],
 )
 

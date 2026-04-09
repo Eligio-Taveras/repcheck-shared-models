@@ -1,15 +1,14 @@
 package repcheck.shared.models.analysis
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class BillAnalysisDO(
-  analysisId: UUID,
+  id: Long,
   billId: Long,
-  versionId: UUID,
+  versionId: Long,
   status: String,
   summary: Option[String],
   topics: List[String],

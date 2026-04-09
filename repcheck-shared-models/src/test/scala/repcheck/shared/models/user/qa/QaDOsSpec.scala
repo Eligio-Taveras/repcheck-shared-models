@@ -11,15 +11,15 @@ import org.scalatest.matchers.should.Matchers
 
 class QaDOsSpec extends AnyFlatSpec with Matchers {
 
-  private val responseId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
-  private val uid        = UUID.fromString("660e8400-e29b-41d4-a716-446655440000")
-  private val instant    = Instant.parse("2024-06-01T14:00:00Z")
+  private val uid     = UUID.fromString("660e8400-e29b-41d4-a716-446655440000")
+  private val instant = Instant.parse("2024-06-01T14:00:00Z")
 
   // --- QaQuestionDO ---
 
   "QaQuestionDO Circe codec" should "round-trip with all fields" in {
     val q = QaQuestionDO(
-      questionId = "q-healthcare-001",
+      id = 1L,
+      naturalKey = "q-healthcare-001",
       questionText = "How important is universal healthcare to you?",
       category = "healthcare",
       displayOrder = 1,
@@ -31,19 +31,19 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with None fields" in {
-    val q = QaQuestionDO("q-001", "Question?", "general", 1, false, true, None)
+    val q = QaQuestionDO(2L, "q-001", "Question?", "general", 1, false, true, None)
     q.asJson.as[QaQuestionDO] shouldBe Right(q)
   }
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      """{"questionId":"q-1","questionText":"Q?","category":"c","displayOrder":1,"allowCustom":false,"active":true}"""
+      """{"id":1,"naturalKey":"q-1","questionText":"Q?","category":"c","displayOrder":1,"allowCustom":false,"active":true}"""
     decodeAccumulating[QaQuestionDO](json).isValid shouldBe true
   }
 
   it should "decodeAccumulating invalid field types" in {
     val json =
-      """{"questionId":123,"questionText":456,"category":789,"displayOrder":"bad","allowCustom":"bad","active":"bad"}"""
+      """{"id":"bad","naturalKey":123,"questionText":456,"category":789,"displayOrder":"bad","allowCustom":"bad","active":"bad"}"""
     decodeAccumulating[QaQuestionDO](json).isInvalid should be(true)
   }
 
@@ -62,12 +62,12 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
   // --- QaQuestionTopicDO ---
 
   "QaQuestionTopicDO Circe codec" should "round-trip" in {
-    val qt = QaQuestionTopicDO("q-001", "healthcare", "Progressive", 0.8f)
+    val qt = QaQuestionTopicDO(1L, 10L, "healthcare", "Progressive", 0.8f)
     qt.asJson.as[QaQuestionTopicDO] shouldBe Right(qt)
   }
 
   it should "decodeAccumulating valid JSON" in {
-    val json = """{"questionId":"q-1","topic":"t","agreeStance":"Progressive","weight":0.5}"""
+    val json = """{"id":1,"questionId":10,"topic":"t","agreeStance":"Progressive","weight":0.5}"""
     decodeAccumulating[QaQuestionTopicDO](json).isValid shouldBe true
   }
 
@@ -85,7 +85,8 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
 
   "QaAnswerOptionDO Circe codec" should "round-trip" in {
     val ao = QaAnswerOptionDO(
-      questionId = "q-001",
+      id = 1L,
+      questionId = 10L,
       optionValue = "strongly_agree",
       displayText = "Strongly Agree",
       stanceMultiplier = 1.0f,
@@ -97,7 +98,7 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      """{"questionId":"q-1","optionValue":"v","displayText":"t","stanceMultiplier":1.0,"importanceSignal":5,"displayOrder":1}"""
+      """{"id":1,"questionId":10,"optionValue":"v","displayText":"t","stanceMultiplier":1.0,"importanceSignal":5,"displayOrder":1}"""
     decodeAccumulating[QaAnswerOptionDO](json).isValid shouldBe true
   }
 
@@ -115,9 +116,9 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
 
   "QaUserResponseDO Circe codec" should "round-trip with all fields" in {
     val resp = QaUserResponseDO(
-      responseId = responseId,
+      id = 1L,
       userId = uid,
-      questionId = "q-001",
+      questionId = 10L,
       selectedOption = Some("strongly_agree"),
       customText = Some("I believe in universal healthcare"),
       respondedAt = Some(instant),
@@ -126,17 +127,17 @@ class QaDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with None fields" in {
-    val resp = QaUserResponseDO(responseId, uid, "q-001", None, None, None)
+    val resp = QaUserResponseDO(2L, uid, 10L, None, None, None)
     resp.asJson.as[QaUserResponseDO] shouldBe Right(resp)
   }
 
   it should "decodeAccumulating valid JSON" in {
-    val json = s"""{"responseId":"$responseId","userId":"$uid","questionId":"q-1"}"""
+    val json = s"""{"id":1,"userId":"$uid","questionId":10}"""
     decodeAccumulating[QaUserResponseDO](json).isValid shouldBe true
   }
 
   it should "decodeAccumulating invalid field types" in {
-    val json = """{"responseId":"bad","userId":"bad","questionId":123}"""
+    val json = """{"id":"bad","userId":"bad","questionId":"bad"}"""
     decodeAccumulating[QaUserResponseDO](json).isInvalid should be(true)
   }
 

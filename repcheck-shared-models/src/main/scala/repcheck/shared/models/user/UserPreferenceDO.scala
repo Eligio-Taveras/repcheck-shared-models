@@ -13,7 +13,7 @@ import io.circe.{Decoder, Encoder}
  * validate before persisting.
  */
 final case class UserPreferenceDO(
-  preferenceId: UUID,
+  id: Long,
   userId: UUID,
   topic: String,
   stance: String,

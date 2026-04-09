@@ -11,7 +11,7 @@ import org.scalatest.matchers.should.Matchers
 class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
 
   private val samplePref = UserPreferenceDO(
-    preferenceId = UUID.fromString("660e8400-e29b-41d4-a716-446655440000"),
+    id = 1L,
     userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
     topic = "Healthcare",
     stance = "support universal coverage",
@@ -24,7 +24,7 @@ class UserPreferenceDOSpec extends AnyFlatSpec with Matchers {
     val decoded = samplePref.asJson.as[UserPreferenceDO]
     val _       = decoded.isRight shouldBe true
     decoded.foreach { result =>
-      val _ = result.preferenceId shouldBe samplePref.preferenceId
+      val _ = result.id shouldBe samplePref.id
       val _ = result.topic shouldBe samplePref.topic
       val _ = result.importance shouldBe samplePref.importance
       result.embedding.map(_.toSeq) shouldBe samplePref.embedding.map(_.toSeq)

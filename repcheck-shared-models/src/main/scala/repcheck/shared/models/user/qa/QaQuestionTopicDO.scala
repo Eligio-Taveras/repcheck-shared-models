@@ -4,7 +4,8 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class QaQuestionTopicDO(
-  questionId: String,
+  id: Long,
+  questionId: Long,
   topic: String,
   agreeStance: String,
   weight: Float,

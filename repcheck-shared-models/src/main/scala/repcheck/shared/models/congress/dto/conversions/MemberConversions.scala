@@ -1,7 +1,5 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import java.util.UUID
-
 import repcheck.shared.models.congress.dos.member.{MemberDO, MemberPartyHistoryDO, MemberTermDO}
 import repcheck.shared.models.congress.dos.results.MemberConversionResult
 import repcheck.shared.models.congress.dto.member.MemberDetailDTO
@@ -9,9 +7,8 @@ import repcheck.shared.models.congress.dto.member.MemberDetailDTO
 object MemberConversions {
 
   implicit class MemberDetailDTOOps(private val dto: MemberDetailDTO) extends AnyVal {
-    def toDO: Either[String, MemberConversionResult] = toDO(() => UUID.randomUUID())
 
-    def toDO(uuidGenerator: () => UUID): Either[String, MemberConversionResult] =
+    def toDO: Either[String, MemberConversionResult] =
       if (dto.bioguideId.trim.isEmpty) {
         Left("bioguideId must not be empty")
       } else {
@@ -47,7 +44,7 @@ object MemberConversions {
           .getOrElse(List.empty)
           .map { t =>
             MemberTermDO(
-              termId = uuidGenerator(),
+              termId = 0L,
               memberId = 0L,
               chamber = t.chamber,
               congress = t.congress,
@@ -64,7 +61,7 @@ object MemberConversions {
           .getOrElse(List.empty)
           .map { ph =>
             MemberPartyHistoryDO(
-              partyHistoryId = uuidGenerator(),
+              id = 0L,
               memberId = 0L,
               partyName = ph.partyName,
               partyAbbreviation = ph.partyAbbreviation,

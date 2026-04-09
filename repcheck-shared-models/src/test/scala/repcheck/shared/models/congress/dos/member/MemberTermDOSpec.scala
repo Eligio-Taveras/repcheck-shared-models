@@ -1,7 +1,5 @@
 package repcheck.shared.models.congress.dos.member
 
-import java.util.UUID
-
 import io.circe.parser.decode
 import io.circe.syntax._
 
@@ -10,10 +8,8 @@ import org.scalatest.matchers.should.Matchers
 
 class MemberTermDOSpec extends AnyFlatSpec with Matchers {
 
-  private val sampleTermId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
-
   private val sampleTerm = MemberTermDO(
-    termId = sampleTermId,
+    termId = 1L,
     memberId = 1L,
     chamber = Some("House"),
     congress = Some(118),
@@ -33,7 +29,7 @@ class MemberTermDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = MemberTermDO(
-      termId = sampleTermId,
+      termId = 2L,
       memberId = 2L,
       chamber = None,
       congress = None,
@@ -48,18 +44,16 @@ class MemberTermDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[MemberTermDO]("""{"termId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[MemberTermDO]("""{"termId":1}""").isLeft shouldBe true
   }
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.postgres.implicits._
     implicitly[Read[MemberTermDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.postgres.implicits._
     implicitly[Write[MemberTermDO]].shouldBe(a[AnyRef])
   }
 

@@ -1,7 +1,6 @@
 package repcheck.shared.models.congress.dos.bill
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
@@ -38,7 +37,7 @@ final case class BillDO(
   apiUrl: Option[String],
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
-  latestTextVersionId: Option[UUID],
+  latestTextVersionId: Option[Long],
 )
 
 object BillDO {
