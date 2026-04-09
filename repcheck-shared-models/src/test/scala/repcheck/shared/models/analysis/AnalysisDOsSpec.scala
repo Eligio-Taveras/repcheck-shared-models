@@ -1,7 +1,6 @@
 package repcheck.shared.models.analysis
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.Decoder
 import io.circe.parser.decode
@@ -12,16 +11,13 @@ import org.scalatest.matchers.should.Matchers
 
 class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
-  private val uuid1 = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
-  private val uuid2 = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901")
-  private val uuid3 = UUID.fromString("c3d4e5f6-a7b8-9012-cdef-123456789012")
-  private val now   = Instant.parse("2024-06-01T12:00:00Z")
+  private val now = Instant.parse("2024-06-01T12:00:00Z")
 
   // ---- BillConceptGroupDO ----
 
   private val sampleConceptGroup = BillConceptGroupDO(
-    conceptGroupId = uuid1,
-    versionId = uuid2,
+    id = 1L,
+    versionId = 2L,
     billId = 1L,
     groupId = "group-1",
     title = "Healthcare Provisions",
@@ -40,7 +36,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillConceptGroupDO]("""{"conceptGroupId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[BillConceptGroupDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {
@@ -66,8 +62,8 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   // ---- BillConceptGroupSectionDO ----
 
   private val sampleConceptGroupSection = BillConceptGroupSectionDO(
-    conceptGroupId = uuid1,
-    sectionId = uuid2,
+    conceptGroupId = 1L,
+    sectionId = 2L,
   )
 
   "BillConceptGroupSectionDO Circe codec" should "round-trip" in {
@@ -75,9 +71,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillConceptGroupSectionDO](
-      """{"conceptGroupId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}"""
-    ).isLeft shouldBe true
+    decode[BillConceptGroupSectionDO]("""{"conceptGroupId":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {
@@ -88,22 +82,20 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.postgres.implicits._
     implicitly[Read[BillConceptGroupSectionDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.postgres.implicits._
     implicitly[Write[BillConceptGroupSectionDO]].shouldBe(a[AnyRef])
   }
 
   // ---- BillAnalysisDO ----
 
   private val sampleAnalysis = BillAnalysisDO(
-    analysisId = uuid1,
+    id = 1L,
     billId = 2L,
-    versionId = uuid2,
+    versionId = 3L,
     status = "completed",
     summary = Some("A bill about healthcare reform"),
     topics = List("healthcare", "reform"),
@@ -136,9 +128,9 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None and empty lists" in {
     val minimal = BillAnalysisDO(
-      analysisId = uuid1,
+      id = 4L,
       billId = 3L,
-      versionId = uuid2,
+      versionId = 5L,
       status = "pending",
       summary = None,
       topics = List.empty,
@@ -168,7 +160,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillAnalysisDO]("""{"analysisId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[BillAnalysisDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {
@@ -196,10 +188,10 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   // ---- BillConceptSummaryDO ----
 
   private val sampleConceptSummary = BillConceptSummaryDO(
-    conceptSummaryId = uuid1,
-    analysisId = uuid2,
+    id = 1L,
+    analysisId = 2L,
     billId = 4L,
-    conceptGroupId = Some(uuid3),
+    conceptGroupId = Some(3L),
     passNumber = 1,
     topics = List("healthcare"),
     summary = Some("Summary of the concept group"),
@@ -227,7 +219,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillConceptSummaryDO]("""{"conceptSummaryId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[BillConceptSummaryDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {
@@ -255,8 +247,8 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   // ---- BillAnalysisTopicDO ----
 
   private val sampleTopic = BillAnalysisTopicDO(
-    topicId = uuid1,
-    analysisId = uuid2,
+    id = 1L,
+    analysisId = 2L,
     billId = 5L,
     conceptGroupId = Some("group-1"),
     passNumber = 1,
@@ -274,7 +266,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillAnalysisTopicDO]("""{"topicId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[BillAnalysisTopicDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {
@@ -285,22 +277,20 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import doobie.postgres.implicits._
     implicitly[Read[BillAnalysisTopicDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import doobie.postgres.implicits._
     implicitly[Write[BillAnalysisTopicDO]].shouldBe(a[AnyRef])
   }
 
   // ---- BillFindingDO ----
 
   private val sampleFinding = BillFindingDO(
-    findingId = uuid1,
+    id = 1L,
     billId = 6L,
-    analysisId = Some(uuid2),
+    analysisId = Some(2L),
     findingTypeId = 1,
     passNumber = 1,
     summary = "Finding about healthcare provision",
@@ -335,7 +325,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillFindingDO]("""{"findingId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[BillFindingDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {
@@ -361,10 +351,10 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   // ---- BillFiscalEstimateDO ----
 
   private val sampleFiscalEstimate = BillFiscalEstimateDO(
-    fiscalEstimateId = uuid1,
-    analysisId = uuid2,
+    id = 1L,
+    analysisId = 2L,
     billId = 7L,
-    conceptGroupId = Some(uuid3),
+    conceptGroupId = Some(3L),
     passNumber = 1,
     estimatedCost = "$1.5 billion",
     timeframe = "10 years",
@@ -388,7 +378,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillFiscalEstimateDO]("""{"fiscalEstimateId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[BillFiscalEstimateDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {
@@ -414,7 +404,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   // ---- AmendmentFindingDO ----
 
   private val sampleAmendmentFinding = AmendmentFindingDO(
-    findingId = uuid1,
+    id = 1L,
     amendmentId = 1L,
     findingTypeId = 2,
     summary = "Amendment changes scope of section 5",
@@ -444,7 +434,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[AmendmentFindingDO]("""{"findingId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[AmendmentFindingDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "accumulate decode errors" in {

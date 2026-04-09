@@ -1,7 +1,5 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import java.util.UUID
-
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
@@ -9,9 +7,6 @@ import repcheck.shared.models.congress.dto.conversions.MemberConversions._
 import repcheck.shared.models.congress.dto.member._
 
 class MemberConversionsSpec extends AnyFlatSpec with Matchers {
-
-  private val fixedUuid           = UUID.fromString("00000000-0000-0000-0000-000000000001")
-  private val uuidGen: () => UUID = () => fixedUuid
 
   private val validMemberDetail = MemberDetailDTO(
     bioguideId = "S000033",
@@ -60,7 +55,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
   )
 
   "MemberDetailDTO.toDO" should "produce MemberDO with correct fields" in {
-    val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
+    val Right(result) = validMemberDetail.toDO: @unchecked
     val m             = result.member
     val _             = m.memberId shouldBe 0L
     val _             = m.naturalKey shouldBe "S000033"
@@ -77,49 +72,49 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "derive currentParty from last partyHistory entry" in {
-    val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
+    val Right(result) = validMemberDetail.toDO: @unchecked
     result.member.currentParty shouldBe Some("I")
   }
 
   it should "derive district from last term" in {
-    val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
+    val Right(result) = validMemberDetail.toDO: @unchecked
     result.member.district shouldBe None // last term has no district (Senate)
   }
 
-  it should "produce terms list with generated UUIDs" in {
-    val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
+  it should "produce terms list with 0L PKs" in {
+    val Right(result) = validMemberDetail.toDO: @unchecked
     val _             = result.terms.length shouldBe 2
     result.terms.foreach { t =>
-      val _ = t.termId shouldBe fixedUuid
+      val _ = t.termId shouldBe 0L
       t.memberId shouldBe 0L
     }
     result.terms.map(_.chamber) shouldBe List(Some("House"), Some("Senate"))
   }
 
   it should "produce partyHistory list" in {
-    val Right(result) = validMemberDetail.toDO(uuidGen): @unchecked
+    val Right(result) = validMemberDetail.toDO: @unchecked
     val _             = result.partyHistory.length shouldBe 2
     result.partyHistory.foreach { ph =>
-      val _ = ph.partyHistoryId shouldBe fixedUuid
+      val _ = ph.id shouldBe 0L
       ph.memberId shouldBe 0L
     }
     result.partyHistory.map(_.partyAbbreviation) shouldBe List(Some("D"), Some("I"))
   }
 
   it should "fail when bioguideId is empty" in {
-    val result = validMemberDetail.copy(bioguideId = "").toDO(uuidGen)
+    val result = validMemberDetail.copy(bioguideId = "").toDO
     val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("bioguideId")) shouldBe Left(true)
   }
 
   it should "fail when bioguideId is blank" in {
-    val result = validMemberDetail.copy(bioguideId = "   ").toDO(uuidGen)
+    val result = validMemberDetail.copy(bioguideId = "   ").toDO
     result.isLeft shouldBe true
   }
 
   it should "handle None terms and partyHistory" in {
     val dto           = validMemberDetail.copy(terms = None, partyHistory = None)
-    val Right(result) = dto.toDO(uuidGen): @unchecked
+    val Right(result) = dto.toDO: @unchecked
     val _             = result.terms shouldBe List.empty
     val _             = result.partyHistory shouldBe List.empty
     val _             = result.member.currentParty shouldBe None
@@ -128,19 +123,9 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "handle None depiction" in {
     val dto           = validMemberDetail.copy(depiction = None)
-    val Right(result) = dto.toDO(uuidGen): @unchecked
+    val Right(result) = dto.toDO: @unchecked
     val _             = result.member.imageUrl shouldBe None
     result.member.imageAttribution shouldBe None
-  }
-
-  it should "succeed using default UUID generator" in {
-    val result      = validMemberDetail.toDO
-    val _           = result.isRight shouldBe true
-    val Right(conv) = result: @unchecked
-    val _           = conv.member.memberId shouldBe 0L
-    val _           = conv.member.naturalKey shouldBe "S000033"
-    val _           = conv.terms.length shouldBe 2
-    conv.partyHistory.length shouldBe 2
   }
 
 }

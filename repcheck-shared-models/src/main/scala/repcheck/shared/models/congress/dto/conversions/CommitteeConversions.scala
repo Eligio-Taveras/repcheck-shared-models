@@ -1,9 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import java.time.Instant
-
 import repcheck.shared.models.congress.dos.committee.{BillCommitteeReferralDO, CommitteeDO, CommitteeMemberDO}
-import repcheck.shared.models.congress.dos.member.LisMemberMappingDO
+import repcheck.shared.models.congress.dos.member.LisMemberDO
 import repcheck.shared.models.congress.dto.committee.{
   BillCommitteeReferralDTO,
   CommitteeListItemDTO,
@@ -31,15 +29,15 @@ object CommitteeConversions {
         )
       }
 
-    def toLisMemberMapping: Option[LisMemberMappingDO] =
-      if (dto.lisMemberId.trim.isEmpty || dto.bioguideId.trim.isEmpty) {
+    def toLisMember: Option[LisMemberDO] =
+      if (dto.lisMemberId.trim.isEmpty) {
         None
       } else {
         Some(
-          LisMemberMappingDO(
-            lisMemberId = dto.lisMemberId,
-            memberId = 0L,
-            lastVerified = Instant.now(),
+          LisMemberDO(
+            id = 0L,
+            naturalKey = dto.lisMemberId,
+            createdAt = None,
           )
         )
       }

@@ -11,10 +11,8 @@ import org.scalatest.matchers.should.Matchers
 
 class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
-  private val uid       = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
-  private val findingId = UUID.fromString("660e8400-e29b-41d4-a716-446655440000")
-  private val stanceId  = UUID.fromString("770e8400-e29b-41d4-a716-446655440000")
-  private val instant   = Instant.parse("2024-06-01T14:00:00Z")
+  private val uid     = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
+  private val instant = Instant.parse("2024-06-01T14:00:00Z")
 
   // --- UserLegislatorPairingDO ---
 
@@ -57,7 +55,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   "MemberBillStanceTopicDO Circe codec" should "round-trip with all fields" in {
     val topic = MemberBillStanceTopicDO(
-      id = stanceId,
+      id = 1L,
       memberId = 1L,
       billId = 2L,
       voteId = Some(3L),
@@ -65,7 +63,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
       stanceDirection = "Progressive",
       reasoning = Some("Voted in favor of expanded coverage"),
       reasoningEmbedding = Some(Array(0.1f, 0.2f, 0.3f)),
-      findingId = Some(findingId),
+      findingId = Some(10L),
       confidence = Some(0.95),
       conceptSummary = Some("Healthcare expansion"),
       createdAt = Some(instant),
@@ -81,7 +79,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with None fields" in {
     val topic = MemberBillStanceTopicDO(
-      stanceId,
+      2L,
       1L,
       2L,
       None,
@@ -99,7 +97,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "decodeAccumulating valid JSON" in {
     val json =
-      s"""{"id":"$stanceId","memberId":1,"billId":2,"topic":"health","stanceDirection":"Neutral"}"""
+      """{"id":3,"memberId":1,"billId":2,"topic":"health","stanceDirection":"Neutral"}"""
     decodeAccumulating[MemberBillStanceTopicDO](json).isValid shouldBe true
   }
 
@@ -129,7 +127,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
       alignmentScore = 0.92,
       reasoning = Some("Strong alignment on coverage expansion"),
       reasoningEmbedding = Some(Array(0.4f, 0.5f, 0.6f)),
-      findingId = Some(findingId),
+      findingId = Some(10L),
       computedAt = Some(instant),
     )
     val decoded = alignment.asJson.as[UserBillAlignmentDO]
@@ -178,7 +176,7 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
       alignmentScore = 0.88,
       reasoning = Some("Amendment aligns with user stance"),
       reasoningEmbedding = Some(Array(0.7f, 0.8f, 0.9f)),
-      findingId = Some(findingId),
+      findingId = Some(10L),
       computedAt = Some(instant),
     )
     val decoded = alignment.asJson.as[UserAmendmentAlignmentDO]

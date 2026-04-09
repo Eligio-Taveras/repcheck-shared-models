@@ -1,7 +1,6 @@
 package repcheck.shared.models.congress.dos.member
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -11,10 +10,8 @@ import org.scalatest.matchers.should.Matchers
 
 class MemberTermHistoryDOSpec extends AnyFlatSpec with Matchers {
 
-  private val historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000")
-
   private val sampleHistory = MemberTermHistoryDO(
-    historyId = historyId,
+    historyId = 1L,
     memberId = 1L,
     chamber = Some("House"),
     congress = Some(118),
@@ -35,7 +32,7 @@ class MemberTermHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = MemberTermHistoryDO(
-      historyId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
+      historyId = 2L,
       memberId = 2L,
       chamber = None,
       congress = None,
@@ -56,7 +53,7 @@ class MemberTermHistoryDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field memberId" in {
-    val json = """{"historyId":"550e8400-e29b-41d4-a716-446655440000"}"""
+    val json = """{"historyId":1}"""
     decode[MemberTermHistoryDO](json).isLeft shouldBe true
   }
 

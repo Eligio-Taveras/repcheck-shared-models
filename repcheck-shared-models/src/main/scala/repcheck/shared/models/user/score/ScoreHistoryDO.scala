@@ -9,7 +9,7 @@ import io.circe.{Decoder, Encoder}
 import repcheck.shared.models.codecs.VectorCodec._
 
 final case class ScoreHistoryDO(
-  scoreId: UUID,
+  id: Long,
   userId: UUID,
   memberId: Long,
   computedAt: Option[Instant],

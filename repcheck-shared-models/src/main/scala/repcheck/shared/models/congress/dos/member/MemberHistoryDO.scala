@@ -1,13 +1,12 @@
 package repcheck.shared.models.congress.dos.member
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class MemberHistoryDO(
-  historyId: UUID,
+  id: Long,
   memberId: Long,
   firstName: Option[String],
   lastName: Option[String],

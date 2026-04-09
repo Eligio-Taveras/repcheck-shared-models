@@ -1,12 +1,10 @@
 package repcheck.shared.models.congress.dos.member
 
-import java.util.UUID
-
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class MemberTermDO(
-  termId: UUID,
+  termId: Long,
   memberId: Long,
   chamber: Option[String],
   congress: Option[Int],

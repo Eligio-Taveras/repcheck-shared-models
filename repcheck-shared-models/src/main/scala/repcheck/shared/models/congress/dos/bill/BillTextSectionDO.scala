@@ -1,14 +1,13 @@
 package repcheck.shared.models.congress.dos.bill
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 final case class BillTextSectionDO(
-  sectionId: UUID,
-  versionId: UUID,
+  id: Long,
+  versionId: Long,
   billId: Long,
   sectionIndex: Int,
   sectionIdentifier: Option[String],

@@ -1,7 +1,6 @@
 package repcheck.shared.models.congress.dos.bill
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -12,7 +11,7 @@ import org.scalatest.matchers.should.Matchers
 class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleVersion = BillTextVersionDO(
-    versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+    id = 1L,
     billId = 1L,
     versionCode = "ih",
     versionType = "Introduced in House",
@@ -33,7 +32,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
 
   it should "round-trip with optional fields as None" in {
     val minimal = BillTextVersionDO(
-      versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+      id = 2L,
       billId = 1L,
       versionCode = "ih",
       versionType = "Introduced in House",
@@ -49,7 +48,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillTextVersionDO]("""{"versionId":"a1b2c3d4-e5f6-7890-abcd-ef1234567890"}""").isLeft shouldBe true
+    decode[BillTextVersionDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "have Doobie Read instance" in {

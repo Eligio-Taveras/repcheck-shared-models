@@ -1,7 +1,6 @@
 package repcheck.shared.models.congress.dos.bill
 
 import java.time.Instant
-import java.util.UUID
 
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -12,8 +11,8 @@ import org.scalatest.matchers.should.Matchers
 class BillTextSectionDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleSection = BillTextSectionDO(
-    sectionId = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901"),
-    versionId = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+    id = 1L,
+    versionId = 2L,
     billId = 1L,
     sectionIndex = 0,
     sectionIdentifier = Some("Sec. 1"),
@@ -40,7 +39,7 @@ class BillTextSectionDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field" in {
-    decode[BillTextSectionDO]("""{"sectionId":"b2c3d4e5-f6a7-8901-bcde-f12345678901"}""").isLeft shouldBe true
+    decode[BillTextSectionDO]("""{"id":1}""").isLeft shouldBe true
   }
 
   it should "have Doobie Read instance" in {
