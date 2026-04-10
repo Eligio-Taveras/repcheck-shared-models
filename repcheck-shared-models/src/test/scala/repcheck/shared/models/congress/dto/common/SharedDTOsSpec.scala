@@ -36,6 +36,26 @@ class SharedDTOsSpec extends AnyFlatSpec with Matchers {
     dto.asJson.as[PaginationInfoDTO] shouldBe Right(dto)
   }
 
+  it should "decode 'next' field as url when 'url' is absent" in {
+    val json   = """{"count": 21, "next": "https://api.congress.gov/v3/bill/116/s/1/cosponsors?offset=20"}"""
+    val result = decode[PaginationInfoDTO](json)
+    result shouldBe Right(
+      PaginationInfoDTO(count = Some(21), url = Some("https://api.congress.gov/v3/bill/116/s/1/cosponsors?offset=20"))
+    )
+  }
+
+  it should "prefer 'url' over 'next' when both are present" in {
+    val json   = """{"count": 5, "url": "https://primary", "next": "https://fallback"}"""
+    val result = decode[PaginationInfoDTO](json)
+    result shouldBe Right(PaginationInfoDTO(count = Some(5), url = Some("https://primary")))
+  }
+
+  it should "decode to None url when neither 'url' nor 'next' is present" in {
+    val json   = """{"count": 10}"""
+    val result = decode[PaginationInfoDTO](json)
+    result shouldBe Right(PaginationInfoDTO(count = Some(10), url = None))
+  }
+
   "ApiListResponseDTO" should "round-trip with items and pagination" in {
     val dto = ApiListResponseDTO(
       items = List(PaginationInfoDTO(Some(1), Some("url1")), PaginationInfoDTO(Some(2), Some("url2"))),
