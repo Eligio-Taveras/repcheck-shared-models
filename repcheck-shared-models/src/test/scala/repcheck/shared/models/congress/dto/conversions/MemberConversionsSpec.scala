@@ -2,6 +2,7 @@ package repcheck.shared.models.congress.dto.conversions
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.{Party, UsState}
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
 import repcheck.shared.models.congress.dto.conversions.MemberConversions._
 import repcheck.shared.models.congress.dto.member._
@@ -64,8 +65,8 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = m.directOrderName shouldBe Some("Bernard Sanders")
     val _             = m.invertedOrderName shouldBe Some("Sanders, Bernard")
     val _             = m.honorificName shouldBe Some("Sen.")
-    val _             = m.birthYear shouldBe Some("1941")
-    val _             = m.state shouldBe Some("Vermont")
+    val _             = m.birthYear shouldBe Some(1941)
+    val _             = m.state shouldBe Some(UsState.Vermont)
     val _             = m.imageUrl shouldBe Some("https://photo.url")
     val _             = m.imageAttribution shouldBe Some("Senate photo")
     m.updateDate shouldBe Some("2024-06-15")
@@ -73,7 +74,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "derive currentParty from last partyHistory entry" in {
     val Right(result) = validMemberDetail.toDO: @unchecked
-    result.member.currentParty shouldBe Some("I")
+    result.member.currentParty shouldBe Some(Party.Independent)
   }
 
   it should "derive district from last term" in {
@@ -126,6 +127,55 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     val Right(result) = dto.toDO: @unchecked
     val _             = result.member.imageUrl shouldBe None
     result.member.imageAttribution shouldBe None
+  }
+
+  it should "fail when birthYear is not a valid integer" in {
+    val dto    = validMemberDetail.copy(birthYear = Some("not-a-number"))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("birthYear")) shouldBe Left(true)
+  }
+
+  it should "handle None birthYear" in {
+    val dto           = validMemberDetail.copy(birthYear = None)
+    val Right(result) = dto.toDO: @unchecked
+    result.member.birthYear shouldBe None
+  }
+
+  it should "fail when party abbreviation is unrecognized" in {
+    val dto = validMemberDetail.copy(
+      partyHistory = Some(List(PartyHistoryDTO(Some("X"), Some("Unknown Party"), Some(2000))))
+    )
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("Unrecognized Party")) shouldBe Left(true)
+  }
+
+  it should "fail when state is unrecognized" in {
+    val dto    = validMemberDetail.copy(state = Some("Atlantis"))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("Unrecognized US state")) shouldBe Left(true)
+  }
+
+  it should "handle None state" in {
+    val dto           = validMemberDetail.copy(state = None)
+    val Right(result) = dto.toDO: @unchecked
+    result.member.state shouldBe None
+  }
+
+  it should "parse state from 2-letter code" in {
+    val dto           = validMemberDetail.copy(state = Some("VT"))
+    val Right(result) = dto.toDO: @unchecked
+    result.member.state shouldBe Some(UsState.Vermont)
+  }
+
+  it should "parse currentParty from full name" in {
+    val dto = validMemberDetail.copy(
+      partyHistory = Some(List(PartyHistoryDTO(Some("Republican"), Some("Republican"), Some(2000))))
+    )
+    val Right(result) = dto.toDO: @unchecked
+    result.member.currentParty shouldBe Some(Party.Republican)
   }
 
 }
