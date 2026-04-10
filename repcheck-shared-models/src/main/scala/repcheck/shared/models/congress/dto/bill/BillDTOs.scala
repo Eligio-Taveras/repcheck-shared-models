@@ -274,3 +274,30 @@ object BillListResponseDTO {
   implicit val encoder: Encoder[BillListResponseDTO] = deriveEncoder[BillListResponseDTO]
   implicit val decoder: Decoder[BillListResponseDTO] = deriveDecoder[BillListResponseDTO]
 }
+
+final case class CosponsorListResponseDTO(
+  cosponsors: List[CoSponsorDTO],
+  pagination: Option[PaginationInfoDTO],
+) extends PagedObject[CoSponsorDTO] {
+  override def items: List[CoSponsorDTO] = cosponsors
+}
+
+object CosponsorListResponseDTO {
+  import cats.Semigroup
+
+  implicit val semigroup: Semigroup[CosponsorListResponseDTO] = Semigroup.instance { (a, b) =>
+    CosponsorListResponseDTO(
+      cosponsors = a.cosponsors ++ b.cosponsors,
+      pagination = b.pagination,
+    )
+  }
+
+  implicit val decoder: Decoder[CosponsorListResponseDTO] = Decoder.instance { c =>
+    for {
+      cosponsors <- c.downField("cosponsors").as[List[CoSponsorDTO]]
+      pagination <- c.downField("pagination").as[Option[PaginationInfoDTO]]
+    } yield CosponsorListResponseDTO(cosponsors, pagination)
+  }
+
+  implicit val encoder: Encoder[CosponsorListResponseDTO] = deriveEncoder[CosponsorListResponseDTO]
+}

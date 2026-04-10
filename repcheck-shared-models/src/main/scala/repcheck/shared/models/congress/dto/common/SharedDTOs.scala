@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dto.common
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.generic.semiauto.deriveEncoder
 import io.circe.{Decoder, Encoder, HCursor, Json}
 
 final case class PaginationInfoDTO(
@@ -10,7 +10,17 @@ final case class PaginationInfoDTO(
 
 object PaginationInfoDTO {
   implicit val encoder: Encoder[PaginationInfoDTO] = deriveEncoder[PaginationInfoDTO]
-  implicit val decoder: Decoder[PaginationInfoDTO] = deriveDecoder[PaginationInfoDTO]
+
+  implicit val decoder: Decoder[PaginationInfoDTO] = Decoder.instance { c =>
+    for {
+      count <- c.downField("count").as[Option[Int]]
+      url <- c.downField("url").as[Option[String]].flatMap {
+        case some @ Some(_) => Right(some)
+        case None           => c.downField("next").as[Option[String]]
+      }
+    } yield PaginationInfoDTO(count = count, url = url)
+  }
+
 }
 
 final case class ApiListResponseDTO[T](
