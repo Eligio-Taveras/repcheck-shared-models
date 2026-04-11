@@ -22,7 +22,7 @@ final case class MemberHistoryDO(
   imageUrl: Option[String],
   imageAttribution: Option[String],
   officialUrl: Option[String],
-  updateDate: Option[String],
+  updateDate: Option[Instant],
   archivedAt: Option[Instant],
 )
 

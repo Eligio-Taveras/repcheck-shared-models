@@ -3,7 +3,8 @@ package repcheck.shared.models.congress.dos.member
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.congress.common.Chamber
+import repcheck.shared.models.congress.common.{Chamber, UsState}
+import repcheck.shared.models.congress.member.MemberType
 
 final case class MemberTermDO(
   termId: Long,
@@ -12,8 +13,8 @@ final case class MemberTermDO(
   congress: Option[Int],
   startYear: Option[Int],
   endYear: Option[Int],
-  memberType: Option[String],
-  stateCode: Option[String],
+  memberType: Option[MemberType],
+  stateCode: Option[UsState],
   stateName: Option[String],
   district: Option[Int],
 )

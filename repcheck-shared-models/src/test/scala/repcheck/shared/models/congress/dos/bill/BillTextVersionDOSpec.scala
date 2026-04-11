@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dos.bill
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -16,7 +16,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
     billId = 1L,
     versionCode = "ih",
     versionType = "Introduced in House",
-    versionDate = Some("2024-01-15"),
+    versionDate = Some(LocalDate.parse("2024-01-15")),
     formatType = Some(FormatType.FormattedXml),
     url = Some("https://congress.gov/bill/118/hr/1234/text/ih"),
     content = Some("Full text of the bill version"),

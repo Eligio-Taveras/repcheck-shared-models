@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dos.committee
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -20,7 +20,7 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
     committeeType = Some(CommitteeType.Standing),
     parentCommitteeId = None,
     isCurrent = Some(true),
-    updateDate = Some("2024-06-01"),
+    updateDate = Some(Instant.parse("2024-06-01T00:00:00Z")),
     createdAt = Some(Instant.parse("2024-01-15T10:30:00Z")),
     updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),
   )
@@ -31,7 +31,7 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
     position = Some(CommitteePosition.Chairman),
     side = None,
     rank = None,
-    beginDate = Some("2021-01-03"),
+    beginDate = Some(LocalDate.parse("2021-01-03")),
     endDate = None,
     congress = Some(118),
     createdAt = Some(Instant.parse("2024-01-15T10:30:00Z")),
@@ -41,8 +41,8 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
   private val sampleReferral = BillCommitteeReferralDO(
     billId = 3L,
     committeeId = 1L,
-    referralDate = Some("2024-01-10"),
-    reportDate = Some("2024-03-20"),
+    referralDate = Some(LocalDate.parse("2024-01-10")),
+    reportDate = Some(LocalDate.parse("2024-03-20")),
     activity = Some("Referred to; Reported by"),
     createdAt = Some(Instant.parse("2024-01-15T10:30:00Z")),
   )

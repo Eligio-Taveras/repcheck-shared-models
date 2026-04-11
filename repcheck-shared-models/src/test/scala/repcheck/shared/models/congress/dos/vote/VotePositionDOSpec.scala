@@ -7,7 +7,7 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.Party
+import repcheck.shared.models.congress.common.{Party, UsState}
 import repcheck.shared.models.congress.vote.VoteCast
 
 class VotePositionDOSpec extends AnyFlatSpec with Matchers {
@@ -17,7 +17,7 @@ class VotePositionDOSpec extends AnyFlatSpec with Matchers {
     memberId = 1L,
     position = Some(VoteCast.Yea),
     partyAtVote = Some(Party.Democrat),
-    stateAtVote = Some("NY"),
+    stateAtVote = Some(UsState.NewYork),
     createdAt = Some(Instant.parse("2024-03-15T10:00:00Z")),
   )
 

@@ -26,7 +26,7 @@ class MemberHistoryDOSpec extends AnyFlatSpec with Matchers {
     imageUrl = Some("https://bioguide.congress.gov/photo/B/B001234.jpg"),
     imageAttribution = Some("Courtesy U.S. Congress"),
     officialUrl = Some("https://smith.house.gov"),
-    updateDate = Some("2024-03-01T12:00:00Z"),
+    updateDate = Some(Instant.parse("2024-03-01T12:00:00Z")),
     archivedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),
   )
 

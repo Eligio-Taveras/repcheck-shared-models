@@ -23,7 +23,7 @@ final case class MemberDO(
   imageUrl: Option[String],
   imageAttribution: Option[String],
   officialUrl: Option[String],
-  updateDate: Option[String],
+  updateDate: Option[Instant],
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
 )

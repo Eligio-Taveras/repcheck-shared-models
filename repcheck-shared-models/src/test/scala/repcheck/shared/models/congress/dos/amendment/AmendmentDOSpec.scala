@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dos.amendment
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -23,10 +23,10 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     description = Some("An amendment to improve section 3"),
     purpose = Some("To strike section 3 and replace with new language"),
     sponsorMemberId = Some(3L),
-    submittedDate = Some("2024-02-15"),
-    latestActionDate = Some("2024-03-01"),
+    submittedDate = Some(LocalDate.parse("2024-02-15")),
+    latestActionDate = Some(LocalDate.parse("2024-03-01")),
     latestActionText = Some("Amendment agreed to by voice vote"),
-    updateDate = Some("2024-03-01T12:00:00Z"),
+    updateDate = Some(Instant.parse("2024-03-01T12:00:00Z")),
     apiUrl = Some("https://api.congress.gov/v3/amendment/118/hamdt/1"),
     createdAt = Some(Instant.parse("2024-02-15T10:30:00Z")),
     updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),

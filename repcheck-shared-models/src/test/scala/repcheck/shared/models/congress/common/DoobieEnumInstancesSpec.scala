@@ -45,4 +45,28 @@ class DoobieEnumInstancesSpec extends AnyFlatSpec with Matchers {
     DoobieEnumInstances.formatTypePut.toString should not be empty
   }
 
+  it should "provide Get[VoteMethod] instance" in {
+    DoobieEnumInstances.voteMethodGet.toString should not be empty
+  }
+
+  it should "provide Put[VoteMethod] instance" in {
+    DoobieEnumInstances.voteMethodPut.toString should not be empty
+  }
+
+  it should "provide Get[MemberType] instance" in {
+    DoobieEnumInstances.memberTypeGet.toString should not be empty
+  }
+
+  it should "provide Put[MemberType] instance" in {
+    DoobieEnumInstances.memberTypePut.toString should not be empty
+  }
+
+  it should "provide Get[TextVersionCode] instance" in {
+    DoobieEnumInstances.textVersionCodeGet.toString should not be empty
+  }
+
+  it should "provide Put[TextVersionCode] instance" in {
+    DoobieEnumInstances.textVersionCodePut.toString should not be empty
+  }
+
 }

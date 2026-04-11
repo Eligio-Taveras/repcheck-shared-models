@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import java.time.{Instant, LocalDate}
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.amendment.AmendmentType
@@ -44,10 +46,10 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     val _        = a.description shouldBe Some("Amendment description")
     val _        = a.purpose shouldBe Some("To improve the bill")
     val _        = a.sponsorMemberId shouldBe None
-    val _        = a.submittedDate shouldBe Some("2024-02-15")
-    val _        = a.latestActionDate shouldBe Some("2024-03-01")
+    val _        = a.submittedDate shouldBe Some(LocalDate.parse("2024-02-15"))
+    val _        = a.latestActionDate shouldBe Some(LocalDate.parse("2024-03-01"))
     val _        = a.latestActionText shouldBe Some("Submitted")
-    a.updateDate shouldBe Some("2024-03-15")
+    a.updateDate shouldBe Some(Instant.parse("2024-03-15T00:00:00Z"))
   }
 
   it should "set billId to None (FK resolved at persistence time)" in {

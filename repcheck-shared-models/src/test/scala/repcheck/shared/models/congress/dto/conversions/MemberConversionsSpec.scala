@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import java.time.Instant
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.common.{Chamber, Party, UsState}
@@ -69,7 +71,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = m.state shouldBe Some(UsState.Vermont)
     val _             = m.imageUrl shouldBe Some("https://photo.url")
     val _             = m.imageAttribution shouldBe Some("Senate photo")
-    m.updateDate shouldBe Some("2024-06-15")
+    m.updateDate shouldBe Some(Instant.parse("2024-06-15T00:00:00Z"))
   }
 
   it should "derive currentParty from last partyHistory entry" in {
