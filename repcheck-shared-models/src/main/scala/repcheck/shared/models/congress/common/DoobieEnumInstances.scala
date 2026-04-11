@@ -32,7 +32,7 @@ object DoobieEnumInstances {
     Get[String].temap(s => UsState.fromString(s).left.map(_.getMessage))
 
   implicit val usStatePut: Put[UsState] =
-    Put[String].contramap(_.fullName)
+    Put[String].contramap(_.code)
 
   implicit val billTypeGet: Get[BillType] =
     Get[String].temap(s => BillType.fromString(s).left.map(_.getMessage))

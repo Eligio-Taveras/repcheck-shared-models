@@ -4,12 +4,13 @@ import io.circe.{Decoder, Encoder}
 
 final case class UnrecognizedChamber(value: String)
     extends Exception(
-      s"Unrecognized Chamber: '$value'. Valid values: House, Senate, House of Representatives"
+      s"Unrecognized Chamber: '$value'. Valid values: House, Senate, Joint, House of Representatives"
     )
 
 enum Chamber(val apiValue: String) {
   case House  extends Chamber("House")
   case Senate extends Chamber("Senate")
+  case Joint  extends Chamber("Joint")
 }
 
 object Chamber {
@@ -18,6 +19,7 @@ object Chamber {
     "HOUSE"                    -> Chamber.House,
     "HOUSE OF REPRESENTATIVES" -> Chamber.House,
     "SENATE"                   -> Chamber.Senate,
+    "JOINT"                    -> Chamber.Joint,
   )
 
   def fromString(value: String): Either[UnrecognizedChamber, Chamber] =
