@@ -89,9 +89,65 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     result.left.map(msg => msg.contains("chamber")) shouldBe Left(true)
   }
 
+  it should "fail when chamber is unrecognized" in {
+    val result = validVoteMembers.copy(chamber = "InvalidChamber").toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("InvalidChamber")) shouldBe Left(true)
+  }
+
   it should "handle None results" in {
     val Right(result) = validVoteMembers.copy(results = None).toDO: @unchecked
     result.positions shouldBe List.empty
+  }
+
+  it should "fail when a position has an unrecognized voteCast" in {
+    val badResult =
+      VoteResultDTO(Some("X000001"), Some("Test"), Some("User"), Some("InvalidVote"), Some("D"), Some("NC"))
+    val dto    = validVoteMembers.copy(results = Some(List(badResult)))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("InvalidVote")) shouldBe Left(true)
+  }
+
+  it should "fail when a position has an unrecognized party" in {
+    val badResult = VoteResultDTO(Some("X000001"), Some("Test"), Some("User"), Some("Yea"), Some("Z"), Some("NC"))
+    val dto       = validVoteMembers.copy(results = Some(List(badResult)))
+    val result    = dto.toDO
+    val _         = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("Z")) shouldBe Left(true)
+  }
+
+  it should "fail when a position has an unrecognized state" in {
+    val badResult =
+      VoteResultDTO(Some("X000001"), Some("Test"), Some("User"), Some("Yea"), Some("D"), Some("ZZ"))
+    val dto    = validVoteMembers.copy(results = Some(List(badResult)))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("ZZ")) shouldBe Left(true)
+  }
+
+  it should "fail when legislationType is invalid" in {
+    val dto    = validVoteMembers.copy(legislationType = Some("invalid_type"))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("invalid_type")) shouldBe Left(true)
+  }
+
+  it should "handle positions with None voteCast, party, and state" in {
+    val sparseResult  = VoteResultDTO(Some("X000001"), Some("Test"), Some("User"), None, None, None)
+    val dto           = validVoteMembers.copy(results = Some(List(sparseResult)))
+    val Right(result) = dto.toDO: @unchecked
+    val _             = result.positions.length shouldBe 1
+    val pos           = result.positions.headOption
+    val _             = pos.flatMap(_.position) shouldBe None
+    val _             = pos.flatMap(_.partyAtVote) shouldBe None
+    pos.flatMap(_.stateAtVote) shouldBe None
+  }
+
+  it should "handle None legislationType" in {
+    val dto           = validVoteMembers.copy(legislationType = None)
+    val Right(result) = dto.toDO: @unchecked
+    result.vote.legislationType shouldBe None
   }
 
   // SenateVoteXmlDTO conversion tests

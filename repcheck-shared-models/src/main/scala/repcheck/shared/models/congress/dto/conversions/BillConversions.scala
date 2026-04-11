@@ -20,6 +20,12 @@ object BillConversions {
       case Some(s) => FormatType.fromString(s).left.map(_.getMessage).map(Some(_))
     }
 
+  private def parseTextVersionCode(raw: Option[String]): Either[String, Option[TextVersionCode]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => TextVersionCode.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
   private def parseBillType(raw: String): Either[String, BillType] =
     BillType.fromString(raw).left.map(_.getMessage)
 
@@ -90,16 +96,15 @@ object BillConversions {
       val firstFormat      = firstTextVersion.flatMap(_.formats).flatMap(_.headOption)
 
       for {
-        _             <- validateBillFields(dto.congress, dto.number, dto.title)
-        billType      <- parseBillType(dto.billType)
-        originChamber <- parseChamber(dto.originChamber)
-        textFormatVal <- parseFormatType(firstFormat.map(_.type_))
+        _               <- validateBillFields(dto.congress, dto.number, dto.title)
+        billType        <- parseBillType(dto.billType)
+        originChamber   <- parseChamber(dto.originChamber)
+        textFormatVal   <- parseFormatType(firstFormat.map(_.type_))
+        textVersionType <- parseTextVersionCode(firstTextVersion.flatMap(_.type_))
       } yield {
         val naturalKey = buildBillId(dto.congress, dto.billType, dto.number)
 
-        val textUrl = firstFormat.map(_.url)
-        val textVersionType =
-          firstTextVersion.flatMap(_.type_).flatMap(s => TextVersionCode.fromString(s).toOption)
+        val textUrl  = firstFormat.map(_.url)
         val textDate = firstTextVersion.flatMap(_.date)
 
         val firstSummary      = dto.summaries.flatMap(_.headOption)

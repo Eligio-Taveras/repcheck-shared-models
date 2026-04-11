@@ -180,4 +180,42 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     result.member.currentParty shouldBe Some(Party.Republican)
   }
 
+  it should "handle terms with None chamber, memberType, and stateCode" in {
+    val sparseTerm    = MemberDetailTermDTO(None, Some(118), Some(2025), None, Some(2007), None, None, None)
+    val dto           = validMemberDetail.copy(terms = Some(List(sparseTerm)))
+    val Right(result) = dto.toDO: @unchecked
+    val _             = result.terms.length shouldBe 1
+    val term          = result.terms.headOption
+    val _             = term.flatMap(_.chamber) shouldBe None
+    val _             = term.flatMap(_.memberType) shouldBe None
+    term.flatMap(_.stateCode) shouldBe None
+  }
+
+  it should "fail when a term has an unrecognized chamber" in {
+    val badTerm =
+      MemberDetailTermDTO(Some("InvalidChamber"), Some(118), Some(2025), Some("sen"), Some(2007), None, None, None)
+    val dto    = validMemberDetail.copy(terms = Some(List(badTerm)))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("InvalidChamber")) shouldBe Left(true)
+  }
+
+  it should "fail when a term has an unrecognized memberType" in {
+    val badTerm =
+      MemberDetailTermDTO(Some("Senate"), Some(118), Some(2025), Some("governor"), Some(2007), None, None, None)
+    val dto    = validMemberDetail.copy(terms = Some(List(badTerm)))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("governor")) shouldBe Left(true)
+  }
+
+  it should "fail when a term has an unrecognized stateCode" in {
+    val badTerm =
+      MemberDetailTermDTO(Some("Senate"), Some(118), Some(2025), Some("sen"), Some(2007), Some("ZZ"), None, None)
+    val dto    = validMemberDetail.copy(terms = Some(List(badTerm)))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("ZZ")) shouldBe Left(true)
+  }
+
 }

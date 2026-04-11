@@ -96,6 +96,24 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     result.left.map(msg => msg.contains("number")) shouldBe Left(true)
   }
 
+  it should "fail when chamber is unrecognized" in {
+    val result = validAmendmentDetail.copy(chamber = Some("InvalidChamber")).toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("InvalidChamber")) shouldBe Left(true)
+  }
+
+  it should "fail when amendmentType is unrecognized" in {
+    val result = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("BADTYPE")) shouldBe Left(true)
+  }
+
+  it should "handle None chamber" in {
+    val dto      = validAmendmentDetail.copy(chamber = None)
+    val Right(a) = dto.toDO: @unchecked
+    a.chamber shouldBe None
+  }
+
   it should "handle partial amendedBill (missing fields)" in {
     val dto = validAmendmentDetail.copy(
       amendedBill = Some(AmendedBillDTO(Some(118), None, None, None, None, Some("hr"), None, None))

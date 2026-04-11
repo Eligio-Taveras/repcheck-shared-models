@@ -9,7 +9,8 @@ class ChamberSpec extends AnyFlatSpec with Matchers {
 
   "Chamber.fromString" should "parse canonical values" in {
     val _ = Chamber.fromString("House") shouldBe Right(Chamber.House)
-    Chamber.fromString("Senate") shouldBe Right(Chamber.Senate)
+    val _ = Chamber.fromString("Senate") shouldBe Right(Chamber.Senate)
+    Chamber.fromString("Joint") shouldBe Right(Chamber.Joint)
   }
 
   it should "be case-insensitive" in {
@@ -17,7 +18,9 @@ class ChamberSpec extends AnyFlatSpec with Matchers {
     val _ = Chamber.fromString("house") shouldBe Right(Chamber.House)
     val _ = Chamber.fromString("House") shouldBe Right(Chamber.House)
     val _ = Chamber.fromString("SENATE") shouldBe Right(Chamber.Senate)
-    Chamber.fromString("senate") shouldBe Right(Chamber.Senate)
+    val _ = Chamber.fromString("senate") shouldBe Right(Chamber.Senate)
+    val _ = Chamber.fromString("JOINT") shouldBe Right(Chamber.Joint)
+    Chamber.fromString("joint") shouldBe Right(Chamber.Joint)
   }
 
   it should "accept alias 'House of Representatives'" in {
@@ -42,7 +45,8 @@ class ChamberSpec extends AnyFlatSpec with Matchers {
 
   it should "encode to apiValue" in {
     val _ = Chamber.House.asJson.asString shouldBe Some("House")
-    Chamber.Senate.asJson.asString shouldBe Some("Senate")
+    val _ = Chamber.Senate.asJson.asString shouldBe Some("Senate")
+    Chamber.Joint.asJson.asString shouldBe Some("Joint")
   }
 
 }
