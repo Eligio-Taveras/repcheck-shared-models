@@ -5,7 +5,8 @@ import java.time.{Instant, LocalDate}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.congress.common.Chamber
+import repcheck.shared.models.congress.common.{BillType, Chamber}
+import repcheck.shared.models.congress.vote.VoteMethod
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class VoteDO(
@@ -18,11 +19,11 @@ final case class VoteDO(
   billId: Option[Long],
   question: Option[String],
   voteType: Option[String],
-  voteMethod: Option[String],
+  voteMethod: Option[VoteMethod],
   result: Option[String],
   voteDate: Option[LocalDate],
   legislationNumber: Option[String],
-  legislationType: Option[String],
+  legislationType: Option[BillType],
   legislationUrl: Option[String],
   sourceDataUrl: Option[String],
   updateDate: Option[Instant],

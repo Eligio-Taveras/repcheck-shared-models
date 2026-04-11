@@ -5,14 +5,15 @@ import java.time.{Instant, LocalDate}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.congress.common.{Chamber, FormatType}
+import repcheck.shared.models.congress.bill.TextVersionCode
+import repcheck.shared.models.congress.common.{BillType, Chamber, FormatType}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class BillDO(
   billId: Long,
   naturalKey: String,
   congress: Int,
-  billType: String,
+  billType: BillType,
   number: String,
   title: String,
   originChamber: Option[Chamber],
@@ -25,7 +26,7 @@ final case class BillDO(
   sponsorMemberId: Option[Long],
   textUrl: Option[String],
   textFormat: Option[FormatType],
-  textVersionType: Option[String],
+  textVersionType: Option[TextVersionCode],
   textDate: Option[LocalDate],
   textContent: Option[String],
   textEmbedding: Option[Array[Float]],
@@ -55,7 +56,7 @@ object BillDO {
         billId = 0L,
         naturalKey = naturalKey,
         congress = 0,
-        billType = "",
+        billType = BillType.HR,
         number = "",
         title = "",
         originChamber = None,

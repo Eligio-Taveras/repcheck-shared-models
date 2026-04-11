@@ -1,6 +1,8 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import repcheck.shared.models.congress.common.{Chamber, Party}
+import cats.syntax.traverse._
+
+import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
 import repcheck.shared.models.congress.dos.results.VoteConversionResult
 import repcheck.shared.models.congress.dos.vote.{VoteDO, VotePositionDO}
 import repcheck.shared.models.congress.dto.vote.{SenateVoteXmlDTO, VoteMembersDTO, VoteResultDTO}
@@ -14,6 +16,30 @@ object VoteConversions {
   private def parseChamber(raw: String): Either[String, Chamber] =
     Chamber.fromString(raw).left.map(_.getMessage)
 
+  private def parseLegislationType(raw: Option[String]): Either[String, Option[BillType]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => BillType.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
+  private def parseVoteCast(raw: Option[String]): Either[String, Option[VoteCast]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => VoteCast.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
+  private def parseParty(raw: Option[String]): Either[String, Option[Party]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => Party.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
+  private def parseState(raw: Option[String]): Either[String, Option[UsState]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => UsState.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
   implicit class VoteMembersDTOOps(private val dto: VoteMembersDTO) extends AnyVal {
 
     def toDO: Either[String, VoteConversionResult] =
@@ -23,7 +49,27 @@ object VoteConversions {
         Left("chamber must not be empty")
       } else {
         for {
-          chamber <- parseChamber(dto.chamber)
+          chamber         <- parseChamber(dto.chamber)
+          legislationType <- parseLegislationType(dto.legislationType)
+          positions <- dto.results
+            .getOrElse(List.empty)
+            .filter(_.memberId.isDefined)
+            .traverse { r =>
+              for {
+                position    <- parseVoteCast(r.voteCast)
+                partyAtVote <- parseParty(r.party)
+                stateAtVote <- parseState(r.state)
+              } yield VotePositionDO(
+                voteId = 0L,
+                // Resolved to the AlloyDB-generated member PK in a downstream
+                // step that joins on the Congress.gov member id (r.memberId).
+                memberId = 0L,
+                position = position,
+                partyAtVote = partyAtVote,
+                stateAtVote = stateAtVote,
+                createdAt = None,
+              )
+            }
         } yield {
           val naturalKey = buildVoteId(dto.congress, dto.chamber, dto.rollCallNumber)
 
@@ -41,29 +87,13 @@ object VoteConversions {
             result = dto.result,
             voteDate = DateParsing.toLocalDate(dto.startDate),
             legislationNumber = dto.legislationNumber,
-            legislationType = dto.legislationType,
+            legislationType = legislationType,
             legislationUrl = dto.legislationUrl,
             sourceDataUrl = dto.sourceDataUrl.orElse(dto.url),
             updateDate = DateParsing.toInstant(dto.updateDate),
             createdAt = None,
             updatedAt = None,
           )
-
-          val positions: List[VotePositionDO] = dto.results
-            .getOrElse(List.empty)
-            .filter(_.memberId.isDefined)
-            .map { r =>
-              VotePositionDO(
-                voteId = 0L,
-                // Resolved to the AlloyDB-generated member PK in a downstream
-                // step that joins on the Congress.gov member id (r.memberId).
-                memberId = 0L,
-                position = r.voteCast.flatMap(s => VoteCast.fromString(s).toOption),
-                partyAtVote = r.party.flatMap(s => Party.fromString(s).toOption),
-                stateAtVote = r.state,
-                createdAt = None,
-              )
-            }
 
           VoteConversionResult(
             vote = vote,

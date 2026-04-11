@@ -4,7 +4,8 @@ import java.time.{Instant, LocalDate}
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.{Chamber, FormatType}
+import repcheck.shared.models.congress.bill.TextVersionCode
+import repcheck.shared.models.congress.common.{BillType, Chamber, FormatType}
 import repcheck.shared.models.congress.dto.bill._
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
 import repcheck.shared.models.congress.dto.conversions.BillConversions._
@@ -34,7 +35,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
   it should "map all list-level fields correctly" in {
     val Right(bill) = validBillListItem.toDO: @unchecked
     val _           = bill.congress shouldBe 118
-    val _           = bill.billType shouldBe "hr"
+    val _           = bill.billType shouldBe BillType.HR
     val _           = bill.number shouldBe "1234"
     val _           = bill.title shouldBe "A bill to do something"
     val _           = bill.originChamber shouldBe Some(Chamber.House)
@@ -138,7 +139,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val Right(result) = validBillDetail.toDO: @unchecked
     val _             = result.bill.textUrl shouldBe Some("https://example.com/text")
     val _             = result.bill.textFormat shouldBe Some(FormatType.FormattedText)
-    val _             = result.bill.textVersionType shouldBe Some("Introduced in Senate")
+    val _             = result.bill.textVersionType shouldBe Some(TextVersionCode.IS)
     result.bill.textDate shouldBe Some(LocalDate.parse("2024-01-10"))
   }
 

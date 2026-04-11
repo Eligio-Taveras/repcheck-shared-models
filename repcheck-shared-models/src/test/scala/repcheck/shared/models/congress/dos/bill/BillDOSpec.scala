@@ -7,7 +7,8 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.{Chamber, FormatType}
+import repcheck.shared.models.congress.bill.TextVersionCode
+import repcheck.shared.models.congress.common.{BillType, Chamber, FormatType}
 
 class BillDOSpec extends AnyFlatSpec with Matchers {
 
@@ -15,7 +16,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     billId = 1L,
     naturalKey = "118-hr-1234",
     congress = 118,
-    billType = "hr",
+    billType = BillType.HR,
     number = "1234",
     title = "Test Bill Title",
     originChamber = Some(Chamber.House),
@@ -28,7 +29,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     sponsorMemberId = Some(1L),
     textUrl = Some("https://congress.gov/bill/118/hr/1234/text"),
     textFormat = Some(FormatType.FormattedXml),
-    textVersionType = Some("Introduced"),
+    textVersionType = Some(TextVersionCode.IH),
     textDate = Some(LocalDate.parse("2024-01-15")),
     textContent = Some("Full text of the bill"),
     textEmbedding = None,
@@ -55,7 +56,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
       billId = 2L,
       naturalKey = "118-hr-5678",
       congress = 118,
-      billType = "hr",
+      billType = BillType.HR,
       number = "5678",
       title = "Minimal Bill",
       originChamber = None,

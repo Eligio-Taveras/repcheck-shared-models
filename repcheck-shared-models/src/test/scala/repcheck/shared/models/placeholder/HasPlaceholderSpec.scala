@@ -2,7 +2,7 @@ package repcheck.shared.models.placeholder
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.Chamber
+import repcheck.shared.models.congress.common.{BillType, Chamber}
 import repcheck.shared.models.congress.dos.amendment.AmendmentDO
 import repcheck.shared.models.congress.dos.bill.BillDO
 import repcheck.shared.models.congress.dos.committee.CommitteeDO
@@ -68,7 +68,7 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
   it should "have zero/empty defaults for required non-Option fields" in {
     val placeholder = HasPlaceholder[BillDO].placeholder("hr1234-118")
     val _           = placeholder.congress shouldBe 0
-    val _           = placeholder.billType shouldBe ""
+    val _           = placeholder.billType shouldBe BillType.HR
     val _           = placeholder.number shouldBe ""
     placeholder.title shouldBe ""
   }

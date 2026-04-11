@@ -7,7 +7,8 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.Chamber
+import repcheck.shared.models.congress.common.{BillType, Chamber}
+import repcheck.shared.models.congress.vote.VoteMethod
 
 class VoteDOSpec extends AnyFlatSpec with Matchers {
 
@@ -21,11 +22,11 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
     billId = Some(1L),
     question = Some("On Passage"),
     voteType = Some("YEA-AND-NAY"),
-    voteMethod = Some("recorded vote"),
+    voteMethod = Some(VoteMethod.RecordedVote),
     result = Some("Passed"),
     voteDate = Some(LocalDate.parse("2024-03-15")),
     legislationNumber = Some("H.R. 1234"),
-    legislationType = Some("HR"),
+    legislationType = Some(BillType.HR),
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
     sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll123.xml"),
     updateDate = Some(Instant.parse("2024-03-16T10:00:00Z")),

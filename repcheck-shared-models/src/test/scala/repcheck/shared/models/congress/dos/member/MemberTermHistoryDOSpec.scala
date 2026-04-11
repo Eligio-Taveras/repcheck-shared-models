@@ -7,7 +7,8 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.Chamber
+import repcheck.shared.models.congress.common.{Chamber, UsState}
+import repcheck.shared.models.congress.member.MemberType
 
 class MemberTermHistoryDOSpec extends AnyFlatSpec with Matchers {
 
@@ -18,8 +19,8 @@ class MemberTermHistoryDOSpec extends AnyFlatSpec with Matchers {
     congress = Some(118),
     startYear = Some(2023),
     endYear = Some(2025),
-    memberType = Some("Representative"),
-    stateCode = Some("CA"),
+    memberType = Some(MemberType.Representative),
+    stateCode = Some(UsState.California),
     stateName = Some("California"),
     district = Some(12),
     archivedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),

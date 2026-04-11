@@ -4,7 +4,7 @@ import java.time.{Instant, LocalDate}
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.{Chamber, Party}
+import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
 import repcheck.shared.models.congress.dto.conversions.VoteConversions._
 import repcheck.shared.models.congress.dto.vote._
 import repcheck.shared.models.congress.vote.VoteCast
@@ -55,7 +55,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = v.result shouldBe Some("Passed")
     val _             = v.voteDate shouldBe Some(LocalDate.parse("2024-01-15"))
     val _             = v.legislationNumber shouldBe Some("HR 1234")
-    val _             = v.legislationType shouldBe Some("HR")
+    val _             = v.legislationType shouldBe Some(BillType.HR)
     val _             = v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
     val _             = v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
     v.updateDate shouldBe Some(Instant.parse("2024-01-16T00:00:00Z"))
@@ -74,7 +74,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = first.map(_.memberId) shouldBe Some(0L)
     val _             = first.flatMap(_.position) shouldBe Some(VoteCast.Yea)
     val _             = first.flatMap(_.partyAtVote) shouldBe Some(Party.Democrat)
-    first.flatMap(_.stateAtVote) shouldBe Some("NC")
+    first.flatMap(_.stateAtVote) shouldBe Some(UsState.NorthCarolina)
   }
 
   it should "fail when congress <= 0" in {
