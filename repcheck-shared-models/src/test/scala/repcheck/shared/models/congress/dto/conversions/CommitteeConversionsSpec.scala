@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import java.time.{Instant, LocalDate}
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
@@ -219,7 +221,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val Right(result) = dto.toDO(0L): @unchecked
-    val _             = result.referralDate shouldBe Some("2024-01-10")
+    val _             = result.referralDate shouldBe Some(LocalDate.parse("2024-01-10"))
     result.reportDate shouldBe None
   }
 
@@ -234,8 +236,8 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val Right(result) = dto.toDO(0L): @unchecked
-    val _             = result.referralDate shouldBe Some("2024-01-10")
-    result.reportDate shouldBe Some("2024-03-20")
+    val _             = result.referralDate shouldBe Some(LocalDate.parse("2024-01-10"))
+    result.reportDate shouldBe Some(LocalDate.parse("2024-03-20"))
   }
 
   it should "select earliest date when multiple Referred to activities exist" in {
@@ -249,7 +251,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val Right(result) = dto.toDO(0L): @unchecked
-    result.referralDate shouldBe Some("2024-01-15")
+    result.referralDate shouldBe Some(LocalDate.parse("2024-01-15"))
   }
 
   it should "set billId and committeeId to 0L (FK resolved at persistence time)" in {

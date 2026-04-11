@@ -95,7 +95,7 @@ object CommitteeConversions {
           committeeType = committeeType,
           parentCommitteeId = None,
           isCurrent = None,
-          updateDate = dto.updateDate,
+          updateDate = DateParsing.toInstant(dto.updateDate),
           createdAt = None,
           updatedAt = None,
         )
@@ -109,17 +109,21 @@ object CommitteeConversions {
       if (dto.committeeCode.trim.isEmpty) {
         Left("committeeCode must not be blank")
       } else {
-        val referralDate = dto.activities
-          .filter(_.name.startsWith("Referred to"))
-          .flatMap(_.date)
-          .sorted
-          .headOption
+        val referralDate = DateParsing.toLocalDate(
+          dto.activities
+            .filter(_.name.startsWith("Referred to"))
+            .flatMap(_.date)
+            .sorted
+            .headOption
+        )
 
-        val reportDate = dto.activities
-          .filter(_.name.startsWith("Reported by"))
-          .flatMap(_.date)
-          .sorted
-          .headOption
+        val reportDate = DateParsing.toLocalDate(
+          dto.activities
+            .filter(_.name.startsWith("Reported by"))
+            .flatMap(_.date)
+            .sorted
+            .headOption
+        )
 
         val activityNames = dto.activities.map(_.name)
         val activity = if (activityNames.nonEmpty) { Some(activityNames.mkString("; ")) }

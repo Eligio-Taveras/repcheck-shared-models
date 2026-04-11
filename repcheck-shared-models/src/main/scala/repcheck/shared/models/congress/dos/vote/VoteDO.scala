@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dos.vote
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
@@ -20,17 +20,19 @@ final case class VoteDO(
   voteType: Option[String],
   voteMethod: Option[String],
   result: Option[String],
-  voteDate: Option[String],
+  voteDate: Option[LocalDate],
   legislationNumber: Option[String],
   legislationType: Option[String],
   legislationUrl: Option[String],
   sourceDataUrl: Option[String],
-  updateDate: Option[String],
+  updateDate: Option[Instant],
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
 )
 
 object VoteDO {
+
+  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[VoteDO] = deriveEncoder[VoteDO]
   implicit val decoder: Decoder[VoteDO] = deriveDecoder[VoteDO]

@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dos.bill
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
@@ -17,23 +17,23 @@ final case class BillDO(
   title: String,
   originChamber: Option[Chamber],
   originChamberCode: Option[String],
-  introducedDate: Option[String],
+  introducedDate: Option[LocalDate],
   policyArea: Option[String],
-  latestActionDate: Option[String],
+  latestActionDate: Option[LocalDate],
   latestActionText: Option[String],
   constitutionalAuthorityText: Option[String],
   sponsorMemberId: Option[Long],
   textUrl: Option[String],
   textFormat: Option[FormatType],
   textVersionType: Option[String],
-  textDate: Option[String],
+  textDate: Option[LocalDate],
   textContent: Option[String],
   textEmbedding: Option[Array[Float]],
   summaryText: Option[String],
   summaryActionDesc: Option[String],
-  summaryActionDate: Option[String],
-  updateDate: Option[String],
-  updateDateIncludingText: Option[String],
+  summaryActionDate: Option[LocalDate],
+  updateDate: Option[Instant],
+  updateDateIncludingText: Option[Instant],
   legislationUrl: Option[String],
   apiUrl: Option[String],
   createdAt: Option[Instant],
@@ -44,6 +44,7 @@ final case class BillDO(
 object BillDO {
 
   import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[BillDO] = deriveEncoder[BillDO]
   implicit val decoder: Decoder[BillDO] = deriveDecoder[BillDO]

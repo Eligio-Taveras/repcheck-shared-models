@@ -63,7 +63,7 @@ object MemberConversions {
             imageUrl = dto.depiction.flatMap(_.imageUrl),
             imageAttribution = dto.depiction.flatMap(_.attribution),
             officialUrl = None,
-            updateDate = dto.updateDate,
+            updateDate = DateParsing.toInstant(dto.updateDate),
             createdAt = None,
             updatedAt = None,
           )

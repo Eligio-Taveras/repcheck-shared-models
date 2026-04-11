@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dos.committee
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
@@ -17,7 +17,7 @@ final case class CommitteeDO(
   committeeType: Option[CommitteeType],
   parentCommitteeId: Option[Long],
   isCurrent: Option[Boolean],
-  updateDate: Option[String],
+  updateDate: Option[Instant],
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
 )
@@ -50,14 +50,16 @@ final case class CommitteeMemberDO(
   position: Option[CommitteePosition],
   side: Option[CommitteeSide],
   rank: Option[Int],
-  beginDate: Option[String],
-  endDate: Option[String],
+  beginDate: Option[LocalDate],
+  endDate: Option[LocalDate],
   congress: Option[Int],
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
 )
 
 object CommitteeMemberDO {
+  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+
   implicit val encoder: Encoder[CommitteeMemberDO] = deriveEncoder[CommitteeMemberDO]
   implicit val decoder: Decoder[CommitteeMemberDO] = deriveDecoder[CommitteeMemberDO]
 }
@@ -65,13 +67,15 @@ object CommitteeMemberDO {
 final case class BillCommitteeReferralDO(
   billId: Long,
   committeeId: Long,
-  referralDate: Option[String],
-  reportDate: Option[String],
+  referralDate: Option[LocalDate],
+  reportDate: Option[LocalDate],
   activity: Option[String],
   createdAt: Option[Instant],
 )
 
 object BillCommitteeReferralDO {
+  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+
   implicit val encoder: Encoder[BillCommitteeReferralDO] = deriveEncoder[BillCommitteeReferralDO]
   implicit val decoder: Decoder[BillCommitteeReferralDO] = deriveDecoder[BillCommitteeReferralDO]
 }

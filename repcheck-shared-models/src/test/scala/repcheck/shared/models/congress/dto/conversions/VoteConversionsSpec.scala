@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import java.time.{Instant, LocalDate}
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.common.{Chamber, Party}
@@ -51,12 +53,12 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = v.voteType shouldBe Some("YEA-AND-NAY")
     val _             = v.voteMethod shouldBe None
     val _             = v.result shouldBe Some("Passed")
-    val _             = v.voteDate shouldBe Some("2024-01-15")
+    val _             = v.voteDate shouldBe Some(LocalDate.parse("2024-01-15"))
     val _             = v.legislationNumber shouldBe Some("HR 1234")
     val _             = v.legislationType shouldBe Some("HR")
     val _             = v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
     val _             = v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
-    v.updateDate shouldBe Some("2024-01-16")
+    v.updateDate shouldBe Some(Instant.parse("2024-01-16T00:00:00Z"))
   }
 
   it should "produce VotePositionDOs only for members with memberId in DTO" in {

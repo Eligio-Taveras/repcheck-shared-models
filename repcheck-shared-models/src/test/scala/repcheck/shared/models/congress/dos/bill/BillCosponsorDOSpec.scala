@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dos.bill
 
+import java.time.LocalDate
+
 import io.circe.parser.decode
 import io.circe.syntax._
 
@@ -12,7 +14,7 @@ class BillCosponsorDOSpec extends AnyFlatSpec with Matchers {
     billId = 1L,
     memberId = 1L,
     isOriginalCosponsor = Some(true),
-    sponsorshipDate = Some("2024-01-20"),
+    sponsorshipDate = Some(LocalDate.parse("2024-01-20")),
   )
 
   "BillCosponsorDO Circe codec" should "round-trip with all fields populated" in {
@@ -37,11 +39,13 @@ class BillCosponsorDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
+    import doobie.postgres.implicits._
     implicitly[Read[BillCosponsorDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
+    import doobie.postgres.implicits._
     implicitly[Write[BillCosponsorDO]].shouldBe(a[AnyRef])
   }
 

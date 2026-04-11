@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import java.time.{Instant, LocalDate}
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.common.{Chamber, FormatType}
@@ -37,10 +39,10 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val _           = bill.title shouldBe "A bill to do something"
     val _           = bill.originChamber shouldBe Some(Chamber.House)
     val _           = bill.originChamberCode shouldBe Some("H")
-    val _           = bill.latestActionDate shouldBe Some("2024-01-15")
+    val _           = bill.latestActionDate shouldBe Some(LocalDate.parse("2024-01-15"))
     val _           = bill.latestActionText shouldBe Some("Referred to committee")
-    val _           = bill.updateDate shouldBe Some("2024-02-01")
-    val _           = bill.updateDateIncludingText shouldBe Some("2024-02-15")
+    val _           = bill.updateDate shouldBe Some(Instant.parse("2024-02-01T00:00:00Z"))
+    val _           = bill.updateDateIncludingText shouldBe Some(Instant.parse("2024-02-15T00:00:00Z"))
     bill.apiUrl shouldBe Some("https://api.congress.gov/v3/bill/118/hr/1234")
   }
 
@@ -126,7 +128,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = result.bill.billId shouldBe 0L
     val _             = result.bill.naturalKey shouldBe "118-S-5678"
     val _             = result.bill.sponsorMemberId shouldBe None
-    val _             = result.bill.introducedDate shouldBe Some("2024-01-10")
+    val _             = result.bill.introducedDate shouldBe Some(LocalDate.parse("2024-01-10"))
     val _             = result.bill.policyArea shouldBe Some("Transportation")
     val _             = result.bill.constitutionalAuthorityText shouldBe Some("Congress has the power...")
     result.bill.legislationUrl shouldBe Some("https://congress.gov/bill/118/s/5678")
@@ -137,14 +139,14 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = result.bill.textUrl shouldBe Some("https://example.com/text")
     val _             = result.bill.textFormat shouldBe Some(FormatType.FormattedText)
     val _             = result.bill.textVersionType shouldBe Some("Introduced in Senate")
-    result.bill.textDate shouldBe Some("2024-01-10")
+    result.bill.textDate shouldBe Some(LocalDate.parse("2024-01-10"))
   }
 
   it should "extract summary from first summary" in {
     val Right(result) = validBillDetail.toDO: @unchecked
     val _             = result.bill.summaryText shouldBe Some("Summary text")
     val _             = result.bill.summaryActionDesc shouldBe Some("Introduced in Senate")
-    result.bill.summaryActionDate shouldBe Some("2024-01-10")
+    result.bill.summaryActionDate shouldBe Some(LocalDate.parse("2024-01-10"))
   }
 
   it should "produce subjects list from legislativeSubjects" in {
@@ -152,7 +154,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = result.subjects.length shouldBe 2
     val _ = result.subjects.map(_.subjectName) shouldBe List("Roads and highways", "Infrastructure development")
     val _ = result.subjects.map(_.billId).distinct shouldBe List(0L)
-    result.subjects.headOption.flatMap(_.updateDate) shouldBe Some("2024-01-15")
+    result.subjects.headOption.flatMap(_.updateDate) shouldBe Some(Instant.parse("2024-01-15T00:00:00Z"))
   }
 
   it should "produce empty cosponsors list (cosponsors are not in BillDetailDTO)" in {

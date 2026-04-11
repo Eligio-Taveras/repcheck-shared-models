@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dos.bill
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 
 import io.circe.parser.decode
 import io.circe.syntax._
@@ -20,23 +20,23 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     title = "Test Bill Title",
     originChamber = Some(Chamber.House),
     originChamberCode = Some("H"),
-    introducedDate = Some("2024-01-15"),
+    introducedDate = Some(LocalDate.parse("2024-01-15")),
     policyArea = Some("Health"),
-    latestActionDate = Some("2024-03-01"),
+    latestActionDate = Some(LocalDate.parse("2024-03-01")),
     latestActionText = Some("Referred to committee"),
     constitutionalAuthorityText = Some("Article I, Section 8"),
     sponsorMemberId = Some(1L),
     textUrl = Some("https://congress.gov/bill/118/hr/1234/text"),
     textFormat = Some(FormatType.FormattedXml),
     textVersionType = Some("Introduced"),
-    textDate = Some("2024-01-15"),
+    textDate = Some(LocalDate.parse("2024-01-15")),
     textContent = Some("Full text of the bill"),
     textEmbedding = None,
     summaryText = Some("A summary of the bill"),
     summaryActionDesc = Some("Introduced in House"),
-    summaryActionDate = Some("2024-01-15"),
-    updateDate = Some("2024-03-01T12:00:00Z"),
-    updateDateIncludingText = Some("2024-03-01T12:00:00Z"),
+    summaryActionDate = Some(LocalDate.parse("2024-01-15")),
+    updateDate = Some(Instant.parse("2024-03-01T12:00:00Z")),
+    updateDateIncludingText = Some(Instant.parse("2024-03-01T12:00:00Z")),
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
     apiUrl = Some("https://api.congress.gov/v3/bill/118/hr/1234"),
     createdAt = Some(Instant.parse("2024-01-15T10:30:00Z")),
