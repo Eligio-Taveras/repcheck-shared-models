@@ -2,8 +2,10 @@ package repcheck.shared.models.congress.dto.conversions
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.{Chamber, Party}
 import repcheck.shared.models.congress.dto.conversions.VoteConversions._
 import repcheck.shared.models.congress.dto.vote._
+import repcheck.shared.models.congress.vote.VoteCast
 
 class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
@@ -42,7 +44,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val Right(result) = validVoteMembers.toDO: @unchecked
     val v             = result.vote
     val _             = v.congress shouldBe 118
-    val _             = v.chamber shouldBe "House"
+    val _             = v.chamber shouldBe Chamber.House
     val _             = v.rollNumber shouldBe 42
     val _             = v.sessionNumber shouldBe Some(1)
     val _             = v.question shouldBe Some("On Passage")
@@ -68,8 +70,8 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val first         = result.positions.headOption
     val _             = first.map(_.voteId) shouldBe Some(0L)
     val _             = first.map(_.memberId) shouldBe Some(0L)
-    val _             = first.flatMap(_.position) shouldBe Some("Yea")
-    val _             = first.flatMap(_.partyAtVote) shouldBe Some("D")
+    val _             = first.flatMap(_.position) shouldBe Some(VoteCast.Yea)
+    val _             = first.flatMap(_.partyAtVote) shouldBe Some(Party.Democrat)
     first.flatMap(_.stateAtVote) shouldBe Some("NC")
   }
 

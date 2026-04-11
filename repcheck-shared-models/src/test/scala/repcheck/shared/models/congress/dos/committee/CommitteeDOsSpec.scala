@@ -7,6 +7,8 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeType}
+import repcheck.shared.models.congress.common.Chamber
 
 class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
 
@@ -14,8 +16,8 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
     committeeId = 1L,
     naturalKey = "SSFI00",
     name = "Committee on Finance",
-    chamber = Some("Senate"),
-    committeeType = Some("Standing"),
+    chamber = Some(Chamber.Senate),
+    committeeType = Some(CommitteeType.Standing),
     parentCommitteeId = None,
     isCurrent = Some(true),
     updateDate = Some("2024-06-01"),
@@ -26,7 +28,7 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
   private val sampleCommitteeMember = CommitteeMemberDO(
     committeeId = 1L,
     memberId = 2L,
-    position = Some("Chairman"),
+    position = Some(CommitteePosition.Chairman),
     side = None,
     rank = None,
     beginDate = Some("2021-01-03"),
@@ -74,12 +76,14 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[CommitteeDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[CommitteeDO]].shouldBe(a[AnyRef])
   }
 
@@ -112,12 +116,14 @@ class CommitteeDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[CommitteeMemberDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[CommitteeMemberDO]].shouldBe(a[AnyRef])
   }
 

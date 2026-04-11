@@ -1,13 +1,18 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import repcheck.shared.models.congress.common.{Chamber, Party}
 import repcheck.shared.models.congress.dos.results.VoteConversionResult
 import repcheck.shared.models.congress.dos.vote.{VoteDO, VotePositionDO}
 import repcheck.shared.models.congress.dto.vote.{SenateVoteXmlDTO, VoteMembersDTO, VoteResultDTO}
+import repcheck.shared.models.congress.vote.VoteCast
 
 object VoteConversions {
 
   private[conversions] def buildVoteId(congress: Int, chamber: String, rollCallNumber: Int): String =
     s"$congress-$chamber-$rollCallNumber"
+
+  private def parseChamber(raw: String): Either[String, Chamber] =
+    Chamber.fromString(raw).left.map(_.getMessage)
 
   implicit class VoteMembersDTOOps(private val dto: VoteMembersDTO) extends AnyVal {
 
@@ -17,52 +22,54 @@ object VoteConversions {
       } else if (dto.chamber.trim.isEmpty) {
         Left("chamber must not be empty")
       } else {
-        val naturalKey = buildVoteId(dto.congress, dto.chamber, dto.rollCallNumber)
+        for {
+          chamber <- parseChamber(dto.chamber)
+        } yield {
+          val naturalKey = buildVoteId(dto.congress, dto.chamber, dto.rollCallNumber)
 
-        val vote = VoteDO(
-          voteId = 0L,
-          naturalKey = naturalKey,
-          congress = dto.congress,
-          chamber = dto.chamber,
-          rollNumber = dto.rollCallNumber,
-          sessionNumber = dto.sessionNumber,
-          billId = None,
-          question = dto.voteQuestion,
-          voteType = dto.voteType,
-          voteMethod = None,
-          result = dto.result,
-          voteDate = dto.startDate,
-          legislationNumber = dto.legislationNumber,
-          legislationType = dto.legislationType,
-          legislationUrl = dto.legislationUrl,
-          sourceDataUrl = dto.sourceDataUrl.orElse(dto.url),
-          updateDate = dto.updateDate,
-          createdAt = None,
-          updatedAt = None,
-        )
+          val vote = VoteDO(
+            voteId = 0L,
+            naturalKey = naturalKey,
+            congress = dto.congress,
+            chamber = chamber,
+            rollNumber = dto.rollCallNumber,
+            sessionNumber = dto.sessionNumber,
+            billId = None,
+            question = dto.voteQuestion,
+            voteType = dto.voteType,
+            voteMethod = None,
+            result = dto.result,
+            voteDate = dto.startDate,
+            legislationNumber = dto.legislationNumber,
+            legislationType = dto.legislationType,
+            legislationUrl = dto.legislationUrl,
+            sourceDataUrl = dto.sourceDataUrl.orElse(dto.url),
+            updateDate = dto.updateDate,
+            createdAt = None,
+            updatedAt = None,
+          )
 
-        val positions: List[VotePositionDO] = dto.results
-          .getOrElse(List.empty)
-          .filter(_.memberId.isDefined)
-          .map { r =>
-            VotePositionDO(
-              voteId = 0L,
-              // Resolved to the AlloyDB-generated member PK in a downstream
-              // step that joins on the Congress.gov member id (r.memberId).
-              memberId = 0L,
-              position = r.voteCast,
-              partyAtVote = r.party,
-              stateAtVote = r.state,
-              createdAt = None,
-            )
-          }
+          val positions: List[VotePositionDO] = dto.results
+            .getOrElse(List.empty)
+            .filter(_.memberId.isDefined)
+            .map { r =>
+              VotePositionDO(
+                voteId = 0L,
+                // Resolved to the AlloyDB-generated member PK in a downstream
+                // step that joins on the Congress.gov member id (r.memberId).
+                memberId = 0L,
+                position = r.voteCast.flatMap(s => VoteCast.fromString(s).toOption),
+                partyAtVote = r.party.flatMap(s => Party.fromString(s).toOption),
+                stateAtVote = r.state,
+                createdAt = None,
+              )
+            }
 
-        Right(
           VoteConversionResult(
             vote = vote,
             positions = positions,
           )
-        )
+        }
       }
 
   }

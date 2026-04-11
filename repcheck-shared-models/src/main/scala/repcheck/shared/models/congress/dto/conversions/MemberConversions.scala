@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import repcheck.shared.models.congress.common.{Party, UsState}
+import repcheck.shared.models.congress.common.{Chamber, Party, UsState}
 import repcheck.shared.models.congress.dos.member.{MemberDO, MemberPartyHistoryDO, MemberTermDO}
 import repcheck.shared.models.congress.dos.results.MemberConversionResult
 import repcheck.shared.models.congress.dto.member.MemberDetailDTO
@@ -74,7 +74,7 @@ object MemberConversions {
               MemberTermDO(
                 termId = 0L,
                 memberId = 0L,
-                chamber = t.chamber,
+                chamber = t.chamber.flatMap(s => Chamber.fromString(s).toOption),
                 congress = t.congress,
                 startYear = t.startYear,
                 endYear = t.endYear,

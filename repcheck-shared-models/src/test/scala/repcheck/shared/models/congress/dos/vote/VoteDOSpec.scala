@@ -7,6 +7,7 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.Chamber
 
 class VoteDOSpec extends AnyFlatSpec with Matchers {
 
@@ -14,7 +15,7 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
     voteId = 1L,
     naturalKey = "rv118-house-123",
     congress = 118,
-    chamber = "House",
+    chamber = Chamber.House,
     rollNumber = 123,
     sessionNumber = Some(1),
     billId = Some(1L),
@@ -43,7 +44,7 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
       voteId = 2L,
       naturalKey = "rv118-senate-456",
       congress = 118,
-      chamber = "Senate",
+      chamber = Chamber.Senate,
       rollNumber = 456,
       sessionNumber = None,
       billId = None,
@@ -91,12 +92,14 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[VoteDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[VoteDO]].shouldBe(a[AnyRef])
   }
 

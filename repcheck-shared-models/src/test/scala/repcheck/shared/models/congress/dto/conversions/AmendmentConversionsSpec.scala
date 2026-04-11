@@ -2,6 +2,8 @@ package repcheck.shared.models.congress.dto.conversions
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.congress.dto.amendment._
 import repcheck.shared.models.congress.dto.bill.{LatestActionDTO, SponsorDTO}
 import repcheck.shared.models.congress.dto.conversions.AmendmentConversions._
@@ -36,9 +38,9 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
   it should "map all fields correctly" in {
     val Right(a) = validAmendmentDetail.toDO: @unchecked
     val _        = a.congress shouldBe 118
-    val _        = a.amendmentType shouldBe Some("SAMDT")
+    val _        = a.amendmentType shouldBe Some(AmendmentType.SAMDT)
     val _        = a.number shouldBe "200"
-    val _        = a.chamber shouldBe Some("Senate")
+    val _        = a.chamber shouldBe Some(Chamber.Senate)
     val _        = a.description shouldBe Some("Amendment description")
     val _        = a.purpose shouldBe Some("To improve the bill")
     val _        = a.sponsorMemberId shouldBe None

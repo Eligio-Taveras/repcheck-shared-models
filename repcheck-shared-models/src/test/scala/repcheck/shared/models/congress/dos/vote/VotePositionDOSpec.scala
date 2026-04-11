@@ -7,14 +7,16 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.Party
+import repcheck.shared.models.congress.vote.VoteCast
 
 class VotePositionDOSpec extends AnyFlatSpec with Matchers {
 
   private val samplePosition = VotePositionDO(
     voteId = 1L,
     memberId = 1L,
-    position = Some("Yea"),
-    partyAtVote = Some("D"),
+    position = Some(VoteCast.Yea),
+    partyAtVote = Some(Party.Democrat),
     stateAtVote = Some("NY"),
     createdAt = Some(Instant.parse("2024-03-15T10:00:00Z")),
   )
@@ -50,12 +52,14 @@ class VotePositionDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[VotePositionDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[VotePositionDO]].shouldBe(a[AnyRef])
   }
 

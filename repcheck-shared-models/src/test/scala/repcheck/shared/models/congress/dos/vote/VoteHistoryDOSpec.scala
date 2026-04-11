@@ -7,6 +7,8 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.{Chamber, Party}
+import repcheck.shared.models.congress.vote.VoteCast
 
 class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
@@ -14,7 +16,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
     id = 1L,
     voteId = 1L,
     congress = 118,
-    chamber = "House",
+    chamber = Chamber.House,
     rollNumber = 123,
     sessionNumber = Some(1),
     billId = Some(1L),
@@ -34,8 +36,8 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
   private val sampleHistoryPosition = VoteHistoryPositionDO(
     historyId = 1L,
     memberId = 1L,
-    position = Some("Yea"),
-    partyAtVote = Some("D"),
+    position = Some(VoteCast.Yea),
+    partyAtVote = Some(Party.Democrat),
     stateAtVote = Some("NY"),
   )
 
@@ -52,7 +54,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
       id = 2L,
       voteId = 2L,
       congress = 118,
-      chamber = "Senate",
+      chamber = Chamber.Senate,
       rollNumber = 456,
       sessionNumber = None,
       billId = None,
@@ -99,12 +101,14 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[VoteHistoryDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[VoteHistoryDO]].shouldBe(a[AnyRef])
   }
 
@@ -139,11 +143,13 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[VoteHistoryPositionDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[VoteHistoryPositionDO]].shouldBe(a[AnyRef])
   }
 

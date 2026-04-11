@@ -2,6 +2,7 @@ package repcheck.shared.models.congress.dto.conversions
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.{Chamber, FormatType}
 import repcheck.shared.models.congress.dto.bill._
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
 import repcheck.shared.models.congress.dto.conversions.BillConversions._
@@ -34,7 +35,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val _           = bill.billType shouldBe "hr"
     val _           = bill.number shouldBe "1234"
     val _           = bill.title shouldBe "A bill to do something"
-    val _           = bill.originChamber shouldBe Some("House")
+    val _           = bill.originChamber shouldBe Some(Chamber.House)
     val _           = bill.originChamberCode shouldBe Some("H")
     val _           = bill.latestActionDate shouldBe Some("2024-01-15")
     val _           = bill.latestActionText shouldBe Some("Referred to committee")
@@ -134,7 +135,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
   it should "extract text info from first textVersion" in {
     val Right(result) = validBillDetail.toDO: @unchecked
     val _             = result.bill.textUrl shouldBe Some("https://example.com/text")
-    val _             = result.bill.textFormat shouldBe Some("Formatted Text")
+    val _             = result.bill.textFormat shouldBe Some(FormatType.FormattedText)
     val _             = result.bill.textVersionType shouldBe Some("Introduced in Senate")
     result.bill.textDate shouldBe Some("2024-01-10")
   }

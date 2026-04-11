@@ -5,13 +5,14 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class VoteDO(
   voteId: Long,
   naturalKey: String,
   congress: Int,
-  chamber: String,
+  chamber: Chamber,
   rollNumber: Int,
   sessionNumber: Option[Int],
   billId: Option[Long],
@@ -40,7 +41,7 @@ object VoteDO {
         voteId = 0L,
         naturalKey = naturalKey,
         congress = 0,
-        chamber = "",
+        chamber = Chamber.House,
         rollNumber = 0,
         sessionNumber = None,
         billId = None,

@@ -7,6 +7,7 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.FormatType
 
 class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
 
@@ -16,7 +17,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
     versionCode = "ih",
     versionType = "Introduced in House",
     versionDate = Some("2024-01-15"),
-    formatType = Some("xml"),
+    formatType = Some(FormatType.FormattedXml),
     url = Some("https://congress.gov/bill/118/hr/1234/text/ih"),
     content = Some("Full text of the bill version"),
     embedding = None,
@@ -55,6 +56,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[BillTextVersionDO]].shouldBe(a[AnyRef])
   }
 
@@ -62,6 +64,7 @@ class BillTextVersionDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[BillTextVersionDO]].shouldBe(a[AnyRef])
   }
 

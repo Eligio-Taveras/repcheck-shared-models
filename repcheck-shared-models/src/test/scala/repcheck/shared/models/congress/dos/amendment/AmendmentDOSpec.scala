@@ -7,6 +7,8 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.Chamber
 
 class AmendmentDOSpec extends AnyFlatSpec with Matchers {
 
@@ -14,10 +16,10 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     amendmentId = 1L,
     naturalKey = "118-hamdt-1",
     congress = 118,
-    amendmentType = Some("hamdt"),
+    amendmentType = Some(AmendmentType.HAMDT),
     number = "1",
     billId = Some(2L),
-    chamber = Some("House"),
+    chamber = Some(Chamber.House),
     description = Some("An amendment to improve section 3"),
     purpose = Some("To strike section 3 and replace with new language"),
     sponsorMemberId = Some(3L),
@@ -66,12 +68,14 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[AmendmentDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[AmendmentDO]].shouldBe(a[AnyRef])
   }
 

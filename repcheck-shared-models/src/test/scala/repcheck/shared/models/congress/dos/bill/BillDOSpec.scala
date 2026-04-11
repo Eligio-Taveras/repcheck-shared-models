@@ -7,6 +7,7 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.{Chamber, FormatType}
 
 class BillDOSpec extends AnyFlatSpec with Matchers {
 
@@ -17,7 +18,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     billType = "hr",
     number = "1234",
     title = "Test Bill Title",
-    originChamber = Some("House"),
+    originChamber = Some(Chamber.House),
     originChamberCode = Some("H"),
     introducedDate = Some("2024-01-15"),
     policyArea = Some("Health"),
@@ -26,7 +27,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     constitutionalAuthorityText = Some("Article I, Section 8"),
     sponsorMemberId = Some(1L),
     textUrl = Some("https://congress.gov/bill/118/hr/1234/text"),
-    textFormat = Some("xml"),
+    textFormat = Some(FormatType.FormattedXml),
     textVersionType = Some("Introduced"),
     textDate = Some("2024-01-15"),
     textContent = Some("Full text of the bill"),
@@ -93,6 +94,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[BillDO]].shouldBe(a[AnyRef])
   }
 
@@ -100,6 +102,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import doobie.postgres.implicits._
     import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[BillDO]].shouldBe(a[AnyRef])
   }
 

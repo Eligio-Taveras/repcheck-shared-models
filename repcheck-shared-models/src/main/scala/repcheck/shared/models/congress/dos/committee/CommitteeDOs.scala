@@ -5,14 +5,16 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
+import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class CommitteeDO(
   committeeId: Long,
   naturalKey: String,
   name: String,
-  chamber: Option[String],
-  committeeType: Option[String],
+  chamber: Option[Chamber],
+  committeeType: Option[CommitteeType],
   parentCommitteeId: Option[Long],
   isCurrent: Option[Boolean],
   updateDate: Option[String],
@@ -45,8 +47,8 @@ object CommitteeDO {
 final case class CommitteeMemberDO(
   committeeId: Long,
   memberId: Long,
-  position: Option[String],
-  side: Option[String],
+  position: Option[CommitteePosition],
+  side: Option[CommitteeSide],
   rank: Option[Int],
   beginDate: Option[String],
   endDate: Option[String],

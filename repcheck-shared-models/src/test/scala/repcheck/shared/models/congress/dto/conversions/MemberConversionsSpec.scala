@@ -2,7 +2,7 @@ package repcheck.shared.models.congress.dto.conversions
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.{Party, UsState}
+import repcheck.shared.models.congress.common.{Chamber, Party, UsState}
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
 import repcheck.shared.models.congress.dto.conversions.MemberConversions._
 import repcheck.shared.models.congress.dto.member._
@@ -89,7 +89,7 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
       val _ = t.termId shouldBe 0L
       t.memberId shouldBe 0L
     }
-    result.terms.map(_.chamber) shouldBe List(Some("House"), Some("Senate"))
+    result.terms.map(_.chamber) shouldBe List(Some(Chamber.House), Some(Chamber.Senate))
   }
 
   it should "produce partyHistory list" in {

@@ -5,13 +5,15 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.common.FormatType
+
 final case class BillTextVersionDO(
   id: Long,
   billId: Long,
   versionCode: String,
   versionType: String,
   versionDate: Option[String],
-  formatType: Option[String],
+  formatType: Option[FormatType],
   url: Option[String],
   content: Option[String],
   embedding: Option[Array[Float]],

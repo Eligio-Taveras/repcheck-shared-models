@@ -5,13 +5,14 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.Chamber
 
 class MemberTermDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleTerm = MemberTermDO(
     termId = 1L,
     memberId = 1L,
-    chamber = Some("House"),
+    chamber = Some(Chamber.House),
     congress = Some(118),
     startYear = Some(2023),
     endYear = Some(2025),
@@ -49,11 +50,13 @@ class MemberTermDOSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[MemberTermDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[MemberTermDO]].shouldBe(a[AnyRef])
   }
 

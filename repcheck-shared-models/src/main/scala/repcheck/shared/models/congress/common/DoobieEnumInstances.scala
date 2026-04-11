@@ -2,6 +2,10 @@ package repcheck.shared.models.congress.common
 
 import doobie.{Get, Put}
 
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
+import repcheck.shared.models.congress.vote.VoteCast
+
 /**
  * Doobie [[Get]] and [[Put]] instances for all domain enums. These enable Doobie auto-derivation of
  * [[doobie.Read]]/[[doobie.Write]] for DOs that contain enum fields (e.g., `MemberDO.currentParty: Option[Party]`).
@@ -39,5 +43,35 @@ object DoobieEnumInstances {
 
   implicit val formatTypePut: Put[FormatType] =
     Put[String].contramap(_.text)
+
+  implicit val voteCastGet: Get[VoteCast] =
+    Get[String].temap(s => VoteCast.fromString(s).left.map(_.getMessage))
+
+  implicit val voteCastPut: Put[VoteCast] =
+    Put[String].contramap(_.apiValue)
+
+  implicit val amendmentTypeGet: Get[AmendmentType] =
+    Get[String].temap(s => AmendmentType.fromString(s).left.map(_.getMessage))
+
+  implicit val amendmentTypePut: Put[AmendmentType] =
+    Put[String].contramap(_.apiValue)
+
+  implicit val committeeTypeGet: Get[CommitteeType] =
+    Get[String].temap(s => CommitteeType.fromString(s).left.map(_.getMessage))
+
+  implicit val committeeTypePut: Put[CommitteeType] =
+    Put[String].contramap(_.apiValue)
+
+  implicit val committeePositionGet: Get[CommitteePosition] =
+    Get[String].temap(s => CommitteePosition.fromString(s).left.map(_.getMessage))
+
+  implicit val committeePositionPut: Put[CommitteePosition] =
+    Put[String].contramap(_.apiValue)
+
+  implicit val committeeSideGet: Get[CommitteeSide] =
+    Get[String].temap(s => CommitteeSide.fromString(s).left.map(_.getMessage))
+
+  implicit val committeeSidePut: Put[CommitteeSide] =
+    Put[String].contramap(_.apiValue)
 
 }
