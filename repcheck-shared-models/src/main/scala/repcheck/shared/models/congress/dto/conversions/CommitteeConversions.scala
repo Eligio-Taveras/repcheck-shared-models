@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import cats.syntax.traverse._
+
 import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
 import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.congress.dos.committee.{BillCommitteeReferralDO, CommitteeDO, CommitteeMemberDO}
@@ -25,22 +27,30 @@ object CommitteeConversions {
       case Some(s) => CommitteeType.fromString(s).left.map(_.getMessage).map(Some(_))
     }
 
+  private def parseCommitteePosition(raw: String): Either[String, CommitteePosition] =
+    CommitteePosition.fromString(raw).left.map(_.getMessage)
+
+  private def parseCommitteeSide(raw: String): Either[String, CommitteeSide] =
+    CommitteeSide.fromString(raw).left.map(_.getMessage)
+
   implicit class SenatorCommitteeDataXmlDTOOps(private val dto: SenatorCommitteeDataXmlDTO) extends AnyVal {
 
-    def toMemberCommittees: List[CommitteeMemberDO] =
-      dto.committees.map { assignment =>
-        CommitteeMemberDO(
-          committeeId = 0L,
-          memberId = 0L,
-          position = CommitteePosition.fromString(assignment.position).toOption,
-          side = None,
-          rank = None,
-          beginDate = None,
-          endDate = None,
-          congress = None,
-          createdAt = None,
-          updatedAt = None,
-        )
+    def toMemberCommittees: Either[String, List[CommitteeMemberDO]] =
+      dto.committees.traverse { assignment =>
+        parseCommitteePosition(assignment.position).map { position =>
+          CommitteeMemberDO(
+            committeeId = 0L,
+            memberId = 0L,
+            position = Some(position),
+            side = None,
+            rank = None,
+            beginDate = None,
+            endDate = None,
+            congress = None,
+            createdAt = None,
+            updatedAt = None,
+          )
+        }
       }
 
     def toLisMember: Option[LisMemberDO] =
@@ -60,20 +70,22 @@ object CommitteeConversions {
 
   implicit class HouseMemberDataXmlDTOOps(private val dto: HouseMemberDataXmlDTO) extends AnyVal {
 
-    def toMemberCommittees: List[CommitteeMemberDO] =
-      dto.committees.map { assignment =>
-        CommitteeMemberDO(
-          committeeId = 0L,
-          memberId = 0L,
-          position = None,
-          side = CommitteeSide.fromString(assignment.side).toOption,
-          rank = assignment.rank,
-          beginDate = None,
-          endDate = None,
-          congress = None,
-          createdAt = None,
-          updatedAt = None,
-        )
+    def toMemberCommittees: Either[String, List[CommitteeMemberDO]] =
+      dto.committees.traverse { assignment =>
+        parseCommitteeSide(assignment.side).map { side =>
+          CommitteeMemberDO(
+            committeeId = 0L,
+            memberId = 0L,
+            position = None,
+            side = Some(side),
+            rank = assignment.rank,
+            beginDate = None,
+            endDate = None,
+            congress = None,
+            createdAt = None,
+            updatedAt = None,
+          )
+        }
       }
 
   }

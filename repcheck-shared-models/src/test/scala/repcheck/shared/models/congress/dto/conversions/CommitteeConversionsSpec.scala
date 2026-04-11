@@ -54,29 +54,38 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
   )
 
   "SenatorCommitteeDataXmlDTO.toMemberCommittees" should "produce correct number of CommitteeMemberDOs" in {
-    val result = senatorWithCommittees.toMemberCommittees
+    val Right(result) = senatorWithCommittees.toMemberCommittees: @unchecked
     result.length shouldBe 2
   }
 
   it should "set committeeId and memberId to 0L (FK resolved at persistence time)" in {
-    val result = senatorWithCommittees.toMemberCommittees
+    val Right(result) = senatorWithCommittees.toMemberCommittees: @unchecked
     result.foreach(_.committeeId shouldBe 0L)
     result.foreach(_.memberId shouldBe 0L)
   }
 
   it should "map position from assignment" in {
-    val result = senatorWithCommittees.toMemberCommittees
+    val Right(result) = senatorWithCommittees.toMemberCommittees: @unchecked
     result.map(_.position) shouldBe List(Some(CommitteePosition.Chairman), Some(CommitteePosition.Member))
   }
 
   it should "set side to None for senate assignments" in {
-    val result = senatorWithCommittees.toMemberCommittees
+    val Right(result) = senatorWithCommittees.toMemberCommittees: @unchecked
     result.foreach(_.side shouldBe None)
   }
 
   it should "return empty list for senator with no committees" in {
-    val result = senatorNoCommittees.toMemberCommittees
+    val Right(result) = senatorNoCommittees.toMemberCommittees: @unchecked
     result shouldBe List.empty
+  }
+
+  it should "fail when position is unrecognized" in {
+    val dto = senatorWithCommittees.copy(
+      committees = List(SenatorCommitteeAssignmentXmlDTO("SSFI00", "Finance", "InvalidPosition"))
+    )
+    val result = dto.toMemberCommittees
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("InvalidPosition")) shouldBe Left(true)
   }
 
   "SenatorCommitteeDataXmlDTO.toLisMember" should "produce Some with id set to 0L (DB-generated)" in {
@@ -112,28 +121,38 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   "HouseMemberDataXmlDTO.toMemberCommittees" should "produce correct number of CommitteeMemberDOs" in {
-    val result = houseMember.toMemberCommittees
+    val Right(result) = houseMember.toMemberCommittees: @unchecked
     result.length shouldBe 2
   }
 
   it should "map side from assignment" in {
-    val result = houseMember.toMemberCommittees
+    val Right(result) = houseMember.toMemberCommittees: @unchecked
     result.map(_.side) shouldBe List(Some(CommitteeSide.Majority), Some(CommitteeSide.Minority))
   }
 
   it should "map rank from assignment" in {
-    val result = houseMember.toMemberCommittees
+    val Right(result) = houseMember.toMemberCommittees: @unchecked
     result.map(_.rank) shouldBe List(Some(2), None)
   }
 
   it should "set position to None for house assignments" in {
-    val result = houseMember.toMemberCommittees
+    val Right(result) = houseMember.toMemberCommittees: @unchecked
     result.foreach(_.position shouldBe None)
   }
 
   it should "return empty list for house member with no committees" in {
-    val dto = houseMember.copy(committees = List.empty)
-    dto.toMemberCommittees shouldBe List.empty
+    val dto           = houseMember.copy(committees = List.empty)
+    val Right(result) = dto.toMemberCommittees: @unchecked
+    result shouldBe List.empty
+  }
+
+  it should "fail when side is unrecognized" in {
+    val dto = houseMember.copy(
+      committees = List(HouseCommitteeAssignmentXmlDTO("HSAP00", "Appropriations", Some(1), "InvalidSide"))
+    )
+    val result = dto.toMemberCommittees
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("InvalidSide")) shouldBe Left(true)
   }
 
   "CommitteeListItemDTO.toDO" should "map systemCode to naturalKey" in {

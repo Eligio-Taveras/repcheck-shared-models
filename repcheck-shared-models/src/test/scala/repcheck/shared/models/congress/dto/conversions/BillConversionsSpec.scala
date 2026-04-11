@@ -75,6 +75,18 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     result.left.map(msg => msg.contains("title")) shouldBe Left(true)
   }
 
+  it should "fail when billType is unrecognized" in {
+    val result = validBillListItem.copy(billType = "invalidtype").toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("invalidtype")) shouldBe Left(true)
+  }
+
+  it should "fail when originChamber is unrecognized" in {
+    val result = validBillListItem.copy(originChamber = Some("BadChamber")).toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("BadChamber")) shouldBe Left(true)
+  }
+
   private val validBillDetail = BillDetailDTO(
     congress = 118,
     number = "5678",
@@ -177,6 +189,23 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val Right(result) = validBillDetail.copy(textVersions = None).toDO: @unchecked
     val _             = result.bill.textUrl shouldBe None
     result.bill.textFormat shouldBe None
+  }
+
+  it should "fail when textVersionCode is unrecognized" in {
+    val dto = validBillDetail.copy(
+      textVersions = Some(
+        List(
+          TextVersionDTO(
+            Some("2024-01-10"),
+            Some(List(FormatDTO("Formatted Text", "https://example.com/text"))),
+            Some("BADCODE"),
+          )
+        )
+      )
+    )
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("BADCODE")) shouldBe Left(true)
   }
 
   it should "handle None subjects" in {
