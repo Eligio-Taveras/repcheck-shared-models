@@ -5,6 +5,7 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.common.{Party, UsState}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class MemberDO(
@@ -15,9 +16,9 @@ final case class MemberDO(
   directOrderName: Option[String],
   invertedOrderName: Option[String],
   honorificName: Option[String],
-  birthYear: Option[String],
-  currentParty: Option[String],
-  state: Option[String],
+  birthYear: Option[Int],
+  currentParty: Option[Party],
+  state: Option[UsState],
   district: Option[Int],
   imageUrl: Option[String],
   imageAttribution: Option[String],

@@ -7,6 +7,7 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.common.{Party, UsState}
 
 class MemberDOSpec extends AnyFlatSpec with Matchers {
 
@@ -18,9 +19,9 @@ class MemberDOSpec extends AnyFlatSpec with Matchers {
     directOrderName = Some("John Smith"),
     invertedOrderName = Some("Smith, John"),
     honorificName = Some("Rep."),
-    birthYear = Some("1965"),
-    currentParty = Some("Democratic"),
-    state = Some("California"),
+    birthYear = Some(1965),
+    currentParty = Some(Party.Democrat),
+    state = Some(UsState.California),
     district = Some(12),
     imageUrl = Some("https://bioguide.congress.gov/photo/B/B001234.jpg"),
     imageAttribution = Some("Courtesy U.S. Congress"),
@@ -66,12 +67,14 @@ class MemberDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[MemberDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
+    import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[MemberDO]].shouldBe(a[AnyRef])
   }
 
