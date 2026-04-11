@@ -2,6 +2,8 @@ package repcheck.shared.models.congress.dto.conversions
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
+import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.congress.dto.committee._
 import repcheck.shared.models.congress.dto.conversions.CommitteeConversions._
 
@@ -62,7 +64,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "map position from assignment" in {
     val result = senatorWithCommittees.toMemberCommittees
-    result.map(_.position) shouldBe List(Some("Chairman"), Some("Member"))
+    result.map(_.position) shouldBe List(Some(CommitteePosition.Chairman), Some(CommitteePosition.Member))
   }
 
   it should "set side to None for senate assignments" in {
@@ -114,7 +116,7 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "map side from assignment" in {
     val result = houseMember.toMemberCommittees
-    result.map(_.side) shouldBe List(Some("majority"), Some("minority"))
+    result.map(_.side) shouldBe List(Some(CommitteeSide.Majority), Some(CommitteeSide.Minority))
   }
 
   it should "map rank from assignment" in {
@@ -147,8 +149,8 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = result.committeeId shouldBe 0L
     val _             = result.naturalKey shouldBe "ssfi00"
     val _             = result.name shouldBe "Committee on Finance"
-    val _             = result.chamber shouldBe Some("Senate")
-    result.committeeType shouldBe Some("Standing")
+    val _             = result.chamber shouldBe Some(Chamber.Senate)
+    result.committeeType shouldBe Some(CommitteeType.Standing)
   }
 
   it should "set parentCommitteeId to None (FK resolved at persistence time)" in {

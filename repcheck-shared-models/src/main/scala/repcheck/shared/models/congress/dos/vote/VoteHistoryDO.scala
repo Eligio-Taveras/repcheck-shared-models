@@ -5,11 +5,14 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.common.{Chamber, Party}
+import repcheck.shared.models.congress.vote.VoteCast
+
 final case class VoteHistoryDO(
   id: Long,
   voteId: Long,
   congress: Int,
-  chamber: String,
+  chamber: Chamber,
   rollNumber: Int,
   sessionNumber: Option[Int],
   billId: Option[Long],
@@ -36,8 +39,8 @@ object VoteHistoryDO {
 final case class VoteHistoryPositionDO(
   historyId: Long,
   memberId: Long,
-  position: Option[String],
-  partyAtVote: Option[String],
+  position: Option[VoteCast],
+  partyAtVote: Option[Party],
   stateAtVote: Option[String],
 )
 

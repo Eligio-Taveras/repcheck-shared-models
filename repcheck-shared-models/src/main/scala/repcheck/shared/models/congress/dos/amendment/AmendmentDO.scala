@@ -5,16 +5,18 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class AmendmentDO(
   amendmentId: Long,
   naturalKey: String,
   congress: Int,
-  amendmentType: Option[String],
+  amendmentType: Option[AmendmentType],
   number: String,
   billId: Option[Long],
-  chamber: Option[String],
+  chamber: Option[Chamber],
   description: Option[String],
   purpose: Option[String],
   sponsorMemberId: Option[Long],

@@ -5,6 +5,7 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.common.{Chamber, FormatType}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class BillDO(
@@ -14,7 +15,7 @@ final case class BillDO(
   billType: String,
   number: String,
   title: String,
-  originChamber: Option[String],
+  originChamber: Option[Chamber],
   originChamberCode: Option[String],
   introducedDate: Option[String],
   policyArea: Option[String],
@@ -23,7 +24,7 @@ final case class BillDO(
   constitutionalAuthorityText: Option[String],
   sponsorMemberId: Option[Long],
   textUrl: Option[String],
-  textFormat: Option[String],
+  textFormat: Option[FormatType],
   textVersionType: Option[String],
   textDate: Option[String],
   textContent: Option[String],

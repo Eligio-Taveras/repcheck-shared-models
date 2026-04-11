@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
+import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.congress.dos.committee.{BillCommitteeReferralDO, CommitteeDO, CommitteeMemberDO}
 import repcheck.shared.models.congress.dos.member.LisMemberDO
 import repcheck.shared.models.congress.dto.committee.{
@@ -11,6 +13,18 @@ import repcheck.shared.models.congress.dto.committee.{
 
 object CommitteeConversions {
 
+  private def parseOptChamber(raw: Option[String]): Either[String, Option[Chamber]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => Chamber.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
+  private def parseOptCommitteeType(raw: Option[String]): Either[String, Option[CommitteeType]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => CommitteeType.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
   implicit class SenatorCommitteeDataXmlDTOOps(private val dto: SenatorCommitteeDataXmlDTO) extends AnyVal {
 
     def toMemberCommittees: List[CommitteeMemberDO] =
@@ -18,7 +32,7 @@ object CommitteeConversions {
         CommitteeMemberDO(
           committeeId = 0L,
           memberId = 0L,
-          position = Some(assignment.position),
+          position = CommitteePosition.fromString(assignment.position).toOption,
           side = None,
           rank = None,
           beginDate = None,
@@ -52,7 +66,7 @@ object CommitteeConversions {
           committeeId = 0L,
           memberId = 0L,
           position = None,
-          side = Some(assignment.side),
+          side = CommitteeSide.fromString(assignment.side).toOption,
           rank = assignment.rank,
           beginDate = None,
           endDate = None,
@@ -70,19 +84,20 @@ object CommitteeConversions {
       if (dto.systemCode.trim.isEmpty) {
         Left("systemCode must not be blank")
       } else {
-        Right(
-          CommitteeDO(
-            committeeId = 0L,
-            naturalKey = dto.systemCode,
-            name = dto.name,
-            chamber = dto.chamber,
-            committeeType = dto.committeeTypeCode,
-            parentCommitteeId = None,
-            isCurrent = None,
-            updateDate = dto.updateDate,
-            createdAt = None,
-            updatedAt = None,
-          )
+        for {
+          chamber       <- parseOptChamber(dto.chamber)
+          committeeType <- parseOptCommitteeType(dto.committeeTypeCode)
+        } yield CommitteeDO(
+          committeeId = 0L,
+          naturalKey = dto.systemCode,
+          name = dto.name,
+          chamber = chamber,
+          committeeType = committeeType,
+          parentCommitteeId = None,
+          isCurrent = None,
+          updateDate = dto.updateDate,
+          createdAt = None,
+          updatedAt = None,
         )
       }
 

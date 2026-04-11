@@ -1,10 +1,23 @@
 package repcheck.shared.models.congress.dto.conversions
 
+import repcheck.shared.models.congress.common.{Chamber, FormatType}
 import repcheck.shared.models.congress.dos.bill.{BillCosponsorDO, BillDO, BillSubjectDO}
 import repcheck.shared.models.congress.dos.results.BillConversionResult
 import repcheck.shared.models.congress.dto.bill.{BillDetailDTO, BillListItemDTO}
 
 object BillConversions {
+
+  private def parseChamber(raw: Option[String]): Either[String, Option[Chamber]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => Chamber.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
+
+  private def parseFormatType(raw: Option[String]): Either[String, Option[FormatType]] =
+    raw match {
+      case None    => Right(None)
+      case Some(s) => FormatType.fromString(s).left.map(_.getMessage).map(Some(_))
+    }
 
   private[conversions] def buildBillId(congress: Int, billType: String, number: String): String =
     s"$congress-${billType.toUpperCase}-$number"
@@ -28,7 +41,8 @@ object BillConversions {
 
     def toDO: Either[String, BillDO] =
       for {
-        _ <- validateBillFields(dto.congress, dto.number, dto.title)
+        _             <- validateBillFields(dto.congress, dto.number, dto.title)
+        originChamber <- parseChamber(dto.originChamber)
       } yield BillDO(
         billId = 0L,
         naturalKey = buildBillId(dto.congress, dto.billType, dto.number),
@@ -36,7 +50,7 @@ object BillConversions {
         billType = dto.billType,
         number = dto.number,
         title = dto.title,
-        originChamber = dto.originChamber,
+        originChamber = originChamber,
         originChamberCode = dto.originChamberCode,
         introducedDate = None,
         policyArea = None,
@@ -66,18 +80,20 @@ object BillConversions {
 
   implicit class BillDetailDTOOps(private val dto: BillDetailDTO) extends AnyVal {
 
-    def toDO: Either[String, BillConversionResult] =
+    def toDO: Either[String, BillConversionResult] = {
+      val firstTextVersion = dto.textVersions.flatMap(_.headOption)
+      val firstFormat      = firstTextVersion.flatMap(_.formats).flatMap(_.headOption)
+
       for {
-        _ <- validateBillFields(dto.congress, dto.number, dto.title)
+        _             <- validateBillFields(dto.congress, dto.number, dto.title)
+        originChamber <- parseChamber(dto.originChamber)
+        textFormatVal <- parseFormatType(firstFormat.map(_.type_))
       } yield {
         val naturalKey = buildBillId(dto.congress, dto.billType, dto.number)
 
-        val firstTextVersion = dto.textVersions.flatMap(_.headOption)
-        val firstFormat      = firstTextVersion.flatMap(_.formats).flatMap(_.headOption)
-        val textUrl          = firstFormat.map(_.url)
-        val textFormat       = firstFormat.map(_.type_)
-        val textVersionType  = firstTextVersion.flatMap(_.type_)
-        val textDate         = firstTextVersion.flatMap(_.date)
+        val textUrl         = firstFormat.map(_.url)
+        val textVersionType = firstTextVersion.flatMap(_.type_)
+        val textDate        = firstTextVersion.flatMap(_.date)
 
         val firstSummary      = dto.summaries.flatMap(_.headOption)
         val summaryText       = firstSummary.flatMap(_.text)
@@ -91,7 +107,7 @@ object BillConversions {
           billType = dto.billType,
           number = dto.number,
           title = dto.title,
-          originChamber = dto.originChamber,
+          originChamber = originChamber,
           originChamberCode = dto.originChamberCode,
           introducedDate = dto.introducedDate,
           policyArea = dto.policyArea,
@@ -100,7 +116,7 @@ object BillConversions {
           constitutionalAuthorityText = dto.constitutionalAuthorityStatementText,
           sponsorMemberId = None,
           textUrl = textUrl,
-          textFormat = textFormat,
+          textFormat = textFormatVal,
           textVersionType = textVersionType,
           textDate = textDate,
           textContent = None,
@@ -140,6 +156,7 @@ object BillConversions {
           subjects = subjects,
         )
       }
+    }
 
   }
 

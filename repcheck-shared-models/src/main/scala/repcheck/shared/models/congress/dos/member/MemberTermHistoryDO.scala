@@ -5,10 +5,12 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
+import repcheck.shared.models.congress.common.Chamber
+
 final case class MemberTermHistoryDO(
   historyId: Long,
   memberId: Long,
-  chamber: Option[String],
+  chamber: Option[Chamber],
   congress: Option[Int],
   startYear: Option[Int],
   endYear: Option[Int],
