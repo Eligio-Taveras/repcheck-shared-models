@@ -157,11 +157,34 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decode[BillListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
+  it should "encode 'type' field correctly" in {
+    val dto = BillListItemDTO(
+      congress = 118,
+      number = "1",
+      billType = "hr",
+      latestAction = None,
+      originChamber = None,
+      originChamberCode = None,
+      title = "Test",
+      updateDate = None,
+      updateDateIncludingText = None,
+      url = "https://example.com",
+    )
+    val json = dto.asJson
+    json.hcursor.downField("type").as[String] shouldBe Right("hr")
+  }
+
+  it should "decode JSON with 'type' field mapped to billType" in {
+    val json   = """{"congress":118,"number":"1","type":"hr","title":"Test","url":"https://example.com"}"""
+    val result = decode[BillListItemDTO](json)
+    result.map(_.billType) shouldBe Right("hr")
+  }
+
   it should "decode with missing optional fields" in {
     val json   = """{
       "congress": 118,
       "number": "1234",
-      "billType": "hr",
+      "type": "hr",
       "title": "Test bill",
       "url": "https://example.com"
     }"""
@@ -240,16 +263,17 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decode[BillDetailDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
-  it should "decode with only required fields" in {
+  it should "decode with only required fields using 'type' field" in {
     val json   = """{
       "congress": 118,
       "number": "100",
-      "billType": "hr",
+      "type": "hr",
       "title": "Minimal bill",
       "url": "https://example.com"
     }"""
     val result = decode[BillDetailDTO](json)
     val _      = result.isRight shouldBe true
+    val _      = result.map(_.billType) shouldBe Right("hr")
     val _      = result.map(_.sponsors) shouldBe Right(None)
     val _      = result.map(_.summaries) shouldBe Right(None)
     result.map(_.textVersions) shouldBe Right(None)
@@ -400,13 +424,33 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
   }
 
   "BillListItemDTO decodeAccumulating" should "succeed on valid JSON" in {
-    val json = """{"congress":118,"number":"1","billType":"hr","title":"Test","url":"https://example.com"}"""
+    val json = """{"congress":118,"number":"1","type":"hr","title":"Test","url":"https://example.com"}"""
     decodeAccumulating[BillListItemDTO](json).isValid shouldBe true
   }
 
   "BillDetailDTO decodeAccumulating" should "succeed on valid JSON" in {
-    val json = """{"congress":118,"number":"1","billType":"hr","title":"Test","url":"https://example.com"}"""
+    val json = """{"congress":118,"number":"1","type":"hr","title":"Test","url":"https://example.com"}"""
     decodeAccumulating[BillDetailDTO](json).isValid shouldBe true
+  }
+
+  "BillListResponseDTO" should "decode Congress.gov response with 'bills' envelope" in {
+    val json   = """{
+      "bills": [
+        {"congress":118,"number":"1","type":"hr","title":"Test Bill","url":"https://example.com"}
+      ],
+      "pagination": {"count": 100, "next": "https://example.com/next"}
+    }"""
+    val result = decode[BillListResponseDTO](json)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.items.size) shouldBe Right(1)
+    val _      = result.map(_.items.headOption.map(_.billType)) shouldBe Right(Some("hr"))
+    result.map(_.pagination.flatMap(_.count)) shouldBe Right(Some(100))
+  }
+
+  it should "decode empty bills list" in {
+    val json   = """{"bills": [], "pagination": {"count": 0}}"""
+    val result = decode[BillListResponseDTO](json)
+    result.map(_.items) shouldBe Right(List.empty)
   }
 
 }
