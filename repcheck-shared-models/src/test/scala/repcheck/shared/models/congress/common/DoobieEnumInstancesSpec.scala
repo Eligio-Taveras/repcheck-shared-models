@@ -8,7 +8,6 @@ import doobie.implicits._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-
 import repcheck.shared.models.congress.amendment.AmendmentType
 import repcheck.shared.models.congress.bill.TextVersionCode
 import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
