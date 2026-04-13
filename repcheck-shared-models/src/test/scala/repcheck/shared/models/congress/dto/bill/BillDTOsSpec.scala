@@ -433,13 +433,13 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decodeAccumulating[BillDetailDTO](json).isValid shouldBe true
   }
 
-  it should "decode Congress.gov detail format with policyArea object and pagination refs" in {
+  it should "decode Congress.gov detail format with policyArea object, no url, and pagination refs" in {
+    // Real API detail responses omit `url` and return policyArea as an object
     val json   = """{
       "congress": 119,
       "number": "622",
       "type": "sres",
       "title": "A resolution designating March 2026",
-      "url": "https://api.congress.gov/v3/bill/119/sres/622",
       "originChamber": "Senate",
       "originChamberCode": "S",
       "introducedDate": "2026-02-26",
@@ -447,7 +447,7 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       "legislationUrl": "https://www.congress.gov/bill/119th-congress/senate-resolution/622",
       "policyArea": {"name": "Agriculture and Food"},
       "latestAction": {"actionDate": "2026-02-26", "text": "Agreed to"},
-      "sponsors": [{"bioguideId": "Y000064", "firstName": "Todd", "lastName": "Young"}],
+      "sponsors": [{"bioguideId": "Y000064", "firstName": "Todd", "lastName": "Young", "district": 5}],
       "cosponsors": {"count": 53, "countIncludingWithdrawnCosponsors": 53, "url": "https://example.com/cosponsors"},
       "subjects": {"count": 6, "url": "https://example.com/subjects"},
       "summaries": {"count": 1, "url": "https://example.com/summaries"},
@@ -461,6 +461,8 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     val _      = result.map(_.policyArea) shouldBe Right(Some("Agriculture and Food"))
     val _      = result.map(_.congress) shouldBe Right(119)
     val _      = result.map(_.billType) shouldBe Right("sres")
+    // url is constructed from congress/billType/number when missing
+    val _ = result.map(_.url) shouldBe Right("https://api.congress.gov/v3/bill/119/sres/622")
     // Pagination refs decode as None since they aren't inline lists
     val _ = result.map(_.summaries) shouldBe Right(None)
     val _ = result.map(_.actions) shouldBe Right(None)
