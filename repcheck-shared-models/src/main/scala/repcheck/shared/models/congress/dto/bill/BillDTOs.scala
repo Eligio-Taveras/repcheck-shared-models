@@ -219,8 +219,48 @@ final case class BillListItemDTO(
 )
 
 object BillListItemDTO {
-  implicit val encoder: Encoder[BillListItemDTO] = deriveEncoder[BillListItemDTO]
-  implicit val decoder: Decoder[BillListItemDTO] = deriveDecoder[BillListItemDTO]
+
+  implicit val encoder: Encoder[BillListItemDTO] = Encoder.instance { b =>
+    val fields = List(
+      Some("congress" -> Json.fromInt(b.congress)),
+      Some("number"   -> Json.fromString(b.number)),
+      Some("type"     -> Json.fromString(b.billType)),
+      b.latestAction.map(v => "latestAction" -> LatestActionDTO.encoder.apply(v)),
+      b.originChamber.map(v => "originChamber" -> Json.fromString(v)),
+      b.originChamberCode.map(v => "originChamberCode" -> Json.fromString(v)),
+      Some("title" -> Json.fromString(b.title)),
+      b.updateDate.map(v => "updateDate" -> Json.fromString(v)),
+      b.updateDateIncludingText.map(v => "updateDateIncludingText" -> Json.fromString(v)),
+      Some("url" -> Json.fromString(b.url)),
+    ).flatten
+    Json.obj(fields*)
+  }
+
+  implicit val decoder: Decoder[BillListItemDTO] = (c: HCursor) =>
+    for {
+      congress                <- c.downField("congress").as[Int]
+      number                  <- c.downField("number").as[String]
+      billType                <- c.downField("type").as[String].orElse(c.downField("billType").as[String])
+      latestAction            <- c.downField("latestAction").as[Option[LatestActionDTO]]
+      originChamber           <- c.downField("originChamber").as[Option[String]]
+      originChamberCode       <- c.downField("originChamberCode").as[Option[String]]
+      title                   <- c.downField("title").as[String]
+      updateDate              <- c.downField("updateDate").as[Option[String]]
+      updateDateIncludingText <- c.downField("updateDateIncludingText").as[Option[String]]
+      url                     <- c.downField("url").as[String]
+    } yield BillListItemDTO(
+      congress = congress,
+      number = number,
+      billType = billType,
+      latestAction = latestAction,
+      originChamber = originChamber,
+      originChamberCode = originChamberCode,
+      title = title,
+      updateDate = updateDate,
+      updateDateIncludingText = updateDateIncludingText,
+      url = url,
+    )
+
 }
 
 final case class BillDetailDTO(
@@ -253,7 +293,62 @@ final case class BillDetailDTO(
 
 object BillDetailDTO {
   implicit val encoder: Encoder[BillDetailDTO] = deriveEncoder[BillDetailDTO]
-  implicit val decoder: Decoder[BillDetailDTO] = deriveDecoder[BillDetailDTO]
+
+  implicit val decoder: Decoder[BillDetailDTO] = (c: HCursor) =>
+    for {
+      congress                             <- c.downField("congress").as[Int]
+      number                               <- c.downField("number").as[String]
+      billType                             <- c.downField("type").as[String].orElse(c.downField("billType").as[String])
+      latestAction                         <- c.downField("latestAction").as[Option[LatestActionDTO]]
+      originChamber                        <- c.downField("originChamber").as[Option[String]]
+      originChamberCode                    <- c.downField("originChamberCode").as[Option[String]]
+      title                                <- c.downField("title").as[String]
+      updateDate                           <- c.downField("updateDate").as[Option[String]]
+      updateDateIncludingText              <- c.downField("updateDateIncludingText").as[Option[String]]
+      url                                  <- c.downField("url").as[String]
+      introducedDate                       <- c.downField("introducedDate").as[Option[String]]
+      policyArea                           <- c.downField("policyArea").as[Option[String]]
+      sponsors                             <- c.downField("sponsors").as[Option[List[SponsorDTO]]]
+      cosponsors                           <- c.downField("cosponsors").as[Option[PaginationInfoDTO]]
+      subjects                             <- c.downField("subjects").as[Option[BillSubjectsDTO]]
+      summaries                            <- c.downField("summaries").as[Option[List[BillSummaryDTO]]]
+      actions                              <- c.downField("actions").as[Option[List[BillActionDTO]]]
+      committees                           <- c.downField("committees").as[Option[List[String]]]
+      textVersions                         <- c.downField("textVersions").as[Option[List[TextVersionDTO]]]
+      titles                               <- c.downField("titles").as[Option[List[TitleDTO]]]
+      constitutionalAuthorityStatementText <- c.downField("constitutionalAuthorityStatementText").as[Option[String]]
+      cboCostEstimates                     <- c.downField("cboCostEstimates").as[Option[List[CboCostEstimateDTO]]]
+      committeeReports                     <- c.downField("committeeReports").as[Option[List[CommitteeReportDTO]]]
+      relatedBills                         <- c.downField("relatedBills").as[Option[List[RelatedBillDTO]]]
+      legislationUrl                       <- c.downField("legislationUrl").as[Option[String]]
+    } yield BillDetailDTO(
+      congress = congress,
+      number = number,
+      billType = billType,
+      latestAction = latestAction,
+      originChamber = originChamber,
+      originChamberCode = originChamberCode,
+      title = title,
+      updateDate = updateDate,
+      updateDateIncludingText = updateDateIncludingText,
+      url = url,
+      introducedDate = introducedDate,
+      policyArea = policyArea,
+      sponsors = sponsors,
+      cosponsors = cosponsors,
+      subjects = subjects,
+      summaries = summaries,
+      actions = actions,
+      committees = committees,
+      textVersions = textVersions,
+      titles = titles,
+      constitutionalAuthorityStatementText = constitutionalAuthorityStatementText,
+      cboCostEstimates = cboCostEstimates,
+      committeeReports = committeeReports,
+      relatedBills = relatedBills,
+      legislationUrl = legislationUrl,
+    )
+
 }
 
 final case class BillListResponseDTO(
@@ -272,7 +367,14 @@ object BillListResponseDTO {
   }
 
   implicit val encoder: Encoder[BillListResponseDTO] = deriveEncoder[BillListResponseDTO]
-  implicit val decoder: Decoder[BillListResponseDTO] = deriveDecoder[BillListResponseDTO]
+
+  implicit val decoder: Decoder[BillListResponseDTO] = Decoder.instance { c =>
+    for {
+      items <- c.downField("bills").as[List[BillListItemDTO]].orElse(c.downField("items").as[List[BillListItemDTO]])
+      pagination <- c.downField("pagination").as[Option[PaginationInfoDTO]]
+    } yield BillListResponseDTO(items = items, pagination = pagination)
+  }
+
 }
 
 final case class CosponsorListResponseDTO(
