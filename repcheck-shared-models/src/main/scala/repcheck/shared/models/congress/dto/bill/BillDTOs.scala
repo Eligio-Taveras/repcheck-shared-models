@@ -294,32 +294,46 @@ final case class BillDetailDTO(
 object BillDetailDTO {
   implicit val encoder: Encoder[BillDetailDTO] = deriveEncoder[BillDetailDTO]
 
+  /**
+   * Try to decode as the expected type; if the JSON shape doesn't match (e.g. pagination ref `{"count":N,"url":"..."}`
+   * instead of an inline list), fall back to `None`.
+   */
+  private def optionalOrNone[A: Decoder](c: HCursor, field: String): Decoder.Result[Option[A]] =
+    c.downField(field).as[Option[A]].orElse(Right(None))
+
   implicit val decoder: Decoder[BillDetailDTO] = (c: HCursor) =>
     for {
-      congress                             <- c.downField("congress").as[Int]
-      number                               <- c.downField("number").as[String]
-      billType                             <- c.downField("type").as[String].orElse(c.downField("billType").as[String])
-      latestAction                         <- c.downField("latestAction").as[Option[LatestActionDTO]]
-      originChamber                        <- c.downField("originChamber").as[Option[String]]
-      originChamberCode                    <- c.downField("originChamberCode").as[Option[String]]
-      title                                <- c.downField("title").as[String]
-      updateDate                           <- c.downField("updateDate").as[Option[String]]
-      updateDateIncludingText              <- c.downField("updateDateIncludingText").as[Option[String]]
-      url                                  <- c.downField("url").as[String]
-      introducedDate                       <- c.downField("introducedDate").as[Option[String]]
-      policyArea                           <- c.downField("policyArea").as[Option[String]]
-      sponsors                             <- c.downField("sponsors").as[Option[List[SponsorDTO]]]
-      cosponsors                           <- c.downField("cosponsors").as[Option[PaginationInfoDTO]]
-      subjects                             <- c.downField("subjects").as[Option[BillSubjectsDTO]]
-      summaries                            <- c.downField("summaries").as[Option[List[BillSummaryDTO]]]
-      actions                              <- c.downField("actions").as[Option[List[BillActionDTO]]]
-      committees                           <- c.downField("committees").as[Option[List[String]]]
-      textVersions                         <- c.downField("textVersions").as[Option[List[TextVersionDTO]]]
-      titles                               <- c.downField("titles").as[Option[List[TitleDTO]]]
+      congress                <- c.downField("congress").as[Int]
+      number                  <- c.downField("number").as[String]
+      billType                <- c.downField("type").as[String].orElse(c.downField("billType").as[String])
+      latestAction            <- c.downField("latestAction").as[Option[LatestActionDTO]]
+      originChamber           <- c.downField("originChamber").as[Option[String]]
+      originChamberCode       <- c.downField("originChamberCode").as[Option[String]]
+      title                   <- c.downField("title").as[String]
+      updateDate              <- c.downField("updateDate").as[Option[String]]
+      updateDateIncludingText <- c.downField("updateDateIncludingText").as[Option[String]]
+      url                     <- c.downField("url").as[String]
+      introducedDate          <- c.downField("introducedDate").as[Option[String]]
+      // Congress.gov returns policyArea as {"name":"..."} object; extract the name field
+      policyArea <- c
+        .downField("policyArea")
+        .downField("name")
+        .as[Option[String]]
+        .orElse(c.downField("policyArea").as[Option[String]])
+      sponsors <- c.downField("sponsors").as[Option[List[SponsorDTO]]]
+      // Congress.gov returns cosponsors as pagination ref {"count":N,"url":"..."}
+      cosponsors <- optionalOrNone[PaginationInfoDTO](c, "cosponsors")
+      // Fields below may be inline data or pagination refs; fall back to None if mismatched
+      subjects                             <- optionalOrNone[BillSubjectsDTO](c, "subjects")
+      summaries                            <- optionalOrNone[List[BillSummaryDTO]](c, "summaries")
+      actions                              <- optionalOrNone[List[BillActionDTO]](c, "actions")
+      committees                           <- optionalOrNone[List[String]](c, "committees")
+      textVersions                         <- optionalOrNone[List[TextVersionDTO]](c, "textVersions")
+      titles                               <- optionalOrNone[List[TitleDTO]](c, "titles")
       constitutionalAuthorityStatementText <- c.downField("constitutionalAuthorityStatementText").as[Option[String]]
-      cboCostEstimates                     <- c.downField("cboCostEstimates").as[Option[List[CboCostEstimateDTO]]]
-      committeeReports                     <- c.downField("committeeReports").as[Option[List[CommitteeReportDTO]]]
-      relatedBills                         <- c.downField("relatedBills").as[Option[List[RelatedBillDTO]]]
+      cboCostEstimates                     <- optionalOrNone[List[CboCostEstimateDTO]](c, "cboCostEstimates")
+      committeeReports                     <- optionalOrNone[List[CommitteeReportDTO]](c, "committeeReports")
+      relatedBills                         <- optionalOrNone[List[RelatedBillDTO]](c, "relatedBills")
       legislationUrl                       <- c.downField("legislationUrl").as[Option[String]]
     } yield BillDetailDTO(
       congress = congress,

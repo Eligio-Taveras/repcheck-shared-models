@@ -433,6 +433,43 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decodeAccumulating[BillDetailDTO](json).isValid shouldBe true
   }
 
+  it should "decode Congress.gov detail format with policyArea object and pagination refs" in {
+    val json   = """{
+      "congress": 119,
+      "number": "622",
+      "type": "sres",
+      "title": "A resolution designating March 2026",
+      "url": "https://api.congress.gov/v3/bill/119/sres/622",
+      "originChamber": "Senate",
+      "originChamberCode": "S",
+      "introducedDate": "2026-02-26",
+      "updateDate": "2026-03-01",
+      "legislationUrl": "https://www.congress.gov/bill/119th-congress/senate-resolution/622",
+      "policyArea": {"name": "Agriculture and Food"},
+      "latestAction": {"actionDate": "2026-02-26", "text": "Agreed to"},
+      "sponsors": [{"bioguideId": "Y000064", "firstName": "Todd", "lastName": "Young"}],
+      "cosponsors": {"count": 53, "countIncludingWithdrawnCosponsors": 53, "url": "https://example.com/cosponsors"},
+      "subjects": {"count": 6, "url": "https://example.com/subjects"},
+      "summaries": {"count": 1, "url": "https://example.com/summaries"},
+      "actions": {"count": 2, "url": "https://example.com/actions"},
+      "committees": {"count": 0, "url": "https://example.com/committees"},
+      "textVersions": {"count": 1, "url": "https://example.com/textVersions"},
+      "relatedBills": {"count": 1, "url": "https://example.com/relatedBills"}
+    }"""
+    val result = decode[BillDetailDTO](json)
+    val _      = result.isRight shouldBe true
+    val _      = result.map(_.policyArea) shouldBe Right(Some("Agriculture and Food"))
+    val _      = result.map(_.congress) shouldBe Right(119)
+    val _      = result.map(_.billType) shouldBe Right("sres")
+    // Pagination refs decode as None since they aren't inline lists
+    val _ = result.map(_.summaries) shouldBe Right(None)
+    val _ = result.map(_.actions) shouldBe Right(None)
+    val _ = result.map(_.textVersions) shouldBe Right(None)
+    val _ = result.map(_.relatedBills) shouldBe Right(None)
+    // Cosponsors decode as PaginationInfoDTO since they share the count/url shape
+    result.map(_.cosponsors.flatMap(_.count)) shouldBe Right(Some(53))
+  }
+
   "BillListResponseDTO" should "decode Congress.gov response with 'bills' envelope" in {
     val json   = """{
       "bills": [
