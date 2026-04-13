@@ -62,7 +62,9 @@ lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
   .enablePlugins(com.repcheck.sbt.ExceptionUniquenessPlugin)
   .settings(
     commonSettings,
-    libraryDependencies ++= circe ++ doobie,
+    libraryDependencies ++= circe ++ doobie ++ Seq(
+      "com.h2database" % "h2" % "2.2.224" % Test,
+    ),
     // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
     scalacOptions += "-Xmax-inlines:64",
     exceptionUniquenessRootPackages := Seq("com.repcheck", "repcheck")
