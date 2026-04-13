@@ -312,8 +312,14 @@ object BillDetailDTO {
       title                   <- c.downField("title").as[String]
       updateDate              <- c.downField("updateDate").as[Option[String]]
       updateDateIncludingText <- c.downField("updateDateIncludingText").as[Option[String]]
-      url                     <- c.downField("url").as[String]
-      introducedDate          <- c.downField("introducedDate").as[Option[String]]
+      // Detail endpoint omits `url` (you're already at the bill URL); construct fallback
+      url <- c
+        .downField("url")
+        .as[String]
+        .orElse(
+          Right(s"https://api.congress.gov/v3/bill/$congress/${billType.toLowerCase}/$number")
+        )
+      introducedDate <- c.downField("introducedDate").as[Option[String]]
       // Congress.gov returns policyArea as {"name":"..."} object; extract the name field
       policyArea <- c
         .downField("policyArea")
