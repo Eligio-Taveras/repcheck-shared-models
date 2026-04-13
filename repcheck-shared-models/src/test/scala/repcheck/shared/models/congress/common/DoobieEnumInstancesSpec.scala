@@ -69,4 +69,44 @@ class DoobieEnumInstancesSpec extends AnyFlatSpec with Matchers {
     DoobieEnumInstances.textVersionCodePut.toString should not be empty
   }
 
+  it should "provide Get[VoteCast] instance" in {
+    DoobieEnumInstances.voteCastGet.toString should not be empty
+  }
+
+  it should "provide Put[VoteCast] instance" in {
+    DoobieEnumInstances.voteCastPut.toString should not be empty
+  }
+
+  it should "provide Get[AmendmentType] instance" in {
+    DoobieEnumInstances.amendmentTypeGet.toString should not be empty
+  }
+
+  it should "provide Put[AmendmentType] instance" in {
+    DoobieEnumInstances.amendmentTypePut.toString should not be empty
+  }
+
+  it should "provide Get[CommitteeType] instance" in {
+    DoobieEnumInstances.committeeTypeGet.toString should not be empty
+  }
+
+  it should "provide Put[CommitteeType] instance" in {
+    DoobieEnumInstances.committeeTypePut.toString should not be empty
+  }
+
+  it should "provide Get[CommitteePosition] instance" in {
+    DoobieEnumInstances.committeePositionGet.toString should not be empty
+  }
+
+  it should "provide Put[CommitteePosition] instance" in {
+    DoobieEnumInstances.committeePositionPut.toString should not be empty
+  }
+
+  it should "provide Get[CommitteeSide] instance" in {
+    DoobieEnumInstances.committeeSideGet.toString should not be empty
+  }
+
+  it should "provide Put[CommitteeSide] instance" in {
+    DoobieEnumInstances.committeeSidePut.toString should not be empty
+  }
+
 }
