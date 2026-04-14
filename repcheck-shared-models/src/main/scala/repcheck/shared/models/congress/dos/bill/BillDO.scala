@@ -29,7 +29,6 @@ final case class BillDO(
   textVersionType: Option[TextVersionCode],
   textDate: Option[LocalDate],
   textContent: Option[String],
-  textEmbedding: Option[Array[Float]],
   summaryText: Option[String],
   summaryActionDesc: Option[String],
   summaryActionDate: Option[LocalDate],
@@ -44,7 +43,6 @@ final case class BillDO(
 
 object BillDO {
 
-  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
   import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[BillDO] = deriveEncoder[BillDO]
@@ -72,7 +70,6 @@ object BillDO {
         textVersionType = None,
         textDate = None,
         textContent = None,
-        textEmbedding = None,
         summaryText = None,
         summaryActionDesc = None,
         summaryActionDate = None,

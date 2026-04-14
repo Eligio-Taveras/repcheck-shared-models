@@ -32,7 +32,6 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     textVersionType = Some(TextVersionCode.IH),
     textDate = Some(LocalDate.parse("2024-01-15")),
     textContent = Some("Full text of the bill"),
-    textEmbedding = None,
     summaryText = Some("A summary of the bill"),
     summaryActionDesc = Some("Introduced in House"),
     summaryActionDate = Some(LocalDate.parse("2024-01-15")),
@@ -72,7 +71,6 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
       textVersionType = None,
       textDate = None,
       textContent = None,
-      textEmbedding = None,
       summaryText = None,
       summaryActionDesc = None,
       summaryActionDate = None,
@@ -94,7 +92,6 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
     import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Read[BillDO]].shouldBe(a[AnyRef])
   }
@@ -102,7 +99,6 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
     import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[BillDO]].shouldBe(a[AnyRef])
   }
