@@ -131,7 +131,7 @@ object BillConversions {
           textVersionType = textVersionType,
           textDate = DateParsing.toLocalDate(textDate),
           textContent = None,
-            summaryText = summaryText,
+          summaryText = summaryText,
           summaryActionDesc = summaryActionDesc,
           summaryActionDate = DateParsing.toLocalDate(summaryActionDate),
           updateDate = DateParsing.toInstant(dto.updateDate),
