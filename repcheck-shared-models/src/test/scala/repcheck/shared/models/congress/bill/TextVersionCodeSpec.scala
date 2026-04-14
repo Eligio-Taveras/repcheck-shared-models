@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
 
-  "TextVersionCode.fromString" should "parse all 11 code values" in {
+  "TextVersionCode.fromString" should "parse all 21 code values" in {
     val _ = TextVersionCode.fromString("IH") shouldBe Right(TextVersionCode.IH)
     val _ = TextVersionCode.fromString("IS") shouldBe Right(TextVersionCode.IS)
     val _ = TextVersionCode.fromString("RH") shouldBe Right(TextVersionCode.RH)
@@ -18,7 +18,17 @@ class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
     val _ = TextVersionCode.fromString("ES") shouldBe Right(TextVersionCode.ES)
     val _ = TextVersionCode.fromString("ENR") shouldBe Right(TextVersionCode.ENR)
     val _ = TextVersionCode.fromString("CPH") shouldBe Right(TextVersionCode.CPH)
-    TextVersionCode.fromString("CPS") shouldBe Right(TextVersionCode.CPS)
+    val _ = TextVersionCode.fromString("CPS") shouldBe Right(TextVersionCode.CPS)
+    val _ = TextVersionCode.fromString("PCS") shouldBe Right(TextVersionCode.PCS)
+    val _ = TextVersionCode.fromString("PCH") shouldBe Right(TextVersionCode.PCH)
+    val _ = TextVersionCode.fromString("PL") shouldBe Right(TextVersionCode.PL)
+    val _ = TextVersionCode.fromString("RDS") shouldBe Right(TextVersionCode.RDS)
+    val _ = TextVersionCode.fromString("RDH") shouldBe Right(TextVersionCode.RDH)
+    val _ = TextVersionCode.fromString("RTS") shouldBe Right(TextVersionCode.RTS)
+    val _ = TextVersionCode.fromString("RTH") shouldBe Right(TextVersionCode.RTH)
+    val _ = TextVersionCode.fromString("ATS") shouldBe Right(TextVersionCode.ATS)
+    val _ = TextVersionCode.fromString("ATH") shouldBe Right(TextVersionCode.ATH)
+    TextVersionCode.fromString("PP") shouldBe Right(TextVersionCode.PP)
   }
 
   it should "accept full name aliases" in {
@@ -32,7 +42,17 @@ class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
     val _ = TextVersionCode.fromString("Engrossed in Senate") shouldBe Right(TextVersionCode.ES)
     val _ = TextVersionCode.fromString("Enrolled Bill") shouldBe Right(TextVersionCode.ENR)
     val _ = TextVersionCode.fromString("Committee Print (House)") shouldBe Right(TextVersionCode.CPH)
-    TextVersionCode.fromString("Committee Print (Senate)") shouldBe Right(TextVersionCode.CPS)
+    val _ = TextVersionCode.fromString("Committee Print (Senate)") shouldBe Right(TextVersionCode.CPS)
+    val _ = TextVersionCode.fromString("Placed on Calendar Senate") shouldBe Right(TextVersionCode.PCS)
+    val _ = TextVersionCode.fromString("Placed on Calendar House") shouldBe Right(TextVersionCode.PCH)
+    val _ = TextVersionCode.fromString("Public Law") shouldBe Right(TextVersionCode.PL)
+    val _ = TextVersionCode.fromString("Received in Senate") shouldBe Right(TextVersionCode.RDS)
+    val _ = TextVersionCode.fromString("Received in House") shouldBe Right(TextVersionCode.RDH)
+    val _ = TextVersionCode.fromString("Reported to Senate") shouldBe Right(TextVersionCode.RTS)
+    val _ = TextVersionCode.fromString("Reported to House") shouldBe Right(TextVersionCode.RTH)
+    val _ = TextVersionCode.fromString("Agreed to Senate") shouldBe Right(TextVersionCode.ATS)
+    val _ = TextVersionCode.fromString("Agreed to House") shouldBe Right(TextVersionCode.ATH)
+    TextVersionCode.fromString("Printed as Passed") shouldBe Right(TextVersionCode.PP)
   }
 
   it should "be case-insensitive for codes" in {

@@ -4,7 +4,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class UnrecognizedTextVersionCode(value: String)
     extends Exception(
-      s"Unrecognized TextVersionCode: '$value'. Valid values: IH, IS, RH, RS, RFS, RFH, EH, ES, ENR, CPH, CPS and their full names"
+      s"Unrecognized TextVersionCode: '$value'. Valid values: IH, IS, RH, RS, RFS, RFH, EH, ES, ENR, CPH, CPS, PCS, PCH, PL, RDS, RDH, RTS, RTH, ATS, ATH, PP and their full names"
     )
 
 enum TextVersionCode(val fullName: String) {
@@ -19,6 +19,16 @@ enum TextVersionCode(val fullName: String) {
   case ENR extends TextVersionCode("Enrolled Bill")
   case CPH extends TextVersionCode("Committee Print (House)")
   case CPS extends TextVersionCode("Committee Print (Senate)")
+  case PCS extends TextVersionCode("Placed on Calendar Senate")
+  case PCH extends TextVersionCode("Placed on Calendar House")
+  case PL  extends TextVersionCode("Public Law")
+  case RDS extends TextVersionCode("Received in Senate")
+  case RDH extends TextVersionCode("Received in House")
+  case RTS extends TextVersionCode("Reported to Senate")
+  case RTH extends TextVersionCode("Reported to House")
+  case ATS extends TextVersionCode("Agreed to Senate")
+  case ATH extends TextVersionCode("Agreed to House")
+  case PP  extends TextVersionCode("Printed as Passed")
 }
 
 object TextVersionCode {
