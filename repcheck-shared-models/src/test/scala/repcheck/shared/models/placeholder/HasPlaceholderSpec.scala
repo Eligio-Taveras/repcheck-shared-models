@@ -88,7 +88,6 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     val _           = placeholder.textVersionType shouldBe None
     val _           = placeholder.textDate shouldBe None
     val _           = placeholder.textContent shouldBe None
-    val _           = placeholder.textEmbedding shouldBe None
     val _           = placeholder.summaryText shouldBe None
     val _           = placeholder.summaryActionDesc shouldBe None
     val _           = placeholder.summaryActionDate shouldBe None
