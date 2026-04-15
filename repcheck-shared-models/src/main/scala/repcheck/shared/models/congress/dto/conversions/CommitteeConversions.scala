@@ -61,6 +61,11 @@ object CommitteeConversions {
           LisMemberDO(
             id = 0L,
             naturalKey = dto.lisMemberId,
+            firstName = None,
+            lastName = None,
+            party = None,
+            state = None,
+            lastVerified = None,
             createdAt = None,
           )
         )
