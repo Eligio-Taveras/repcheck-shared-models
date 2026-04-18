@@ -10,6 +10,16 @@ import repcheck.shared.models.congress.member.MemberType
 
 object MemberConversions {
 
+  // Congress.gov returns full party names ("Democratic", "Republican", "Independent") in partyHistory[].partyName.
+  // The member_party_history table stores party_name as party_abbreviation_type ({D, R, I}), so we normalize here.
+  private def normalizePartyName(raw: Option[String]): Option[String] =
+    raw.map {
+      case "Democratic"  => "D"
+      case "Republican"  => "R"
+      case "Independent" => "I"
+      case other         => other
+    }
+
   private def parseBirthYear(raw: Option[String]): Either[String, Option[Int]] =
     raw match {
       case None => Right(None)
@@ -111,7 +121,7 @@ object MemberConversions {
               MemberPartyHistoryDO(
                 id = 0L,
                 memberId = 0L,
-                partyName = ph.partyName,
+                partyName = normalizePartyName(ph.partyName),
                 partyAbbreviation = ph.partyAbbreviation,
                 startYear = ph.startYear,
               )
