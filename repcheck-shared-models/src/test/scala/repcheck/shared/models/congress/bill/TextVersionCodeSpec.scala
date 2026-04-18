@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
 
-  "TextVersionCode.fromString" should "parse all 21 code values" in {
+  "TextVersionCode.fromString" should "parse all 24 code values" in {
     val _ = TextVersionCode.fromString("IH") shouldBe Right(TextVersionCode.IH)
     val _ = TextVersionCode.fromString("IS") shouldBe Right(TextVersionCode.IS)
     val _ = TextVersionCode.fromString("RH") shouldBe Right(TextVersionCode.RH)
@@ -28,7 +28,10 @@ class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
     val _ = TextVersionCode.fromString("RTH") shouldBe Right(TextVersionCode.RTH)
     val _ = TextVersionCode.fromString("ATS") shouldBe Right(TextVersionCode.ATS)
     val _ = TextVersionCode.fromString("ATH") shouldBe Right(TextVersionCode.ATH)
-    TextVersionCode.fromString("PP") shouldBe Right(TextVersionCode.PP)
+    val _ = TextVersionCode.fromString("PP") shouldBe Right(TextVersionCode.PP)
+    val _ = TextVersionCode.fromString("RCH") shouldBe Right(TextVersionCode.RCH)
+    val _ = TextVersionCode.fromString("EAS") shouldBe Right(TextVersionCode.EAS)
+    TextVersionCode.fromString("RIS") shouldBe Right(TextVersionCode.RIS)
   }
 
   it should "accept full name aliases" in {
@@ -52,7 +55,10 @@ class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
     val _ = TextVersionCode.fromString("Reported to House") shouldBe Right(TextVersionCode.RTH)
     val _ = TextVersionCode.fromString("Agreed to Senate") shouldBe Right(TextVersionCode.ATS)
     val _ = TextVersionCode.fromString("Agreed to House") shouldBe Right(TextVersionCode.ATH)
-    TextVersionCode.fromString("Printed as Passed") shouldBe Right(TextVersionCode.PP)
+    val _ = TextVersionCode.fromString("Printed as Passed") shouldBe Right(TextVersionCode.PP)
+    val _ = TextVersionCode.fromString("Reference Change House") shouldBe Right(TextVersionCode.RCH)
+    val _ = TextVersionCode.fromString("Engrossed Amendment Senate") shouldBe Right(TextVersionCode.EAS)
+    TextVersionCode.fromString("Referral Instructions Senate") shouldBe Right(TextVersionCode.RIS)
   }
 
   it should "be case-insensitive for codes" in {

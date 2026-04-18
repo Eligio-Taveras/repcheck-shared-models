@@ -80,6 +80,48 @@ class MemberDTOsSpec extends AnyFlatSpec with Matchers {
     decode[MemberListItemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
+  it should "decode Congress.gov API format with nested terms { item: [...] }" in {
+    val json =
+      """{
+        |  "bioguideId": "G000594",
+        |  "name": "Gonzales, Tony",
+        |  "partyName": "Republican",
+        |  "state": "Texas",
+        |  "depiction": {
+        |    "attribution": "Image courtesy of the Member",
+        |    "imageUrl": "https://www.congress.gov/img/member/g000594_200.jpg"
+        |  },
+        |  "terms": {
+        |    "item": [
+        |      { "chamber": "House of Representatives", "startYear": 2021 }
+        |    ]
+        |  },
+        |  "updateDate": "2026-04-15T19:41:13Z",
+        |  "url": "https://api.congress.gov/v3/member/G000594?format=json"
+        |}""".stripMargin
+    val result = decode[MemberListItemDTO](json)
+    val _      = result.isRight shouldBe true
+    result.foreach { dto =>
+      val _ = dto.bioguideId shouldBe "G000594"
+      val _ = dto.terms shouldBe Some(List(MemberTermSummaryDTO(Some("House of Representatives"), Some(2021))))
+      dto.partyName shouldBe Some("Republican")
+    }
+  }
+
+  it should "decode member with absent terms as None" in {
+    val json   = """{"bioguideId":"T000001","name":"Test, Member"}"""
+    val result = decode[MemberListItemDTO](json)
+    val _      = result.isRight shouldBe true
+    result.foreach(_.terms shouldBe None)
+  }
+
+  it should "decode member with empty terms item array as Some(Nil)" in {
+    val json   = """{"bioguideId":"T000002","terms":{"item":[]}}"""
+    val result = decode[MemberListItemDTO](json)
+    val _      = result.isRight shouldBe true
+    result.foreach(_.terms shouldBe Some(Nil))
+  }
+
   "MemberDetailDTO" should "round-trip with all fields" in {
     val dto = MemberDetailDTO(
       bioguideId = "S000033",
