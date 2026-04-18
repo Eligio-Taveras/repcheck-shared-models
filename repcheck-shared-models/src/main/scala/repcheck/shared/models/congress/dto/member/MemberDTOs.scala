@@ -1,6 +1,7 @@
 package repcheck.shared.models.congress.dto.member
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.syntax._
 import io.circe.{Decoder, Encoder, HCursor, Json}
 
 import repcheck.shared.models.congress.dto.common.{PagedObject, PaginationInfoDTO}
@@ -87,8 +88,39 @@ final case class MemberListItemDTO(
 )
 
 object MemberListItemDTO {
-  implicit val encoder: Encoder[MemberListItemDTO] = deriveEncoder[MemberListItemDTO]
-  implicit val decoder: Decoder[MemberListItemDTO] = deriveDecoder[MemberListItemDTO]
+
+  // Congress.gov encodes `terms` as `{"item": [...]}` in the member list endpoint.
+  // Auto-derived encoder/decoder cannot handle this wrapping, so we use custom instances.
+  implicit val encoder: Encoder[MemberListItemDTO] = Encoder.instance { m =>
+    Json.obj(
+      "bioguideId" -> Json.fromString(m.bioguideId),
+      "name"       -> m.name.asJson,
+      "partyName"  -> m.partyName.asJson,
+      "state"      -> m.state.asJson,
+      "depiction"  -> m.depiction.asJson,
+      "terms"      -> m.terms.fold(Json.Null)(items => Json.obj("item" -> items.asJson)),
+      "updateDate" -> m.updateDate.asJson,
+      "url"        -> m.url.asJson,
+    )
+  }
+
+  implicit val decoder: Decoder[MemberListItemDTO] = Decoder.instance { c =>
+    for {
+      bioguideId <- c.downField("bioguideId").as[String]
+      name       <- c.downField("name").as[Option[String]]
+      partyName  <- c.downField("partyName").as[Option[String]]
+      state      <- c.downField("state").as[Option[String]]
+      depiction  <- c.downField("depiction").as[Option[MemberDepictionDTO]]
+      termsJson  <- c.downField("terms").as[Option[Json]]
+      terms <- termsJson match {
+        case None    => Right(None)
+        case Some(j) => j.hcursor.downField("item").as[Option[List[MemberTermSummaryDTO]]]
+      }
+      updateDate <- c.downField("updateDate").as[Option[String]]
+      url        <- c.downField("url").as[Option[String]]
+    } yield MemberListItemDTO(bioguideId, name, partyName, state, depiction, terms, updateDate, url)
+  }
+
 }
 
 final case class MemberDetailDTO(
