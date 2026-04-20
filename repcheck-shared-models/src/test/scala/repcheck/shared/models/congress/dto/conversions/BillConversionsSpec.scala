@@ -213,9 +213,9 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     result.subjects shouldBe List.empty
   }
 
-  "buildBillId" should "construct correct natural key" in {
-    val _ = BillConversions.buildBillId(118, "hr", "1234") shouldBe "118-HR-1234"
-    BillConversions.buildBillId(117, "sjres", "10") shouldBe "117-SJRES-10"
+  "buildBillNaturalKey" should "construct correct natural key" in {
+    val _ = BillConversions.buildBillNaturalKey(118, "hr", "1234") shouldBe "118-HR-1234"
+    BillConversions.buildBillNaturalKey(117, "sjres", "10") shouldBe "117-SJRES-10"
   }
 
 }

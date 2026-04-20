@@ -6,7 +6,7 @@ import repcheck.shared.models.congress.amendment.AmendmentType
 import repcheck.shared.models.congress.bill.TextVersionCode
 import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
 import repcheck.shared.models.congress.member.MemberType
-import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod}
+import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod, VoteType}
 
 /**
  * Doobie [[Get]] and [[Put]] instances for all domain enums. These enable Doobie auto-derivation of
@@ -105,6 +105,15 @@ object DoobieEnumInstances {
 
   implicit val voteMethodGet: Get[VoteMethod] = voteMethodMeta.get
   implicit val voteMethodPut: Put[VoteMethod] = voteMethodMeta.put
+
+  private val voteTypeMeta = doobie.postgres.implicits.pgEnumStringOpt(
+    "vote_type_enum",
+    s => VoteType.fromString(s).toOption,
+    _.apiValue,
+  )
+
+  implicit val voteTypeGet: Get[VoteType] = voteTypeMeta.get
+  implicit val voteTypePut: Put[VoteType] = voteTypeMeta.put
 
   private val memberTypeMeta = doobie.postgres.implicits.pgEnumStringOpt(
     "member_type_enum",

@@ -6,12 +6,18 @@ import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState
 import repcheck.shared.models.congress.dos.results.VoteConversionResult
 import repcheck.shared.models.congress.dos.vote.{VoteDO, VotePositionDO}
 import repcheck.shared.models.congress.dto.vote.{SenateVoteXmlDTO, VoteMembersDTO, VoteResultDTO}
-import repcheck.shared.models.congress.vote.VoteCast
+import repcheck.shared.models.congress.vote.{VoteCast, VoteType}
 
 object VoteConversions {
 
-  private[conversions] def buildVoteId(congress: Int, chamber: String, rollCallNumber: Int): String =
-    s"$congress-$chamber-$rollCallNumber"
+  /**
+   * Canonical natural-key builder for a roll-call vote. Used by every writer and every ON CONFLICT clause. Format:
+   * `"$congress-$chamber-$session-$rollCallNumber"`, e.g., `"119-House-1-17"`. Chamber stays in its API casing
+   * ("House"/"Senate"). Session is part of the key because Senate roll-call numbers reset per session within a
+   * Congress. Always call this — do not inline the format string.
+   */
+  def buildVoteNaturalKey(congress: Int, chamber: String, session: Int, rollCallNumber: Int): String =
+    s"$congress-$chamber-$session-$rollCallNumber"
 
   private def parseChamber(raw: String): Either[String, Chamber] =
     Chamber.fromString(raw).left.map(_.getMessage)
@@ -48,57 +54,63 @@ object VoteConversions {
       } else if (dto.chamber.trim.isEmpty) {
         Left("chamber must not be empty")
       } else {
-        for {
-          chamber         <- parseChamber(dto.chamber)
-          legislationType <- parseLegislationType(dto.legislationType)
-          positions <- dto.results
-            .getOrElse(List.empty)
-            .filter(_.memberId.isDefined)
-            .traverse { r =>
-              for {
-                position    <- parseVoteCast(r.voteCast)
-                partyAtVote <- parseParty(r.party)
-                stateAtVote <- parseState(r.state)
-              } yield VotePositionDO(
+        dto.sessionNumber match {
+          case None =>
+            Left("sessionNumber is required for vote natural-key construction")
+          case Some(session) =>
+            for {
+              chamber         <- parseChamber(dto.chamber)
+              legislationType <- parseLegislationType(dto.legislationType)
+              positions <- dto.results
+                .getOrElse(List.empty)
+                .filter(_.memberId.isDefined)
+                .traverse { r =>
+                  for {
+                    position    <- parseVoteCast(r.voteCast)
+                    partyAtVote <- parseParty(r.party)
+                    stateAtVote <- parseState(r.state)
+                  } yield VotePositionDO(
+                    voteId = 0L,
+                    // Resolved to the AlloyDB-generated member PK in a downstream
+                    // step that joins on the Congress.gov member id (r.memberId).
+                    memberId = 0L,
+                    position = position,
+                    partyAtVote = partyAtVote,
+                    stateAtVote = stateAtVote,
+                    createdAt = None,
+                  )
+                }
+            } yield {
+              val naturalKey     = buildVoteNaturalKey(dto.congress, dto.chamber, session, dto.rollCallNumber)
+              val classifiedType = dto.voteQuestion.map(VoteType.fromQuestion)
+
+              val vote = VoteDO(
                 voteId = 0L,
-                // Resolved to the AlloyDB-generated member PK in a downstream
-                // step that joins on the Congress.gov member id (r.memberId).
-                memberId = 0L,
-                position = position,
-                partyAtVote = partyAtVote,
-                stateAtVote = stateAtVote,
+                naturalKey = naturalKey,
+                congress = dto.congress,
+                chamber = chamber,
+                rollNumber = dto.rollCallNumber,
+                sessionNumber = dto.sessionNumber,
+                billId = None,
+                question = dto.voteQuestion,
+                voteType = classifiedType,
+                voteMethod = None,
+                result = dto.result,
+                voteDate = DateParsing.toLocalDate(dto.startDate),
+                legislationNumber = dto.legislationNumber,
+                legislationType = legislationType,
+                legislationUrl = dto.legislationUrl,
+                sourceDataUrl = dto.sourceDataUrl.orElse(dto.url),
+                updateDate = DateParsing.toInstant(dto.updateDate),
                 createdAt = None,
+                updatedAt = None,
+              )
+
+              VoteConversionResult(
+                vote = vote,
+                positions = positions,
               )
             }
-        } yield {
-          val naturalKey = buildVoteId(dto.congress, dto.chamber, dto.rollCallNumber)
-
-          val vote = VoteDO(
-            voteId = 0L,
-            naturalKey = naturalKey,
-            congress = dto.congress,
-            chamber = chamber,
-            rollNumber = dto.rollCallNumber,
-            sessionNumber = dto.sessionNumber,
-            billId = None,
-            question = dto.voteQuestion,
-            voteType = dto.voteType,
-            voteMethod = None,
-            result = dto.result,
-            voteDate = DateParsing.toLocalDate(dto.startDate),
-            legislationNumber = dto.legislationNumber,
-            legislationType = legislationType,
-            legislationUrl = dto.legislationUrl,
-            sourceDataUrl = dto.sourceDataUrl.orElse(dto.url),
-            updateDate = DateParsing.toInstant(dto.updateDate),
-            createdAt = None,
-            updatedAt = None,
-          )
-
-          VoteConversionResult(
-            vote = vote,
-            positions = positions,
-          )
         }
       }
 

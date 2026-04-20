@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
 import repcheck.shared.models.congress.dto.conversions.VoteConversions._
 import repcheck.shared.models.congress.dto.vote._
-import repcheck.shared.models.congress.vote.VoteCast
+import repcheck.shared.models.congress.vote.{VoteCast, VoteType}
 
 class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
@@ -36,13 +36,13 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     ),
   )
 
-  "VoteMembersDTO.toDO" should "produce VoteDO with correct natural key" in {
+  "VoteMembersDTO.toDO" should "produce VoteDO with correct natural key including session" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
     val _             = result.vote.voteId shouldBe 0L
-    result.vote.naturalKey shouldBe "118-House-42"
+    result.vote.naturalKey shouldBe "118-House-1-42"
   }
 
-  it should "map all vote fields correctly" in {
+  it should "map all vote fields correctly and classify voteType via fromQuestion" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
     val v             = result.vote
     val _             = v.congress shouldBe 118
@@ -50,15 +50,47 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = v.rollNumber shouldBe 42
     val _             = v.sessionNumber shouldBe Some(1)
     val _             = v.question shouldBe Some("On Passage")
-    val _             = v.voteType shouldBe Some("YEA-AND-NAY")
-    val _             = v.voteMethod shouldBe None
-    val _             = v.result shouldBe Some("Passed")
-    val _             = v.voteDate shouldBe Some(LocalDate.parse("2024-01-15"))
-    val _             = v.legislationNumber shouldBe Some("HR 1234")
-    val _             = v.legislationType shouldBe Some(BillType.HR)
-    val _             = v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
-    val _             = v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
+    // voteType is derived from voteQuestion via VoteType.fromQuestion, not from dto.voteType
+    val _ = v.voteType shouldBe Some(VoteType.Passage)
+    val _ = v.voteMethod shouldBe None
+    val _ = v.result shouldBe Some("Passed")
+    val _ = v.voteDate shouldBe Some(LocalDate.parse("2024-01-15"))
+    val _ = v.legislationNumber shouldBe Some("HR 1234")
+    val _ = v.legislationType shouldBe Some(BillType.HR)
+    val _ = v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
+    val _ = v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
     v.updateDate shouldBe Some(Instant.parse("2024-01-16T00:00:00Z"))
+  }
+
+  it should "leave voteType as None when voteQuestion is absent" in {
+    val dto           = validVoteMembers.copy(voteQuestion = None)
+    val Right(result) = dto.toDO: @unchecked
+    result.vote.voteType shouldBe None
+  }
+
+  it should "classify voteType for each fromQuestion pattern" in {
+    val cases: List[(String, VoteType)] = List(
+      "On Passage of HR 1234"                  -> VoteType.Passage,
+      "On Agreeing to the Conference Report"   -> VoteType.ConferenceReport,
+      "On Cloture on the Motion to Proceed"    -> VoteType.Cloture,
+      "On Overriding the Veto"                 -> VoteType.VetoOverride,
+      "On Agreeing to the Amendment"           -> VoteType.Amendment,
+      "Reported favorably from committee"      -> VoteType.Committee,
+      "On Motion to Recommit"                  -> VoteType.Recommit,
+      "Some obscure question with no keywords" -> VoteType.Other,
+    )
+    cases.foreach {
+      case (question, expected) =>
+        val dto           = validVoteMembers.copy(voteQuestion = Some(question))
+        val Right(result) = dto.toDO: @unchecked
+        result.vote.voteType shouldBe Some(expected)
+    }
+  }
+
+  it should "fail when sessionNumber is None" in {
+    val result = validVoteMembers.copy(sessionNumber = None).toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("sessionNumber")) shouldBe Left(true)
   }
 
   it should "produce VotePositionDOs only for members with memberId in DTO" in {
@@ -201,9 +233,10 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     result.left.map(msg => msg.contains("S0002")) shouldBe Left(true)
   }
 
-  "buildVoteId" should "construct correct natural key" in {
-    val _ = VoteConversions.buildVoteId(118, "House", 42) shouldBe "118-House-42"
-    VoteConversions.buildVoteId(117, "Senate", 100) shouldBe "117-Senate-100"
+  "buildVoteNaturalKey" should "construct correct natural key with session" in {
+    val _ = VoteConversions.buildVoteNaturalKey(118, "House", 1, 42) shouldBe "118-House-1-42"
+    val _ = VoteConversions.buildVoteNaturalKey(117, "Senate", 2, 100) shouldBe "117-Senate-2-100"
+    VoteConversions.buildVoteNaturalKey(119, "House", 1, 17) shouldBe "119-House-1-17"
   }
 
 }

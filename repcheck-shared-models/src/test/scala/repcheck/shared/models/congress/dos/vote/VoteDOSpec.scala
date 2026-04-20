@@ -8,20 +8,20 @@ import io.circe.syntax._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.common.{BillType, Chamber}
-import repcheck.shared.models.congress.vote.VoteMethod
+import repcheck.shared.models.congress.vote.{VoteMethod, VoteType}
 
 class VoteDOSpec extends AnyFlatSpec with Matchers {
 
   private val sampleVote = VoteDO(
     voteId = 1L,
-    naturalKey = "rv118-house-123",
+    naturalKey = "118-House-1-123",
     congress = 118,
     chamber = Chamber.House,
     rollNumber = 123,
     sessionNumber = Some(1),
     billId = Some(1L),
     question = Some("On Passage"),
-    voteType = Some("YEA-AND-NAY"),
+    voteType = Some(VoteType.Passage),
     voteMethod = Some(VoteMethod.RecordedVote),
     result = Some("Passed"),
     voteDate = Some(LocalDate.parse("2024-03-15")),
@@ -43,7 +43,7 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
   it should "round-trip with optional fields as None" in {
     val minimal = VoteDO(
       voteId = 2L,
-      naturalKey = "rv118-senate-456",
+      naturalKey = "118-Senate-2-456",
       congress = 118,
       chamber = Chamber.Senate,
       rollNumber = 456,
@@ -66,7 +66,7 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field voteId" in {
-    val json = """{"naturalKey":"rv118-house-1","congress":118,"chamber":"House","rollNumber":123}"""
+    val json = """{"naturalKey":"118-House-1-1","congress":118,"chamber":"House","rollNumber":123}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 
@@ -76,17 +76,17 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "fail on missing required field congress" in {
-    val json = """{"voteId":1,"naturalKey":"rv118-house-1","chamber":"House","rollNumber":1}"""
+    val json = """{"voteId":1,"naturalKey":"118-House-1-1","chamber":"House","rollNumber":1}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field chamber" in {
-    val json = """{"voteId":1,"naturalKey":"rv118-house-1","congress":118,"rollNumber":1}"""
+    val json = """{"voteId":1,"naturalKey":"118-House-1-1","congress":118,"rollNumber":1}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 
   it should "fail on missing required field rollNumber" in {
-    val json = """{"voteId":1,"naturalKey":"rv118-house-1","congress":118,"chamber":"House"}"""
+    val json = """{"voteId":1,"naturalKey":"118-House-1-1","congress":118,"chamber":"House"}"""
     decode[VoteDO](json).isLeft shouldBe true
   }
 

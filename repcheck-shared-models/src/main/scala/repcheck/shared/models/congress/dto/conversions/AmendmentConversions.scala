@@ -31,7 +31,7 @@ object AmendmentConversions {
       c  <- congress
       bt <- billType
       n  <- number
-    } yield s"$c-${bt.toUpperCase}-$n"
+    } yield BillConversions.buildBillNaturalKey(c, bt, n.toString)
 
   implicit class AmendmentDetailDTOOps(private val dto: AmendmentDetailDTO) extends AnyVal {
 

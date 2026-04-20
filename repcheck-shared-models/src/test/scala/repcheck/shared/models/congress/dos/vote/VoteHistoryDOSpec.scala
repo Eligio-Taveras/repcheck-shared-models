@@ -8,7 +8,7 @@ import io.circe.syntax._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
-import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod}
+import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod, VoteType}
 
 class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
@@ -21,7 +21,7 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
     sessionNumber = Some(1),
     billId = Some(1L),
     question = Some("On Passage"),
-    voteType = Some("YEA-AND-NAY"),
+    voteType = Some(VoteType.Passage),
     voteMethod = Some(VoteMethod.RecordedVote),
     result = Some("Passed"),
     voteDate = Some(LocalDate.parse("2024-03-15")),

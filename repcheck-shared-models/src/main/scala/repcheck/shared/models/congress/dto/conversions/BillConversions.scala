@@ -29,7 +29,12 @@ object BillConversions {
   private def parseBillType(raw: String): Either[String, BillType] =
     BillType.fromString(raw).left.map(_.getMessage)
 
-  private[conversions] def buildBillId(congress: Int, billType: String, number: String): String =
+  /**
+   * Canonical natural-key builder for a bill. Used by every writer and every ON CONFLICT clause. Format:
+   * `"$congress-${billType.toUpperCase}-$number"`, e.g., `"119-HR-30"`. Congress first, uppercase bill type. Always
+   * call this — do not inline the format string.
+   */
+  def buildBillNaturalKey(congress: Int, billType: String, number: String): String =
     s"$congress-${billType.toUpperCase}-$number"
 
   private[conversions] def validateBillFields(
@@ -56,7 +61,7 @@ object BillConversions {
         originChamber <- parseChamber(dto.originChamber)
       } yield BillDO(
         billId = 0L,
-        naturalKey = buildBillId(dto.congress, dto.billType, dto.number),
+        naturalKey = buildBillNaturalKey(dto.congress, dto.billType, dto.number),
         congress = dto.congress,
         billType = billType,
         number = dto.number,
@@ -101,7 +106,7 @@ object BillConversions {
         textFormatVal   <- parseFormatType(firstFormat.map(_.type_))
         textVersionType <- parseTextVersionCode(firstTextVersion.flatMap(_.type_))
       } yield {
-        val naturalKey = buildBillId(dto.congress, dto.billType, dto.number)
+        val naturalKey = buildBillNaturalKey(dto.congress, dto.billType, dto.number)
 
         val textUrl  = firstFormat.map(_.url)
         val textDate = firstTextVersion.flatMap(_.date)

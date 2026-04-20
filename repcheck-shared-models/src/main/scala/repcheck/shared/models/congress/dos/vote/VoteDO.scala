@@ -6,7 +6,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 import repcheck.shared.models.congress.common.{BillType, Chamber}
-import repcheck.shared.models.congress.vote.VoteMethod
+import repcheck.shared.models.congress.vote.{VoteMethod, VoteType}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class VoteDO(
@@ -18,7 +18,7 @@ final case class VoteDO(
   sessionNumber: Option[Int],
   billId: Option[Long],
   question: Option[String],
-  voteType: Option[String],
+  voteType: Option[VoteType],
   voteMethod: Option[VoteMethod],
   result: Option[String],
   voteDate: Option[LocalDate],
