@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
 import repcheck.shared.models.congress.dto.conversions.VoteConversions._
 import repcheck.shared.models.congress.dto.vote._
-import repcheck.shared.models.congress.vote.{VoteCast, VoteType}
+import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod, VoteType}
 
 class VoteConversionsSpec extends AnyFlatSpec with Matchers {
 
@@ -20,7 +20,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     updateDate = Some("2024-01-16"),
     result = Some("Passed"),
     voteType = Some("YEA-AND-NAY"),
-    legislationNumber = Some("HR 1234"),
+    legislationNumber = Some("1234"),
     legislationType = Some("HR"),
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
     url = Some("https://api.congress.gov/v3/vote/118/house/42"),
@@ -52,14 +52,66 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val _             = v.question shouldBe Some("On Passage")
     // voteType is derived from voteQuestion via VoteType.fromQuestion, not from dto.voteType
     val _ = v.voteType shouldBe Some(VoteType.Passage)
-    val _ = v.voteMethod shouldBe None
+    // voteMethod is derived from dto.voteType (the API's procedural label) via VoteMethod.fromString.
+    // Fixture has "YEA-AND-NAY" which parses (case-insensitive) to YeaAndNay.
+    val _ = v.voteMethod shouldBe Some(VoteMethod.YeaAndNay)
     val _ = v.result shouldBe Some("Passed")
     val _ = v.voteDate shouldBe Some(LocalDate.parse("2024-01-15"))
-    val _ = v.legislationNumber shouldBe Some("HR 1234")
+    val _ = v.legislationNumber shouldBe Some("1234")
     val _ = v.legislationType shouldBe Some(BillType.HR)
     val _ = v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
     val _ = v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
+    // billId stays None at the pure conversion layer — processor resolves via billNaturalKey.
+    val _ = v.billId shouldBe None
     v.updateDate shouldBe Some(Instant.parse("2024-01-16T00:00:00Z"))
+  }
+
+  it should "populate billNaturalKey from legislation fields" in {
+    val Right(result) = validVoteMembers.toDO: @unchecked
+    result.billNaturalKey shouldBe Some("118-HR-1234")
+  }
+
+  it should "leave billNaturalKey as None when legislation fields are missing (procedural vote)" in {
+    val procedural    = validVoteMembers.copy(legislationType = None, legislationNumber = None)
+    val Right(result) = procedural.toDO: @unchecked
+    result.billNaturalKey shouldBe None
+  }
+
+  it should "leave billNaturalKey as None when only legislationType is present" in {
+    val partial       = validVoteMembers.copy(legislationNumber = None)
+    val Right(result) = partial.toDO: @unchecked
+    result.billNaturalKey shouldBe None
+  }
+
+  it should "derive voteMethod from dto.voteType for each known API label" in {
+    val cases: List[(String, VoteMethod)] = List(
+      "recorded vote"     -> VoteMethod.RecordedVote,
+      "Recorded Vote"     -> VoteMethod.RecordedVote,
+      "Voice Vote"        -> VoteMethod.VoiceVote,
+      "Unanimous Consent" -> VoteMethod.UnanimousConsent,
+      "Yea-and-Nay"       -> VoteMethod.YeaAndNay,
+      "2/3 Yea-And-Nay"   -> VoteMethod.TwoThirdsYeaAndNay,
+      "Quorum Call"       -> VoteMethod.QuorumCall,
+    )
+    cases.foreach {
+      case (apiLabel, expected) =>
+        val dto           = validVoteMembers.copy(voteType = Some(apiLabel))
+        val Right(result) = dto.toDO: @unchecked
+        result.vote.voteMethod shouldBe Some(expected)
+    }
+  }
+
+  it should "leave voteMethod as None when dto.voteType is absent" in {
+    val dto           = validVoteMembers.copy(voteType = None)
+    val Right(result) = dto.toDO: @unchecked
+    result.vote.voteMethod shouldBe None
+  }
+
+  it should "fail fast when dto.voteType is not a known VoteMethod" in {
+    val dto    = validVoteMembers.copy(voteType = Some("Something Unmapped"))
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("Something Unmapped")) shouldBe Left(true)
   }
 
   it should "leave voteType as None when voteQuestion is absent" in {
@@ -93,18 +145,26 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     result.left.map(msg => msg.contains("sessionNumber")) shouldBe Left(true)
   }
 
-  it should "produce VotePositionDOs only for members with memberId in DTO" in {
+  it should "emit UnresolvedVotePositions only for members with memberId in DTO" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
-    val _             = result.positions.length shouldBe 2
-    result.positions.foreach(_.memberId shouldBe 0L)
+    // Fixture has 3 results; one has memberId = None. Should be filtered out.
+    val _ = result.positions.length shouldBe 2
+    // All emitted positions carry the bioguide via Left — the Right variant is reserved for a
+    // future Senate-LIS path (P2.3). Every Left should be a non-empty bioguide string.
+    result.positions.foreach(pos => pos.memberSource.isLeft shouldBe true)
+  }
+
+  it should "carry the bioguide in memberSource.Left for each resolved House position" in {
+    val Right(result) = validVoteMembers.toDO: @unchecked
+    val bioguides     = result.positions.map(_.memberSource.fold(identity, _ => ""))
+    bioguides shouldBe List("A000370", "B001297")
   }
 
   it should "map position fields correctly" in {
     val Right(result) = validVoteMembers.toDO: @unchecked
     val first         = result.positions.headOption
-    val _             = first.map(_.voteId) shouldBe Some(0L)
-    val _             = first.map(_.memberId) shouldBe Some(0L)
-    val _             = first.flatMap(_.position) shouldBe Some(VoteCast.Yea)
+    val _             = first.map(_.memberSource) shouldBe Some(Left("A000370"))
+    val _             = first.flatMap(_.voteCast) shouldBe Some(VoteCast.Yea)
     val _             = first.flatMap(_.partyAtVote) shouldBe Some(Party.Democrat)
     first.flatMap(_.stateAtVote) shouldBe Some(UsState.NorthCarolina)
   }
@@ -171,7 +231,7 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val Right(result) = dto.toDO: @unchecked
     val _             = result.positions.length shouldBe 1
     val pos           = result.positions.headOption
-    val _             = pos.flatMap(_.position) shouldBe None
+    val _             = pos.flatMap(_.voteCast) shouldBe None
     val _             = pos.flatMap(_.partyAtVote) shouldBe None
     pos.flatMap(_.stateAtVote) shouldBe None
   }
