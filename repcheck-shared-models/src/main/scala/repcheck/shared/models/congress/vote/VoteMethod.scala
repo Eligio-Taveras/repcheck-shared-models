@@ -4,14 +4,18 @@ import io.circe.{Decoder, Encoder}
 
 final case class UnrecognizedVoteMethod(value: String)
     extends Exception(
-      s"Unrecognized VoteMethod: '$value'. Valid values: recorded vote, voice vote, unanimous consent, roll"
+      s"Unrecognized VoteMethod: '$value'. Valid values: recorded vote, voice vote, unanimous consent, roll, " +
+        "yea-and-nay, 2/3 yea-and-nay, quorum call"
     )
 
 enum VoteMethod(val apiValue: String) {
-  case RecordedVote     extends VoteMethod("recorded vote")
-  case VoiceVote        extends VoteMethod("voice vote")
-  case UnanimousConsent extends VoteMethod("unanimous consent")
-  case Roll             extends VoteMethod("roll")
+  case RecordedVote       extends VoteMethod("recorded vote")
+  case VoiceVote          extends VoteMethod("voice vote")
+  case UnanimousConsent   extends VoteMethod("unanimous consent")
+  case Roll               extends VoteMethod("roll")
+  case YeaAndNay          extends VoteMethod("yea-and-nay")
+  case TwoThirdsYeaAndNay extends VoteMethod("2/3 yea-and-nay")
+  case QuorumCall         extends VoteMethod("quorum call")
 }
 
 object VoteMethod {

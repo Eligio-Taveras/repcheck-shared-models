@@ -12,7 +12,7 @@ import repcheck.shared.models.congress.amendment.AmendmentType
 import repcheck.shared.models.congress.bill.TextVersionCode
 import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
 import repcheck.shared.models.congress.member.MemberType
-import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod}
+import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod, VoteType}
 
 class DoobieEnumInstancesSpec extends AnyFlatSpec with Matchers {
 
@@ -89,6 +89,13 @@ class DoobieEnumInstancesSpec extends AnyFlatSpec with Matchers {
   it should "round-trip VoteMethod via H2" in {
     VoteMethod.values.foreach { v =>
       val result = sql"SELECT ${v.apiValue}".query[VoteMethod].unique.transact(xa).unsafeRunSync()
+      result shouldBe v
+    }
+  }
+
+  it should "round-trip VoteType via H2" in {
+    VoteType.values.foreach { v =>
+      val result = sql"SELECT ${v.apiValue}".query[VoteType].unique.transact(xa).unsafeRunSync()
       result shouldBe v
     }
   }
