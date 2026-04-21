@@ -21,14 +21,15 @@ final case class MemberConversionResult(
 /**
  * Output of DTO→DO conversion for a single roll-call vote.
  *
- * Carries the partially-populated [[VoteDO]] (with `billId = None` and `voteId = 0L`) plus the two pieces of
- * information the pure conversion layer cannot resolve without DB access:
+ * Holds the [[VoteDO]] with `billId` already resolved by the caller-supplied lookup function during
+ * `VoteMembersDTO.toDO`. `voteId` is still `0L` here — that's set to the DB-assigned value after INSERT RETURNING in
+ * the processor.
  *
- *   - `billNaturalKey` — the bill's natural key (e.g., "118-HR-1234") built from the DTO's legislation fields. The
- *     processor looks this up in the bills table (or placeholder-creates) and sets [[VoteDO.billId]] before upsert.
- *     `None` only when the vote is procedural (no associated bill).
- *   - `positions: List[UnresolvedVotePosition]` — one entry per voter with the source identifier (bioguide for House,
- *     lis_member_id for Senate pre-resolution). The processor resolves each to a `members.id` Long (creating
+ *   - `billNaturalKey` — the bill's natural key (e.g., "118-HR-1234") built from the DTO's legislation fields. Kept
+ *     alongside the resolved `vote.billId` because downstream consumers (e.g., the `VoteRecordedEvent` payload) need
+ *     the natural key, not the Long PK. `None` when the vote is procedural (no associated bill).
+ *   - `positions: List[UnresolvedVotePosition]` — one entry per voter with the source member identifier (bioguide for
+ *     House, lis_member_id for Senate pre-resolution). The processor resolves each to a `members.id` Long (creating
  *     placeholder members when absent) and materializes the final `VotePositionDO` rows with the resolved memberId and
  *     the inserted vote's returned voteId.
  */
