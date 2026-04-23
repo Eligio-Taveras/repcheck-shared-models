@@ -4,7 +4,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class UnrecognizedVoteCast(value: String)
     extends Exception(
-      s"Unrecognized VoteCast: '$value'. Valid values: Yea, Aye, Yes, Nay, No, Present, NotVoting, Not Voting, Absent"
+      s"Unrecognized VoteCast: '$value'. Valid values: Yea, Aye, Yes, Nay, No, Present, NotVoting, Not Voting, Absent, Candidate"
     )
 
 enum VoteCast(val apiValue: String) {
@@ -13,6 +13,14 @@ enum VoteCast(val apiValue: String) {
   case Present   extends VoteCast("Present")
   case NotVoting extends VoteCast("Not Voting")
   case Absent    extends VoteCast("Absent")
+
+  /**
+   * Member voted for a specific candidate in an officer-election vote (House Speaker, Clerk, etc.). The candidate's
+   * name is NOT carried on the enum — it lives in the companion `vote_positions.vote_cast_candidate_name` column per DB
+   * migration 025 (and on `VotePositionDO.voteCastCandidateName`). Using the DB column rather than a parameterized enum
+   * case keeps `vote_cast_type` a flat SQL enum, which plays nicely with Doobie's `pgEnumStringOpt`.
+   */
+  case Candidate extends VoteCast("Candidate")
 }
 
 object VoteCast {
@@ -27,6 +35,7 @@ object VoteCast {
     "NOT VOTING" -> VoteCast.NotVoting,
     "NOTVOTING"  -> VoteCast.NotVoting,
     "ABSENT"     -> VoteCast.Absent,
+    "CANDIDATE"  -> VoteCast.Candidate,
   )
 
   def fromString(value: String): Either[UnrecognizedVoteCast, VoteCast] =
