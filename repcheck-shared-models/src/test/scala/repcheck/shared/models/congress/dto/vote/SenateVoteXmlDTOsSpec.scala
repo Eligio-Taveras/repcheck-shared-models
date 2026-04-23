@@ -20,6 +20,31 @@ class SenateVoteXmlDTOsSpec extends AnyFlatSpec with Matchers {
     decode[SenateVoteMemberXmlDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
+  "SenateVoteDocumentDTO" should "round-trip" in {
+    val dto = SenateVoteDocumentDTO(
+      documentCongress = 119,
+      documentType = "S.",
+      documentNumber = "1071",
+      documentName = "S. 1071",
+      documentTitle =
+        "A bill to require the Secretary of Veterans Affairs to disinter the remains of Fernando V. Cota from Fort Sam Houston National Cemetery, Texas, and for other purposes.",
+      documentShortTitle = None,
+    )
+    decode[SenateVoteDocumentDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  it should "round-trip with a documentShortTitle populated" in {
+    val dto = SenateVoteDocumentDTO(
+      documentCongress = 117,
+      documentType = "H.R.",
+      documentNumber = "1319",
+      documentName = "H.R. 1319",
+      documentTitle = "American Rescue Plan Act of 2021",
+      documentShortTitle = Some("ARPA"),
+    )
+    decode[SenateVoteDocumentDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
   "SenateVoteXmlDTO" should "round-trip" in {
     val dto = SenateVoteXmlDTO(
       congress = 118,
@@ -28,6 +53,14 @@ class SenateVoteXmlDTOsSpec extends AnyFlatSpec with Matchers {
       question = "On the Motion",
       voteDate = "2024-01-15",
       result = "Motion Agreed to",
+      document = SenateVoteDocumentDTO(
+        documentCongress = 118,
+        documentType = "S.",
+        documentNumber = "123",
+        documentName = "S. 123",
+        documentTitle = "A bill to do something important.",
+        documentShortTitle = None,
+      ),
       members = List(
         SenateVoteMemberXmlDTO("S0001", "John", "Smith", "D", "NY", "Yea"),
         SenateVoteMemberXmlDTO("S0002", "Jane", "Doe", "R", "TX", "Nay"),

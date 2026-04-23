@@ -287,6 +287,14 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     question = "On the Motion",
     voteDate = "2024-06-01",
     result = "Motion Agreed to",
+    document = SenateVoteDocumentDTO(
+      documentCongress = 118,
+      documentType = "S.",
+      documentNumber = "500",
+      documentName = "S. 500",
+      documentTitle = "A bill for testing purposes.",
+      documentShortTitle = None,
+    ),
     members = List(
       SenateVoteMemberXmlDTO("S0001", "John", "Smith", "D", "NY", "Yea"),
       SenateVoteMemberXmlDTO("S0002", "Jane", "Doe", "R", "TX", "Nay"),
