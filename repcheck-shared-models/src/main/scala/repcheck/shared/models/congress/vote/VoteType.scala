@@ -4,7 +4,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class UnrecognizedVoteType(value: String)
     extends Exception(
-      s"Unrecognized VoteType: '$value'. Valid values: Passage, ConferenceReport, Cloture, VetoOverride, Amendment, Committee, Recommit, Other"
+      s"Unrecognized VoteType: '$value'. Valid values: Passage, ConferenceReport, Cloture, VetoOverride, Amendment, Committee, Recommit, Election, Other"
     )
 
 enum VoteType(val apiValue: String) {
@@ -15,7 +15,15 @@ enum VoteType(val apiValue: String) {
   case Amendment        extends VoteType("Amendment")
   case Committee        extends VoteType("Committee")
   case Recommit         extends VoteType("Recommit")
-  case Other            extends VoteType("Other")
+
+  /**
+   * Officer-election vote — House Speaker (roll call #2 at the start of each Congress, plus any mid-term vacancy vote),
+   * Clerk, Sergeant-at-Arms, etc. The member's `voteCast` in these votes is a candidate name rather than Yea/Nay, so
+   * processors pair this VoteType with [[VoteCast.Candidate]] + a populated `vote_cast_candidate_name` column.
+   */
+  case Election extends VoteType("Election")
+
+  case Other extends VoteType("Other")
 }
 
 object VoteType {
@@ -30,6 +38,7 @@ object VoteType {
     "AMENDMENT"         -> VoteType.Amendment,
     "COMMITTEE"         -> VoteType.Committee,
     "RECOMMIT"          -> VoteType.Recommit,
+    "ELECTION"          -> VoteType.Election,
     "OTHER"             -> VoteType.Other,
   )
 
@@ -39,6 +48,12 @@ object VoteType {
       case None     => Left(UnrecognizedVoteType(value))
     }
 
+  /**
+   * Derive a domain VoteType from the raw Congress.gov `voteQuestion` text. The order of checks matters — more specific
+   * substring checks run before more general ones. `ELECTION` runs before `AMENDMENT` so that `"Election of the
+   * Speaker"` (or any hypothetical `"Election of the Amendments Clerk"`) classifies as [[VoteType.Election]] rather
+   * than getting caught by the Amendment substring.
+   */
   def fromQuestion(question: String): VoteType = {
     val upper = question.toUpperCase
     if (upper.contains("ON PASSAGE")) {
@@ -49,6 +64,8 @@ object VoteType {
       VoteType.Cloture
     } else if (upper.contains("VETO")) {
       VoteType.VetoOverride
+    } else if (upper.contains("ELECTION")) {
+      VoteType.Election
     } else if (upper.contains("AMENDMENT")) {
       VoteType.Amendment
     } else if (upper.contains("COMMITTEE")) {

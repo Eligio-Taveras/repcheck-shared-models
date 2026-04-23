@@ -98,6 +98,29 @@ class VotePositionDOSpec extends AnyFlatSpec with Matchers {
     )
   }
 
+  it should "round-trip the Candidate arm (Speaker-election vote with candidate name populated)" in {
+    val candidateArm = VotePositionDO(
+      id = 12L,
+      voteId = 3L,
+      memberId = Some(99L),
+      position = Some(VoteCast.Candidate),
+      partyAtVote = Some(Party.Democrat),
+      stateAtVote = Some(UsState.NewYork),
+      createdAt = Some(Instant.parse("2025-01-03T12:00:00Z")),
+      lisMemberId = None,
+      voteCastCandidateName = Some("Jeffries"),
+    )
+    val decoded = candidateArm.asJson.as[VotePositionDO]
+    val _       = decoded shouldBe Right(candidateArm)
+    decoded.map(_.voteCastCandidateName) shouldBe Right(Some("Jeffries"))
+  }
+
+  it should "default voteCastCandidateName to None when constructed without it (normal legislative votes)" in {
+    // The new field has a default so existing callsites that predate migration 025 don't need updates —
+    // matches the DB CHECK constraint expecting NULL for every non-Candidate voteCast.
+    houseArm.voteCastCandidateName shouldBe None
+  }
+
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._

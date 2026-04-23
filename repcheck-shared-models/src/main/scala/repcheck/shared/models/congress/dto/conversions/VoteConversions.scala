@@ -30,10 +30,37 @@ object VoteConversions {
       case Some(s) => BillType.fromString(s).left.map(_.getMessage).map(Some(_))
     }
 
-  private def parseVoteCast(raw: Option[String]): Either[String, Option[VoteCast]] =
+  /**
+   * Parse a raw `voteCast` string into a `(VoteCast, Option[candidateName])` pair, with VoteType-aware fallback.
+   *
+   * For `VoteType.Election` (House Speaker / officer-election votes), the raw `voteCast` values are candidate NAMES
+   * rather than Yea/Nay/etc. (e.g., `"Jeffries"`, `"Johnson (LA)"`, `"Scalise"`). When the canonical parser returns
+   * `Left(UnrecognizedVoteCast)` in that case, we interpret the raw string as a candidate name and emit
+   * `(VoteCast.Candidate, Some(rawString))` — the raw string flows through to `vote_positions.vote_cast_candidate_name`
+   * (migration 025).
+   *
+   * For every other `VoteType`, unrecognized values stay `Left` — a "Jeffries"-like string on a normal legislative vote
+   * IS a bug we want to surface, not silently absorb.
+   *
+   * `None` input (no cast supplied) is always `Right((None, None))` regardless of VoteType. Known canonical values
+   * (Yea/Nay/...) are `Right((Some(vc), None))` — candidate-name column stays NULL per the DB CHECK constraint.
+   */
+  private def parseVoteCast(
+    raw: Option[String],
+    voteType: Option[VoteType],
+  ): Either[String, (Option[VoteCast], Option[String])] =
     raw match {
-      case None    => Right(None)
-      case Some(s) => VoteCast.fromString(s).left.map(_.getMessage).map(Some(_))
+      case None =>
+        Right((None, None))
+      case Some(s) =>
+        VoteCast.fromString(s) match {
+          case Right(vc) =>
+            Right((Some(vc), None))
+          case Left(err) if voteType.contains(VoteType.Election) =>
+            Right((Some(VoteCast.Candidate), Some(s)))
+          case Left(err) =>
+            Left(err.getMessage)
+        }
     }
 
   private def parseParty(raw: Option[String]): Either[String, Option[Party]] =
@@ -104,6 +131,11 @@ object VoteConversions {
           case None =>
             F.pure(Left("sessionNumber is required for vote natural-key construction"))
           case Some(session) =>
+            // Compute VoteType up-front so `parseVoteCast` can opt into the candidate-name fallback for
+            // VoteType.Election (Speaker / officer elections) — raw casts like "Jeffries" route into
+            // (VoteCast.Candidate, Some("Jeffries")) instead of failing.
+            val classifiedType = dto.voteQuestion.map(VoteType.fromQuestion)
+
             val pureValidation: Either[String, (Option[Long] => VoteDO, Option[String], List[UnresolvedVotePosition])] =
               for {
                 chamber         <- parseChamber(dto.chamber)
@@ -114,7 +146,7 @@ object VoteConversions {
                   .filter(_.memberId.isDefined)
                   .traverse { r =>
                     for {
-                      position    <- parseVoteCast(r.voteCast)
+                      castPair    <- parseVoteCast(r.voteCast, classifiedType)
                       partyAtVote <- parseParty(r.party)
                       stateAtVote <- parseState(r.state)
                     } yield UnresolvedVotePosition(
@@ -123,14 +155,14 @@ object VoteConversions {
                       // The Right variant is reserved for a future refactor (P2.3) where the
                       // Senate path passes unresolved lisMemberIds through to the processor.
                       memberSource = Left(r.memberId.getOrElse("")),
-                      voteCast = position,
+                      voteCast = castPair._1,
                       partyAtVote = partyAtVote,
                       stateAtVote = stateAtVote,
+                      voteCastCandidateName = castPair._2,
                     )
                   }
               } yield {
-                val naturalKey     = buildVoteNaturalKey(dto.congress, dto.chamber, session, dto.rollCallNumber)
-                val classifiedType = dto.voteQuestion.map(VoteType.fromQuestion)
+                val naturalKey = buildVoteNaturalKey(dto.congress, dto.chamber, session, dto.rollCallNumber)
                 val billNaturalKey =
                   buildOptionalBillNaturalKey(dto.congress, dto.legislationType, dto.legislationNumber)
 

@@ -43,6 +43,18 @@ class VoteCastSpec extends AnyFlatSpec with Matchers {
     result.isLeft shouldBe true
   }
 
+  it should "accept 'Candidate' for officer-election votes" in {
+    VoteCast.fromString("Candidate") shouldBe Right(VoteCast.Candidate)
+  }
+
+  it should "NOT accept candidate names like 'Jeffries' as direct VoteCast values" in {
+    // Candidate-name handling is VoteType-aware and happens in VoteConversions.parseVoteCast,
+    // not in VoteCast.fromString — keep the enum parser strict so a future bug can't silently
+    // absorb a candidate name on a normal legislative vote.
+    val _ = VoteCast.fromString("Jeffries").isLeft shouldBe true
+    VoteCast.fromString("Johnson (LA)").isLeft shouldBe true
+  }
+
   "VoteCast Circe codec" should "round-trip values" in {
     VoteCast.values.foreach { vc =>
       val json    = vc.asJson

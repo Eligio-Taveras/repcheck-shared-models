@@ -54,4 +54,8 @@ final case class UnresolvedVotePosition(
   voteCast: Option[VoteCast],
   partyAtVote: Option[Party],
   stateAtVote: Option[UsState],
+  // Populated only when `voteCast = Some(VoteCast.Candidate)` — carries the candidate's name from an officer-election
+  // vote through to the persister, which writes it to `vote_positions.vote_cast_candidate_name`. `None` for every
+  // other voteCast value (the DB CHECK constraint enforces the invariant).
+  voteCastCandidateName: Option[String] = None,
 )

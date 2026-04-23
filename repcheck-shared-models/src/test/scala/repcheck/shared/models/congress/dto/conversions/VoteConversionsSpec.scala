@@ -237,6 +237,73 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     result.left.map(msg => msg.contains("InvalidVote")) shouldBe Left(true)
   }
 
+  // ---------------------------------------------------------------------------
+  // VoteType-aware voteCast parsing (officer-election votes → VoteCast.Candidate)
+  // ---------------------------------------------------------------------------
+
+  it should "route candidate-name voteCast values to VoteCast.Candidate when VoteType.fromQuestion classifies the vote as Election" in {
+    val speakerRow =
+      VoteResultDTO(Some("J000294"), Some("Hakeem"), Some("Jeffries"), Some("Jeffries"), Some("D"), Some("NY"))
+    val dto = validVoteMembers.copy(
+      voteQuestion = Some("Election of the Speaker"),
+      legislationType = None,
+      legislationNumber = None,
+      legislationUrl = None,
+      results = Some(List(speakerRow)),
+    )
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val _             = result.vote.voteType shouldBe Some(VoteType.Election)
+    val _             = result.positions.length shouldBe 1
+    val pos           = result.positions.headOption
+    val _             = pos.flatMap(_.voteCast) shouldBe Some(VoteCast.Candidate)
+    pos.flatMap(_.voteCastCandidateName) shouldBe Some("Jeffries")
+  }
+
+  it should "STILL fail when a position has an unrecognized voteCast on a non-Election vote" in {
+    // Regression guard: the VoteType-aware fallback must NOT silently absorb garbage on normal votes.
+    val badResult =
+      VoteResultDTO(Some("X000001"), Some("Test"), Some("User"), Some("Jeffries"), Some("D"), Some("NC"))
+    val dto    = validVoteMembers.copy(voteQuestion = Some("On Passage"), results = Some(List(badResult)))
+    val result = dto.toDO(noBillLookup)
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("Jeffries")) shouldBe Left(true)
+  }
+
+  it should "leave voteCastCandidateName as None for canonical casts even on an Election vote" in {
+    // Mid-roll-call, a member might formally vote "Present" instead of for a candidate. That should still
+    // parse as VoteCast.Present with no candidate name — the DB CHECK constraint enforces the invariant
+    // (position <> 'Candidate' -> candidate_name IS NULL).
+    val presentRow =
+      VoteResultDTO(Some("P000001"), Some("Present"), Some("Voter"), Some("Present"), Some("I"), Some("VT"))
+    val dto = validVoteMembers.copy(
+      voteQuestion = Some("Election of the Speaker"),
+      legislationType = None,
+      legislationNumber = None,
+      legislationUrl = None,
+      results = Some(List(presentRow)),
+    )
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val pos           = result.positions.headOption
+    val _             = pos.flatMap(_.voteCast) shouldBe Some(VoteCast.Present)
+    pos.flatMap(_.voteCastCandidateName) shouldBe None
+  }
+
+  it should "preserve parenthesized district disambiguators in candidate names (e.g., 'Johnson (LA)')" in {
+    // Multiple members share the same surname — Congress.gov disambiguates with "(STATE)".
+    // The candidate-name column is a free-text TEXT, so the parenthesized form flows through.
+    val row = VoteResultDTO(Some("J000299"), Some("Mike"), Some("Johnson"), Some("Johnson (LA)"), Some("R"), Some("LA"))
+    val dto = validVoteMembers.copy(
+      voteQuestion = Some("Election of the Speaker"),
+      legislationType = None,
+      legislationNumber = None,
+      legislationUrl = None,
+      results = Some(List(row)),
+    )
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val _             = result.positions.headOption.flatMap(_.voteCast) shouldBe Some(VoteCast.Candidate)
+    result.positions.headOption.flatMap(_.voteCastCandidateName) shouldBe Some("Johnson (LA)")
+  }
+
   it should "fail when a position has an unrecognized party" in {
     val badResult = VoteResultDTO(Some("X000001"), Some("Test"), Some("User"), Some("Yea"), Some("Z"), Some("NC"))
     val dto       = validVoteMembers.copy(results = Some(List(badResult)))

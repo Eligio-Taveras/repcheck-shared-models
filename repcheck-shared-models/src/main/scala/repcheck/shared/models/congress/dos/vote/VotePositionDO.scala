@@ -20,6 +20,9 @@ import repcheck.shared.models.congress.vote.VoteCast
  *   - `voteId` — FK to `votes.id`.
  *   - `memberId` — FK to `members.id`; populated for House votes. Nullable as of migration 023.
  *   - `lisMemberId` — FK to `lis_members.id`; populated for Senate votes (both mapped and unmapped senators).
+ *   - `voteCastCandidateName` — populated only when `position = VoteCast.Candidate` (officer-election votes where the
+ *     member voted for a specific candidate like "Jeffries" or "Johnson (LA)"). Added in migration 025 with a CHECK
+ *     constraint tying it to `position = 'Candidate'`; always `None` for every other `position` value.
  *
  * Field order mirrors the canonical SELECT column order used by downstream repositories so the Doobie auto-derived
  * `Read` / `Write` instances align positionally.
@@ -33,6 +36,9 @@ final case class VotePositionDO(
   stateAtVote: Option[UsState],
   createdAt: Option[Instant],
   lisMemberId: Option[Long],
+  // Only populated when `position = Some(VoteCast.Candidate)`. Default `None` matches every non-election vote — the DB
+  // `chk_vp_candidate_name` CHECK enforces the invariant from the other side (migration 025).
+  voteCastCandidateName: Option[String] = None,
 )
 
 object VotePositionDO {
