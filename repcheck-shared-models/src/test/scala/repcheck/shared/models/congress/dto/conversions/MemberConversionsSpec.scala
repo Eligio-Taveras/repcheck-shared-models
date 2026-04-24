@@ -104,6 +104,41 @@ class MemberConversionsSpec extends AnyFlatSpec with Matchers {
     result.partyHistory.map(_.partyAbbreviation) shouldBe List(Some("D"), Some("I"))
   }
 
+  it should "populate partyHistory[].partyName with party_type values ('Democrat', not 'D' or 'Democratic')" in {
+    // Regression guard: the MemberPartyHistoryDO.partyName field lands in
+    // `member_party_history.party_name` which is typed as `party_type` ({Democrat, Republican,
+    // Independent}). Congress.gov returns 'Democratic' in partyHistory[].partyName; our conversion
+    // must map 'Democratic' -> 'Democrat' so the DB cast succeeds. Unknown values would have failed
+    // with `invalid input value for enum party_type` during docker-compose E2E runs before this fix.
+    val Right(result) = validMemberDetail.toDO: @unchecked
+    result.partyHistory.map(_.partyName) shouldBe List(Some("Democrat"), Some("Independent"))
+  }
+
+  "MemberConversions.partyNameToPartyType" should "map 'Democratic' to 'Democrat'" in {
+    partyNameToPartyType(Some("Democratic")) shouldBe Some("Democrat")
+  }
+
+  it should "pass 'Republican' and 'Independent' through unchanged" in {
+    val _ = partyNameToPartyType(Some("Republican")) shouldBe Some("Republican")
+    partyNameToPartyType(Some("Independent")) shouldBe Some("Independent")
+  }
+
+  it should "pass unknown values through unchanged (DB cast will fail fast)" in {
+    partyNameToPartyType(Some("Libertarian")) shouldBe Some("Libertarian")
+  }
+
+  it should "return None for None input" in {
+    partyNameToPartyType(None) shouldBe None
+  }
+
+  "MemberConversions.normalizePartyName" should "still map full party names to single-letter abbreviations" in {
+    // Kept available for writers that target `party_abbreviation_type` ({D, R, I}) columns even
+    // though the MemberPartyHistoryDO conversion no longer uses it — partyNameToPartyType does.
+    val _ = normalizePartyName(Some("Democratic")) shouldBe Some("D")
+    val _ = normalizePartyName(Some("Republican")) shouldBe Some("R")
+    normalizePartyName(Some("Independent")) shouldBe Some("I")
+  }
+
   it should "fail when bioguideId is empty" in {
     val result = validMemberDetail.copy(bioguideId = "").toDO
     val _      = result.isLeft shouldBe true

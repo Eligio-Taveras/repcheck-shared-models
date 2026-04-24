@@ -10,14 +10,35 @@ import repcheck.shared.models.congress.member.MemberType
 
 object MemberConversions {
 
-  // Congress.gov returns full party names ("Democratic", "Republican", "Independent") in partyHistory[].partyName.
-  // The member_party_history table stores party_name as party_abbreviation_type ({D, R, I}), so we normalize here.
-  private def normalizePartyName(raw: Option[String]): Option[String] =
+  /**
+   * Normalises a Congress.gov-style party name to its single-letter abbreviation. Kept available for writers that
+   * target `party_abbreviation_type` ({D, R, I}) columns.
+   *
+   * NOT used by the `MemberPartyHistoryDO.partyName` construction — that field lands in
+   * `member_party_history.party_name`, which is typed as `party_type` (full names). See [[partyNameToPartyType]] for
+   * the correct mapping in that direction.
+   */
+  private[conversions] def normalizePartyName(raw: Option[String]): Option[String] =
     raw.map {
       case "Democratic"  => "D"
       case "Republican"  => "R"
       case "Independent" => "I"
       case other         => other
+    }
+
+  /**
+   * Maps a Congress.gov-style party name ("Democratic", "Republican", "Independent") to the corresponding `party_type`
+   * enum value ({'Democrat', 'Republican', 'Independent'}) used by `member_party_history.party_name`.
+   *
+   * "Democratic" is the only transformation the API needs ("Democrat" is the enum value; the API returns "Democratic").
+   * "Republican" and "Independent" already match the enum values and pass through unchanged. Any unknown value also
+   * passes through — the DB cast will fail fast with a clear enum-rejection error rather than silently accepting
+   * garbage.
+   */
+  private[conversions] def partyNameToPartyType(raw: Option[String]): Option[String] =
+    raw.map {
+      case "Democratic" => "Democrat"
+      case other        => other
     }
 
   private def parseBirthYear(raw: Option[String]): Either[String, Option[Int]] =
@@ -121,7 +142,7 @@ object MemberConversions {
               MemberPartyHistoryDO(
                 id = 0L,
                 memberId = 0L,
-                partyName = normalizePartyName(ph.partyName),
+                partyName = partyNameToPartyType(ph.partyName),
                 partyAbbreviation = ph.partyAbbreviation,
                 startYear = ph.startYear,
               )
