@@ -37,6 +37,25 @@ class VoteMethodSpec extends AnyFlatSpec with Matchers {
     VoteMethod.fromString("Quorum Call") shouldBe Right(VoteMethod.QuorumCall)
   }
 
+  it should "accept House Clerk synonyms — '2/3 Recorded Vote' as TwoThirdsYeaAndNay" in {
+    // Surfaced live on 119-House-1-289 during P6 docker-compose validation. The Clerk's Office
+    // uses the modern label "2/3 Recorded Vote" interchangeably with the historical
+    // "2/3 Yea-and-Nay" — same procedure (named vote requiring 2/3 supermajority for veto
+    // override / suspension of the rules).
+    val _ = VoteMethod.fromString("2/3 Recorded Vote") shouldBe Right(VoteMethod.TwoThirdsYeaAndNay)
+    val _ = VoteMethod.fromString("2/3 RECORDED VOTE") shouldBe Right(VoteMethod.TwoThirdsYeaAndNay)
+    VoteMethod.fromString("2/3 recorded vote") shouldBe Right(VoteMethod.TwoThirdsYeaAndNay)
+  }
+
+  it should "accept House Clerk synonyms — bare 'Quorum' as QuorumCall" in {
+    // Surfaced live on 119-House-1-1 + 119-House-2-1 during P6 docker-compose validation.
+    // Bare "Quorum" is House-clerk shorthand for what `quorum call` describes — a procedural
+    // vote whose only purpose is to establish whether a quorum is present.
+    val _ = VoteMethod.fromString("Quorum") shouldBe Right(VoteMethod.QuorumCall)
+    val _ = VoteMethod.fromString("QUORUM") shouldBe Right(VoteMethod.QuorumCall)
+    VoteMethod.fromString("quorum") shouldBe Right(VoteMethod.QuorumCall)
+  }
+
   it should "return Left for unknown values" in {
     val result = VoteMethod.fromString("unknown method")
     val _      = result.isLeft shouldBe true
