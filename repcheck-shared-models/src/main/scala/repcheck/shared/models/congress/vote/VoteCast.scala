@@ -36,6 +36,19 @@ object VoteCast {
     "NOTVOTING"  -> VoteCast.NotVoting,
     "ABSENT"     -> VoteCast.Absent,
     "CANDIDATE"  -> VoteCast.Candidate,
+    // Senate impeachment-trial verdict votes use "Guilty" / "Not Guilty" instead of "Yea" / "Nay".
+    // Semantically the question on the Senate floor is "should we convict?", so a Guilty vote IS a
+    // Yea on conviction and a Not Guilty IS a Nay — alignment-scoring math works correctly without
+    // a separate enum case. Live example surfacing this: 117-Senate-1-59 (Trump 2nd impeachment
+    // verdict, Feb 2021) where every senator's <vote_cast> is Guilty / Not Guilty. Pre-fix the
+    // converter produced None and the NOT NULL `position` column rejected the whole batch insert,
+    // dropping every position row for that vote.
+    //
+    // Display-layer / analytics that want to surface the original "Guilty / Not Guilty" labels
+    // can re-derive them from the parent vote's voteType + voteQuestion (impeachment trials are
+    // distinguishable as a class). Storing as Yea / Nay keeps the alignment-score path uniform.
+    "GUILTY"     -> VoteCast.Yea,
+    "NOT GUILTY" -> VoteCast.Nay,
   )
 
   def fromString(value: String): Either[UnrecognizedVoteCast, VoteCast] =

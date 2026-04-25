@@ -47,6 +47,22 @@ class VoteCastSpec extends AnyFlatSpec with Matchers {
     VoteCast.fromString("Candidate") shouldBe Right(VoteCast.Candidate)
   }
 
+  it should "alias Senate impeachment-trial 'Guilty' to Yea" in {
+    // Senate impeachment trials emit "Guilty" / "Not Guilty" in <vote_cast>. The Senate's question
+    // is "should we convict?", so Guilty IS Yea on conviction. Keeps alignment-score math uniform
+    // without a separate enum case. Surfaced live on 117-Senate-1-59 (Trump 2nd impeachment
+    // verdict, Feb 2021).
+    val _ = VoteCast.fromString("Guilty") shouldBe Right(VoteCast.Yea)
+    val _ = VoteCast.fromString("GUILTY") shouldBe Right(VoteCast.Yea)
+    VoteCast.fromString("guilty") shouldBe Right(VoteCast.Yea)
+  }
+
+  it should "alias Senate impeachment-trial 'Not Guilty' to Nay" in {
+    val _ = VoteCast.fromString("Not Guilty") shouldBe Right(VoteCast.Nay)
+    val _ = VoteCast.fromString("NOT GUILTY") shouldBe Right(VoteCast.Nay)
+    VoteCast.fromString("not guilty") shouldBe Right(VoteCast.Nay)
+  }
+
   it should "NOT accept candidate names like 'Jeffries' as direct VoteCast values" in {
     // Candidate-name handling is VoteType-aware and happens in VoteConversions.parseVoteCast,
     // not in VoteCast.fromString — keep the enum parser strict so a future bug can't silently
