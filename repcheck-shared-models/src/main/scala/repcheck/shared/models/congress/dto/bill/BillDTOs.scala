@@ -118,12 +118,61 @@ object BillSubjectsDTO {
   implicit val decoder: Decoder[BillSubjectsDTO] = deriveDecoder[BillSubjectsDTO]
 }
 
+/**
+ * Identifying reference to a bill carried inside global /summaries response entries. Mirrors Congress.gov's
+ * `summaryBill` schema (`congress`, `type`, `number`). Absent from the bill-scoped /bill/{c}/{t}/{n}/summaries response
+ * (the bill is implied by the URL path); present on the global /summaries[/{congress}[/{billType}]] endpoints.
+ */
+final case class BillReferenceDTO(
+  congress: Int,
+  billType: String,
+  number: Long,
+) {
+
+  /**
+   * Build the bill natural key in the same format used by `BillConversions.buildBillNaturalKey` (e.g. `"118-HR-30"`).
+   * The bill-type segment is uppercased to match the convention.
+   */
+  def naturalKey: String = s"$congress-${billType.toUpperCase}-${number.toString}"
+
+}
+
+object BillReferenceDTO {
+
+  implicit val decoder: Decoder[BillReferenceDTO] = (c: HCursor) =>
+    for {
+      congress <- c.downField("congress").as[Int]
+      billType <- c.downField("type").as[String]
+      number   <- c.downField("number").as[Long]
+    } yield BillReferenceDTO(congress = congress, billType = billType, number = number)
+
+  implicit val encoder: Encoder[BillReferenceDTO] = (b: BillReferenceDTO) =>
+    Json.obj(
+      "congress" -> Json.fromInt(b.congress),
+      "type"     -> Json.fromString(b.billType),
+      "number"   -> Json.fromLong(b.number),
+    )
+
+}
+
+/**
+ * One entry from a Congress.gov summaries response. Used by both the bill-scoped `/bill/{c}/{t}/{n}/summaries` endpoint
+ * (where `bill = None` because the bill is implied by the URL) and the global `/summaries[/{congress}[/{billType}]]`
+ * endpoints (where `bill` carries the bill reference). All non-bill fields stay Optional because the detail-endpoint
+ * usage at `BillDetailDTO.summaries` predates this consolidation and tolerates missing fields defensively.
+ *
+ * The `versionCode` field maps to a [[repcheck.shared.models.congress.bill.TextVersionCode]] via
+ * [[repcheck.shared.models.congress.bill.SummaryVersionCodeMapper]] when present. Entries with a `None` `versionCode`
+ * are skipped by `bill-summary-pipeline` with a warn log (malformed API response — not a fail-fast halt). Unknown
+ * versionCodes raise [[repcheck.shared.models.congress.bill.UnrecognizedSummaryVersionCode]] which IS Systemic.
+ */
 final case class BillSummaryDTO(
   actionDate: Option[String],
   actionDesc: Option[String],
   text: Option[String],
   updateDate: Option[String],
   versionCode: Option[String],
+  bill: Option[BillReferenceDTO] = None,
 )
 
 object BillSummaryDTO {

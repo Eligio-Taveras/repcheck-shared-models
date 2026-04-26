@@ -103,4 +103,50 @@ class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
     }
   }
 
+  "TextVersionCode.progressionOrder" should "place introduced (IH/IS) at the lowest tier" in {
+    val _ = TextVersionCode.IH.progressionOrder shouldBe 10
+    TextVersionCode.IS.progressionOrder shouldBe 10
+  }
+
+  it should "place law (PL/PRL) above enrolled (ENR), engrossed (EH/ES), reported (RH/RS), introduced (IH/IS)" in {
+    val pl       = TextVersionCode.PL.progressionOrder
+    val enr      = TextVersionCode.ENR.progressionOrder
+    val engrossH = TextVersionCode.EH.progressionOrder
+    val report   = TextVersionCode.RH.progressionOrder
+    val intro    = TextVersionCode.IH.progressionOrder
+
+    val _ = pl should be > enr
+    val _ = enr should be > engrossH
+    val _ = engrossH should be > report
+    val _ = report should be > intro
+
+    // PRL parallels PL.
+    val _ = TextVersionCode.PRL.progressionOrder shouldBe pl
+
+    // ES parallels EH (each chamber's own engrossed is the same tier).
+    val _ = TextVersionCode.ES.progressionOrder shouldBe engrossH
+
+    // RS parallels RH.
+    TextVersionCode.RS.progressionOrder shouldBe report
+  }
+
+  it should "place engrossed-amendment (cross-chamber) above engrossed-in-origin" in {
+    // EAH/EAS represent passing the OTHER chamber after origin already passed — strictly later.
+    val _ = TextVersionCode.EAH.progressionOrder should be > TextVersionCode.EH.progressionOrder
+    TextVersionCode.EAS.progressionOrder should be > TextVersionCode.ES.progressionOrder
+  }
+
+  it should "treat tabled (LTH/LTS) as terminal so a stale earlier-stage summary cannot regress" in {
+    // LTH/LTS are terminal (bill killed); their progressionOrder must be at-or-above PL so the
+    // regression guard rejects writes that would downgrade them.
+    val _ = TextVersionCode.LTH.progressionOrder should be >= TextVersionCode.PL.progressionOrder
+    TextVersionCode.LTS.progressionOrder should be >= TextVersionCode.PL.progressionOrder
+  }
+
+  it should "be defined for every enum case (no NoSuchElementException at access)" in {
+    // Smoke check that every code returns a usable Int — guards against a future code being added
+    // to the enum without a progressionOrder being assigned.
+    TextVersionCode.values.foreach(tvc => tvc.progressionOrder should be > 0)
+  }
+
 }
