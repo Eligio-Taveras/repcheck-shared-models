@@ -31,18 +31,25 @@ class SummaryVersionCodeMapperSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "raise UnrecognizedSummaryVersionCode for codes not in the catalog" in {
-    val result = SummaryVersionCodeMapper.toTextVersionCode("999-not-a-code")
-    val _      = result.isLeft shouldBe true
-    val err    = result.swap.toOption.get
-    val _      = err.value shouldBe "999-not-a-code"
-    err.getMessage should include("999-not-a-code")
+    SummaryVersionCodeMapper.toTextVersionCode("999-not-a-code") match {
+      case Left(err) =>
+        val _ = err.value shouldBe "999-not-a-code"
+        err.getMessage should include("999-not-a-code")
+      case Right(tvc) =>
+        fail(s"Expected Left(UnrecognizedSummaryVersionCode) but got Right($tvc)")
+    }
   }
 
   it should "include actionable guidance in the unrecognized-code error message" in {
-    val msg = SummaryVersionCodeMapper.toTextVersionCode("XX").swap.toOption.get.getMessage
-    val _   = msg should include("SummaryVersionCodeMapper")
-    val _   = msg should include("redeploy")
-    msg should include("empirical")
+    SummaryVersionCodeMapper.toTextVersionCode("XX") match {
+      case Left(err) =>
+        val msg = err.getMessage
+        val _   = msg should include("SummaryVersionCodeMapper")
+        val _   = msg should include("redeploy")
+        msg should include("empirical")
+      case Right(tvc) =>
+        fail(s"Expected Left(UnrecognizedSummaryVersionCode) but got Right($tvc)")
+    }
   }
 
   it should "treat the empty string as unrecognized (defensive against malformed JSON)" in {

@@ -7,6 +7,24 @@ import org.scalatest.matchers.should.Matchers
 
 class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
 
+  /**
+   * Pattern-match an `Either[L, R]` to extract the Right value or fail the test. Uses pattern matching rather than
+   * `Either.toOption.get` to comply with WartRemover's `OptionPartial` rule.
+   */
+  private def expectRight[L, R](either: Either[L, R]): R = either match {
+    case Right(value) => value
+    case Left(err)    => fail(s"Expected Right but got Left($err)")
+  }
+
+  /**
+   * Pattern-match an `Option[T]` to extract the Some value or fail the test. WartRemover's `OptionPartial` rule
+   * disallows `.get` directly; this helper centralizes the failure message.
+   */
+  private def expectSome[T](opt: Option[T], context: String): T = opt match {
+    case Some(value) => value
+    case None        => fail(s"Expected Some($context) but got None")
+  }
+
   "BillSummaryDTO.decoder" should "decode a global /summaries response entry with bill reference" in {
     val json =
       """
@@ -24,17 +42,16 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
         |}
         |""".stripMargin
 
-    val result = decode[BillSummaryDTO](json)
-    val _      = result.isRight shouldBe true
-
-    val dto = result.toOption.get
+    val dto = expectRight(decode[BillSummaryDTO](json))
     val _   = dto.actionDate shouldBe Some("2022-02-18")
     val _   = dto.actionDesc shouldBe Some("Passed Senate")
     val _   = dto.text shouldBe defined
     val _   = dto.updateDate shouldBe Some("2022-02-18T16:38:41Z")
     val _   = dto.versionCode shouldBe Some("55")
     val _   = dto.bill shouldBe Some(BillReferenceDTO(congress = 117, billType = "HR", number = 3076L))
-    dto.bill.get.naturalKey shouldBe "117-HR-3076"
+
+    val ref = expectSome(dto.bill, "decoded bill reference")
+    ref.naturalKey shouldBe "117-HR-3076"
   }
 
   it should "decode a bill-scoped /bill/{c}/{t}/{n}/summaries entry where bill ref is absent" in {
@@ -50,17 +67,13 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
         |}
         |""".stripMargin
 
-    val dto = decode[BillSummaryDTO](json).toOption.get
+    val dto = expectRight(decode[BillSummaryDTO](json))
     val _   = dto.bill shouldBe None
     dto.versionCode shouldBe Some("00")
   }
 
   it should "tolerate every field missing (defensive, matches original BillDetailDTO.summaries usage)" in {
-    val json   = """{}"""
-    val result = decode[BillSummaryDTO](json)
-    val _      = result.isRight shouldBe true
-
-    val dto = result.toOption.get
+    val dto = expectRight(decode[BillSummaryDTO]("""{}"""))
     val _   = dto.actionDate shouldBe None
     val _   = dto.actionDesc shouldBe None
     val _   = dto.text shouldBe None
@@ -78,7 +91,7 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
         |}
         |""".stripMargin
 
-    val dto = decode[BillSummaryDTO](json).toOption.get
+    val dto = expectRight(decode[BillSummaryDTO](json))
     val _   = dto.bill shouldBe None
     dto.versionCode shouldBe Some("70")
   }
@@ -92,7 +105,8 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
     val json   = """{"congress": 118, "type": "S", "number": 42}"""
     val result = decode[BillReferenceDTO](json)
     val _      = result shouldBe Right(BillReferenceDTO(congress = 118, billType = "S", number = 42L))
-    result.toOption.get.naturalKey shouldBe "118-S-42"
+    val ref    = expectRight(result)
+    ref.naturalKey shouldBe "118-S-42"
   }
 
   it should "round-trip through Circe Encoder using the API field name 'type' (not 'billType')" in {
