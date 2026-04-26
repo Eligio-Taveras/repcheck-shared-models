@@ -24,8 +24,9 @@ class SummaryVersionCodeMapperSpec extends AnyFlatSpec with Matchers {
       "73" -> TextVersionCode.RS,
     )
 
-    expected.foreach { case (code, expectedTextCode) =>
-      SummaryVersionCodeMapper.toTextVersionCode(code) shouldBe Right(expectedTextCode)
+    expected.foreach {
+      case (code, expectedTextCode) =>
+        SummaryVersionCodeMapper.toTextVersionCode(code) shouldBe Right(expectedTextCode)
     }
   }
 

@@ -146,9 +146,7 @@ class TextVersionCodeSpec extends AnyFlatSpec with Matchers {
   it should "be defined for every enum case (no NoSuchElementException at access)" in {
     // Smoke check that every code returns a usable Int — guards against a future code being added
     // to the enum without a progressionOrder being assigned.
-    TextVersionCode.values.foreach { tvc =>
-      tvc.progressionOrder should be > 0
-    }
+    TextVersionCode.values.foreach(tvc => tvc.progressionOrder should be > 0)
   }
 
 }

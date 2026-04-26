@@ -14,17 +14,16 @@ final case class UnrecognizedSummaryVersionCode(value: String)
     )
 
 /**
- * Maps CRS summary `versionCode` values returned from Congress.gov's `/summaries` endpoint to our
- * domain [[TextVersionCode]] enum. The CRS-internal versionCode catalog is not officially documented;
- * the mappings below are seeded from observation of real `/summaries` responses and grow as new codes
- * are encountered in production. Unknown codes raise [[UnrecognizedSummaryVersionCode]] (Systemic) so
- * the pipeline halts immediately and the operator adds the new entry — see fail-fast posture decision
- * in the bill-summary-pipeline plan.
+ * Maps CRS summary `versionCode` values returned from Congress.gov's `/summaries` endpoint to our domain
+ * [[TextVersionCode]] enum. The CRS-internal versionCode catalog is not officially documented; the mappings below are
+ * seeded from observation of real `/summaries` responses and grow as new codes are encountered in production. Unknown
+ * codes raise [[UnrecognizedSummaryVersionCode]] (Systemic) so the pipeline halts immediately and the operator adds the
+ * new entry — see fail-fast posture decision in the bill-summary-pipeline plan.
  *
- * Each entry's mapping target is the [[TextVersionCode]] that best represents the same legislative
- * stage. When in doubt, lean conservative: pick a code whose `progressionOrder` is at-or-below the
- * stage signaled by the summary's `actionDesc`. The regression guard at the write boundary will
- * still skip if our existing stored stage is more advanced.
+ * Each entry's mapping target is the [[TextVersionCode]] that best represents the same legislative stage. When in
+ * doubt, lean conservative: pick a code whose `progressionOrder` is at-or-below the stage signaled by the summary's
+ * `actionDesc`. The regression guard at the write boundary will still skip if our existing stored stage is more
+ * advanced.
  */
 object SummaryVersionCodeMapper {
 
@@ -34,8 +33,8 @@ object SummaryVersionCodeMapper {
    * the wild. Unknown codes raise [[UnrecognizedSummaryVersionCode]] (Systemic) — see scaladoc above.
    *
    * Initial seed covers the codes most commonly observed in `/summaries` responses. Add new entries here when
-   * `bill-summary-pipeline` halts on an unknown code; include the `actionDesc` you observed alongside the new code in
-   * a comment so the next operator knows what stage it represents.
+   * `bill-summary-pipeline` halts on an unknown code; include the `actionDesc` you observed alongside the new code in a
+   * comment so the next operator knows what stage it represents.
    */
   private val versionCodeToTextCode: Map[String, TextVersionCode] = Map(
     "00" -> TextVersionCode.IH,  // "Introduced in House"

@@ -8,14 +8,14 @@ final case class UnrecognizedTextVersionCode(value: String)
     )
 
 /**
- * `progressionOrder` ranks each text-version code by how far the bill has progressed through the
- * legislative pipeline. Used by the cooperative-write contract on `bills.expected_text_version_code`
- * (set by both bill-metadata-pipeline and bill-summary-pipeline) — neither writer may downgrade an
- * already-advanced bill: an UPDATE only fires when `newCode.progressionOrder > existing.progressionOrder`.
+ * `progressionOrder` ranks each text-version code by how far the bill has progressed through the legislative pipeline.
+ * Used by the cooperative-write contract on `bills.expected_text_version_code` (set by both bill-metadata-pipeline and
+ * bill-summary-pipeline) — neither writer may downgrade an already-advanced bill: an UPDATE only fires when
+ * `newCode.progressionOrder > existing.progressionOrder`.
  *
- * The grouping is intentionally coarse (8 tiers) — the exact relative order between codes within a tier
- * doesn't matter for the regression guard, only that the tiers are monotonic with bill progression. Codes
- * not yet observed in real Congress.gov responses are placed by analogy; iterate as we learn.
+ * The grouping is intentionally coarse (8 tiers) — the exact relative order between codes within a tier doesn't matter
+ * for the regression guard, only that the tiers are monotonic with bill progression. Codes not yet observed in real
+ * Congress.gov responses are placed by analogy; iterate as we learn.
  *
  * Tiers:
  *   - 10 — Introduced (IH, IS)
@@ -26,8 +26,8 @@ final case class UnrecognizedTextVersionCode(value: String)
  *   - 60 — Engrossed amendment (cross-chamber) / agreed-to / printed-as-passed (EAH, EAS, ATH, ATS, PP)
  *   - 70 — Enrolled (ENR)
  *   - 80 — Law (PL, PRL)
- *   - 99 — Tabled (LTH, LTS) — terminal "bill killed" state; treated as max so a stale earlier-stage
- *          summary can't overwrite a tabled bill back into the sweep.
+ *   - 99 — Tabled (LTH, LTS) — terminal "bill killed" state; treated as max so a stale earlier-stage summary can't
+ *     overwrite a tabled bill back into the sweep.
  */
 enum TextVersionCode(val fullName: String, val progressionOrder: Int) {
   case IH  extends TextVersionCode("Introduced in House", 10)
