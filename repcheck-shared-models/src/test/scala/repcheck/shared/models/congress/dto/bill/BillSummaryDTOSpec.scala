@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
 
-  "BillSummaryDTO.decoder" should "decode a typical /summaries response entry with bill reference" in {
+  "BillSummaryDTO.decoder" should "decode a global /summaries response entry with bill reference" in {
     val json =
       """
         |{
@@ -31,13 +31,13 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
     val _   = dto.actionDate shouldBe Some("2022-02-18")
     val _   = dto.actionDesc shouldBe Some("Passed Senate")
     val _   = dto.text shouldBe defined
-    val _   = dto.updateDate shouldBe "2022-02-18T16:38:41Z"
-    val _   = dto.versionCode shouldBe "55"
+    val _   = dto.updateDate shouldBe Some("2022-02-18T16:38:41Z")
+    val _   = dto.versionCode shouldBe Some("55")
     val _   = dto.bill shouldBe Some(BillReferenceDTO(congress = 117, billType = "HR", number = 3076L))
     dto.bill.get.naturalKey shouldBe "117-HR-3076"
   }
 
-  it should "decode an entry whose bill reference is absent (bill-scoped /bill/{c}/{t}/{n}/summaries response)" in {
+  it should "decode a bill-scoped /bill/{c}/{t}/{n}/summaries entry where bill ref is absent" in {
     // The bill-scoped endpoint omits the `bill` reference because the bill is implied by the URL.
     val json =
       """
@@ -52,10 +52,24 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
 
     val dto = decode[BillSummaryDTO](json).toOption.get
     val _   = dto.bill shouldBe None
-    dto.versionCode shouldBe "00"
+    dto.versionCode shouldBe Some("00")
   }
 
-  it should "tolerate missing optional fields (actionDate, actionDesc, text)" in {
+  it should "tolerate every field missing (defensive, matches original BillDetailDTO.summaries usage)" in {
+    val json   = """{}"""
+    val result = decode[BillSummaryDTO](json)
+    val _      = result.isRight shouldBe true
+
+    val dto = result.toOption.get
+    val _   = dto.actionDate shouldBe None
+    val _   = dto.actionDesc shouldBe None
+    val _   = dto.text shouldBe None
+    val _   = dto.updateDate shouldBe None
+    val _   = dto.versionCode shouldBe None
+    dto.bill shouldBe None
+  }
+
+  it should "default the bill reference to None when missing" in {
     val json =
       """
         |{
@@ -65,34 +79,8 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
         |""".stripMargin
 
     val dto = decode[BillSummaryDTO](json).toOption.get
-    val _   = dto.actionDate shouldBe None
-    val _   = dto.actionDesc shouldBe None
-    val _   = dto.text shouldBe None
-    val _   = dto.updateDate shouldBe "2024-06-01T00:00:00Z"
-    dto.versionCode shouldBe "70"
-  }
-
-  it should "fail decoding if updateDate is missing (required for ordering)" in {
-    val json =
-      """
-        |{
-        |  "actionDate": "2022-02-18",
-        |  "versionCode": "55"
-        |}
-        |""".stripMargin
-
-    decode[BillSummaryDTO](json).isLeft shouldBe true
-  }
-
-  it should "fail decoding if versionCode is missing (required for stage classification)" in {
-    val json =
-      """
-        |{
-        |  "updateDate": "2022-02-18T16:38:41Z"
-        |}
-        |""".stripMargin
-
-    decode[BillSummaryDTO](json).isLeft shouldBe true
+    val _   = dto.bill shouldBe None
+    dto.versionCode shouldBe Some("70")
   }
 
   "BillReferenceDTO.naturalKey" should "uppercase the bill type segment to match BillConversions.buildBillNaturalKey" in {
@@ -105,6 +93,15 @@ class BillSummaryDTOSpec extends AnyFlatSpec with Matchers {
     val result = decode[BillReferenceDTO](json)
     val _      = result shouldBe Right(BillReferenceDTO(congress = 118, billType = "S", number = 42L))
     result.toOption.get.naturalKey shouldBe "118-S-42"
+  }
+
+  it should "round-trip through Circe Encoder using the API field name 'type' (not 'billType')" in {
+    import io.circe.syntax._
+    val ref = BillReferenceDTO(congress = 117, billType = "HR", number = 3076L)
+    val out = ref.asJson.noSpaces
+    val _   = out should include("\"congress\":117")
+    val _   = out should include("\"type\":\"HR\"")
+    out should include("\"number\":3076")
   }
 
 }
