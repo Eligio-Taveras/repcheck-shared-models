@@ -18,6 +18,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     amendmentType = Some("SAMDT"),
     amendedBill =
       Some(AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None, None)),
+    amendedAmendment = None,
     chamber = Some("Senate"),
     description = Some("Amendment description"),
     purpose = Some("To improve the bill"),
@@ -25,44 +26,64 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
       List(SponsorDTO("S000033", Some("Bernard"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))
     ),
     submittedDate = Some("2024-02-15"),
-    latestAction = Some(LatestActionDTO("2024-03-01", "Submitted")),
+    proposedDate = Some("2024-02-16T00:00:00Z"),
+    latestAction = Some(LatestActionDTO(actionDate = "2024-03-01", text = "Submitted", actionTime = Some("14:30:00"))),
     updateDate = Some("2024-03-15"),
     actions = None,
     textVersions = None,
   )
 
-  "AmendmentDetailDTO.toDO" should "produce AmendmentDO with correct natural key" in {
+  "AmendmentDetailDTO.toDO (parameterless)" should "produce AmendmentDO with correct natural key" in {
     val Right(result) = validAmendmentDetail.toDO: @unchecked
     val _             = result.amendmentId shouldBe 0L
     result.naturalKey shouldBe "118-SAMDT-200"
   }
 
-  it should "map all fields correctly" in {
+  it should "map all fields correctly including new proposedDate / latestActionTime" in {
     val Right(a) = validAmendmentDetail.toDO: @unchecked
     val _        = a.congress shouldBe 118
     val _        = a.amendmentType shouldBe Some(AmendmentType.SAMDT)
     val _        = a.number shouldBe "200"
-    val _        = a.chamber shouldBe Some(Chamber.Senate)
+    val _        = a.chamber shouldBe Chamber.Senate
     val _        = a.description shouldBe Some("Amendment description")
     val _        = a.purpose shouldBe Some("To improve the bill")
     val _        = a.sponsorMemberId shouldBe None
     val _        = a.submittedDate shouldBe Some(LocalDate.parse("2024-02-15"))
+    val _        = a.proposedDate shouldBe Some(LocalDate.parse("2024-02-16"))
     val _        = a.latestActionDate shouldBe Some(LocalDate.parse("2024-03-01"))
+    val _        = a.latestActionTime shouldBe Some("14:30:00")
     val _        = a.latestActionText shouldBe Some("Submitted")
-    a.updateDate shouldBe Some(Instant.parse("2024-03-15T00:00:00Z"))
+    val _        = a.updateDate shouldBe Some(Instant.parse("2024-03-15T00:00:00Z"))
+    val _        = a.parentAmendmentId shouldBe None
+    val _        = a.effectiveBillId shouldBe None
+    a.lastTextCheckAt shouldBe None
   }
 
-  it should "set billId to None (FK resolved at persistence time)" in {
+  it should "leave proposedDate as None when DTO omits it" in {
+    val Right(a) = validAmendmentDetail.copy(proposedDate = None).toDO: @unchecked
+    a.proposedDate shouldBe None
+  }
+
+  it should "leave latestActionTime as None when latestAction has no actionTime" in {
+    val Right(a) =
+      validAmendmentDetail.copy(latestAction = Some(LatestActionDTO("2024-03-01", "Submitted"))).toDO: @unchecked
+    a.latestActionTime shouldBe None
+  }
+
+  it should "set billId / sponsorMemberId / parentAmendmentId to None (caller resolves)" in {
     val Right(a) = validAmendmentDetail.toDO: @unchecked
-    a.billId shouldBe None
+    val _        = a.billId shouldBe None
+    val _        = a.sponsorMemberId shouldBe None
+    a.parentAmendmentId shouldBe None
   }
 
-  it should "use UNKNOWN when amendmentType is None" in {
+  it should "use UNKNOWN in natural key when amendmentType is None and an explicit chamber is provided" in {
     val dto      = validAmendmentDetail.copy(amendmentType = None)
     val Right(a) = dto.toDO: @unchecked
     val _        = a.amendmentId shouldBe 0L
     val _        = a.naturalKey shouldBe "118-UNKNOWN-200"
-    a.amendmentType shouldBe None
+    val _        = a.amendmentType shouldBe None
+    a.chamber shouldBe Chamber.Senate
   }
 
   it should "handle None amendedBill" in {
@@ -81,6 +102,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     val dto      = validAmendmentDetail.copy(latestAction = None)
     val Right(a) = dto.toDO: @unchecked
     val _        = a.latestActionDate shouldBe None
+    val _        = a.latestActionTime shouldBe None
     a.latestActionText shouldBe None
   }
 
@@ -108,10 +130,28 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     result.left.map(msg => msg.contains("BADTYPE")) shouldBe Left(true)
   }
 
-  it should "handle None chamber" in {
+  it should "derive Senate chamber from SAMDT when DTO chamber is missing" in {
     val dto      = validAmendmentDetail.copy(chamber = None)
     val Right(a) = dto.toDO: @unchecked
-    a.chamber shouldBe None
+    a.chamber shouldBe Chamber.Senate
+  }
+
+  it should "derive House chamber from HAMDT when DTO chamber is missing" in {
+    val dto      = validAmendmentDetail.copy(chamber = None, amendmentType = Some("HAMDT"))
+    val Right(a) = dto.toDO: @unchecked
+    a.chamber shouldBe Chamber.House
+  }
+
+  it should "derive Senate chamber from SUAMDT when DTO chamber is missing" in {
+    val dto      = validAmendmentDetail.copy(chamber = None, amendmentType = Some("SUAMDT"))
+    val Right(a) = dto.toDO: @unchecked
+    a.chamber shouldBe Chamber.Senate
+  }
+
+  it should "fail when both chamber and amendmentType are missing — can't satisfy NOT NULL" in {
+    val result = validAmendmentDetail.copy(chamber = None, amendmentType = None).toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(msg => msg.contains("Cannot resolve chamber")) shouldBe Left(true)
   }
 
   it should "handle partial amendedBill (missing fields)" in {
@@ -120,6 +160,33 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     )
     val Right(a) = dto.toDO: @unchecked
     a.billId shouldBe None // number is None, so billId can't be constructed
+  }
+
+  "AmendmentDetailDTO.toDO (3-arg overload)" should "substitute resolved billId / sponsorMemberId / parentAmendmentId" in {
+    val Right(a) = validAmendmentDetail.toDO(
+      billId = Some(42L),
+      sponsorMemberId = Some(7L),
+      parentAmendmentId = Some(99L),
+    ): @unchecked
+    val _ = a.billId shouldBe Some(42L)
+    val _ = a.sponsorMemberId shouldBe Some(7L)
+    val _ = a.parentAmendmentId shouldBe Some(99L)
+    // effectiveBillId is computed by the caller post-conversion (per §7.3 step 9), so the conversion leaves it None.
+    a.effectiveBillId shouldBe None
+  }
+
+  it should "keep all parsed fields identical to the parameterless form when ids are None" in {
+    val Right(parameterless) = validAmendmentDetail.toDO: @unchecked
+    val Right(overload)      = validAmendmentDetail.toDO(None, None, None): @unchecked
+    overload shouldBe parameterless
+  }
+
+  it should "still validate congress / number / amendmentType / chamber under the overload" in {
+    val r = validAmendmentDetail.copy(congress = 0).toDO(Some(1L), Some(2L), Some(3L))
+    val _ = r.isLeft shouldBe true
+
+    val r2 = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO(Some(1L), None, None)
+    r2.isLeft shouldBe true
   }
 
   "buildAmendmentId" should "construct correct natural key" in {

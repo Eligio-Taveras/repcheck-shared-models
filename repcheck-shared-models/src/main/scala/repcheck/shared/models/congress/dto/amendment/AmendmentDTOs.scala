@@ -22,6 +22,26 @@ object AmendedBillDTO {
   implicit val decoder: Decoder[AmendedBillDTO] = deriveDecoder[AmendedBillDTO]
 }
 
+/**
+ * Sub-amendment parent reference. Surfaces when the upstream amendment is itself an amendment to another amendment
+ * (mostly Senate floor amendments-to-amendments).
+ *
+ * Same shape as `AmendedBillDTO` but pointing at an amendment.
+ */
+final case class AmendedAmendmentDTO(
+  congress: Option[Int],
+  number: Option[String],
+  amendmentType: Option[String],
+  description: Option[String],
+  purpose: Option[String],
+  url: Option[String],
+)
+
+object AmendedAmendmentDTO {
+  implicit val encoder: Encoder[AmendedAmendmentDTO] = deriveEncoder[AmendedAmendmentDTO]
+  implicit val decoder: Decoder[AmendedAmendmentDTO] = deriveDecoder[AmendedAmendmentDTO]
+}
+
 final case class AmendmentListItemDTO(
   congress: Int,
   number: String,
@@ -42,11 +62,13 @@ final case class AmendmentDetailDTO(
   number: String,
   amendmentType: Option[String],
   amendedBill: Option[AmendedBillDTO],
+  amendedAmendment: Option[AmendedAmendmentDTO],
   chamber: Option[String],
   description: Option[String],
   purpose: Option[String],
   sponsors: Option[List[SponsorDTO]],
   submittedDate: Option[String],
+  proposedDate: Option[String],
   latestAction: Option[LatestActionDTO],
   updateDate: Option[String],
   actions: Option[List[LatestActionDTO]],
@@ -75,4 +97,50 @@ object AmendmentListResponseDTO {
 
   implicit val encoder: Encoder[AmendmentListResponseDTO] = deriveEncoder[AmendmentListResponseDTO]
   implicit val decoder: Decoder[AmendmentListResponseDTO] = deriveDecoder[AmendmentListResponseDTO]
+}
+
+/**
+ * One entry under `textVersions` in the response from `/v3/amendment/{congress}/{type}/{number}/text`. Each version
+ * carries an optional `type` discriminator (`"Submitted"` | `"Modified"`), optional ISO datetime `date`, and a list of
+ * format URLs (PDF + HTML at api.congress.gov / www.congress.gov; rewritten to api.govinfo.gov downstream).
+ *
+ * `date` is kept as a raw string per the L6 design rule — downstream code parses with `DateParsing.toInstant`.
+ */
+final case class AmendmentTextItemDTO(
+  `type`: Option[String],
+  date: Option[String],
+  formats: List[AmendmentFormatDTO],
+)
+
+object AmendmentTextItemDTO {
+  implicit val encoder: Encoder[AmendmentTextItemDTO] = deriveEncoder[AmendmentTextItemDTO]
+  implicit val decoder: Decoder[AmendmentTextItemDTO] = deriveDecoder[AmendmentTextItemDTO]
+}
+
+/**
+ * One format entry under an `AmendmentTextItemDTO.formats` list. `type` is `"PDF"` or `"HTML"`; `url` points at a
+ * www.congress.gov CREC URL that the amendment-text-pipeline rewrites to api.govinfo.gov before download.
+ */
+final case class AmendmentFormatDTO(
+  `type`: String,
+  url: String,
+)
+
+object AmendmentFormatDTO {
+  implicit val encoder: Encoder[AmendmentFormatDTO] = deriveEncoder[AmendmentFormatDTO]
+  implicit val decoder: Decoder[AmendmentFormatDTO] = deriveDecoder[AmendmentFormatDTO]
+}
+
+/**
+ * Response envelope for `/v3/amendment/{congress}/{type}/{number}/text`. Shape: `{ "textVersions": [...], "pagination":
+ * {...} }`.
+ */
+final case class AmendmentTextResponseDTO(
+  textVersions: List[AmendmentTextItemDTO],
+  pagination: Option[PaginationInfoDTO],
+)
+
+object AmendmentTextResponseDTO {
+  implicit val encoder: Encoder[AmendmentTextResponseDTO] = deriveEncoder[AmendmentTextResponseDTO]
+  implicit val decoder: Decoder[AmendmentTextResponseDTO] = deriveDecoder[AmendmentTextResponseDTO]
 }
