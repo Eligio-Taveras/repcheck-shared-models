@@ -25,14 +25,12 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     purpose = Some("To strike section 3 and replace with new language"),
     sponsorMemberId = Some(3L),
     submittedDate = Some(LocalDate.parse("2024-02-15")),
-    proposedDate = Some(LocalDate.parse("2024-02-16")),
     latestActionDate = Some(LocalDate.parse("2024-03-01")),
     latestActionTime = Some("14:30:00"),
     latestActionText = Some("Amendment agreed to by voice vote"),
     updateDate = Some(Instant.parse("2024-03-01T12:00:00Z")),
     apiUrl = Some("https://api.congress.gov/v3/amendment/118/hamdt/1"),
     parentAmendmentId = Some(99L),
-    effectiveBillId = Some(2L),
     lastTextCheckAt = Some(Instant.parse("2024-03-02T08:15:00Z")),
     createdAt = Some(Instant.parse("2024-02-15T10:30:00Z")),
     updatedAt = Some(Instant.parse("2024-06-01T14:00:00Z")),
@@ -57,14 +55,12 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
       purpose = None,
       sponsorMemberId = None,
       submittedDate = None,
-      proposedDate = None,
       latestActionDate = None,
       latestActionTime = None,
       latestActionText = None,
       updateDate = None,
       apiUrl = None,
       parentAmendmentId = None,
-      effectiveBillId = None,
       lastTextCheckAt = None,
       createdAt = None,
       updatedAt = None,
@@ -112,10 +108,8 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     val _           = placeholder.number shouldBe ""
     val _           = placeholder.chamber shouldBe Chamber.House
     val _           = placeholder.billId shouldBe None
-    val _           = placeholder.proposedDate shouldBe None
     val _           = placeholder.latestActionTime shouldBe None
     val _           = placeholder.parentAmendmentId shouldBe None
-    val _           = placeholder.effectiveBillId shouldBe None
     placeholder.lastTextCheckAt shouldBe None
   }
 

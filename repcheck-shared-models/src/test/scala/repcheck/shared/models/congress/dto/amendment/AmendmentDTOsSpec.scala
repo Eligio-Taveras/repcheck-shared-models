@@ -82,7 +82,6 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
         List(SponsorDTO("S000033", Some("Bernard"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))
       ),
       submittedDate = Some("2024-02-15"),
-      proposedDate = Some("2024-02-16T00:00:00Z"),
       latestAction =
         Some(LatestActionDTO(actionDate = "2024-03-01", text = "Submitted", actionTime = Some("14:30:00"))),
       updateDate = Some("2024-03-15"),
@@ -99,7 +98,6 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
     val _      = result.map(_.amendedBill) shouldBe Right(None)
     val _      = result.map(_.amendedAmendment) shouldBe Right(None)
     val _      = result.map(_.sponsors) shouldBe Right(None)
-    val _      = result.map(_.proposedDate) shouldBe Right(None)
     val _      = result.map(_.actions) shouldBe Right(None)
     result.map(_.textVersions) shouldBe Right(None)
   }

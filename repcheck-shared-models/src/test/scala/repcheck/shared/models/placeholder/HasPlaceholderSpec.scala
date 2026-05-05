@@ -166,14 +166,12 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     val _           = placeholder.purpose shouldBe None
     val _           = placeholder.sponsorMemberId shouldBe None
     val _           = placeholder.submittedDate shouldBe None
-    val _           = placeholder.proposedDate shouldBe None
     val _           = placeholder.latestActionDate shouldBe None
     val _           = placeholder.latestActionTime shouldBe None
     val _           = placeholder.latestActionText shouldBe None
     val _           = placeholder.updateDate shouldBe None
     val _           = placeholder.apiUrl shouldBe None
     val _           = placeholder.parentAmendmentId shouldBe None
-    val _           = placeholder.effectiveBillId shouldBe None
     val _           = placeholder.lastTextCheckAt shouldBe None
     val _           = placeholder.createdAt shouldBe None
     placeholder.updatedAt shouldBe None

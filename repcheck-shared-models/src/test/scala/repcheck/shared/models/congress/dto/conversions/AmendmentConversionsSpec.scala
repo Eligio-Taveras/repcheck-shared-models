@@ -26,7 +26,6 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
       List(SponsorDTO("S000033", Some("Bernard"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))
     ),
     submittedDate = Some("2024-02-15"),
-    proposedDate = Some("2024-02-16T00:00:00Z"),
     latestAction = Some(LatestActionDTO(actionDate = "2024-03-01", text = "Submitted", actionTime = Some("14:30:00"))),
     updateDate = Some("2024-03-15"),
     actions = None,
@@ -39,7 +38,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     result.naturalKey shouldBe "118-SAMDT-200"
   }
 
-  it should "map all fields correctly including new proposedDate / latestActionTime" in {
+  it should "map all fields correctly including new latestActionTime" in {
     val Right(a) = validAmendmentDetail.toDO: @unchecked
     val _        = a.congress shouldBe 118
     val _        = a.amendmentType shouldBe Some(AmendmentType.SAMDT)
@@ -49,19 +48,12 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     val _        = a.purpose shouldBe Some("To improve the bill")
     val _        = a.sponsorMemberId shouldBe None
     val _        = a.submittedDate shouldBe Some(LocalDate.parse("2024-02-15"))
-    val _        = a.proposedDate shouldBe Some(LocalDate.parse("2024-02-16"))
     val _        = a.latestActionDate shouldBe Some(LocalDate.parse("2024-03-01"))
     val _        = a.latestActionTime shouldBe Some("14:30:00")
     val _        = a.latestActionText shouldBe Some("Submitted")
     val _        = a.updateDate shouldBe Some(Instant.parse("2024-03-15T00:00:00Z"))
     val _        = a.parentAmendmentId shouldBe None
-    val _        = a.effectiveBillId shouldBe None
     a.lastTextCheckAt shouldBe None
-  }
-
-  it should "leave proposedDate as None when DTO omits it" in {
-    val Right(a) = validAmendmentDetail.copy(proposedDate = None).toDO: @unchecked
-    a.proposedDate shouldBe None
   }
 
   it should "leave latestActionTime as None when latestAction has no actionTime" in {
@@ -170,9 +162,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     ): @unchecked
     val _ = a.billId shouldBe Some(42L)
     val _ = a.sponsorMemberId shouldBe Some(7L)
-    val _ = a.parentAmendmentId shouldBe Some(99L)
-    // effectiveBillId is computed by the caller post-conversion (per §7.3 step 9), so the conversion leaves it None.
-    a.effectiveBillId shouldBe None
+    a.parentAmendmentId shouldBe Some(99L)
   }
 
   it should "keep all parsed fields identical to the parameterless form when ids are None" in {

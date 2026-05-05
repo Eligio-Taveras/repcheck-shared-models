@@ -61,7 +61,7 @@ object AmendmentConversions {
 
     /**
      * Build an `AmendmentDO` with surrogate ids unresolved (`billId`, `sponsorMemberId`, `parentAmendmentId`,
-     * `effectiveBillId`, `lastTextCheckAt` all `None`).
+     * `lastTextCheckAt` all `None`).
      *
      * Used by callers that don't need the resolved cross-entity ids (initial DTO inspection, change detection, tests).
      * The amendments-pipeline ingest path uses the 3-arg overload below to inject ids resolved from the member / bill /
@@ -76,9 +76,9 @@ object AmendmentConversions {
      * Per
      * [P7.0](../../../../../../../../../docs/architecture/acceptance-criteria/07-amendments-pipeline/PRODUCTION_TASKS.md)
      * — the amendments-pipeline `processAmendment` flow walks the parent / sponsor / bill chains via repository calls,
-     * then hands the resolved surrogate ids here. `effectiveBillId` is computed by the caller in step 9 and substituted
-     * via a subsequent `.copy(effectiveBillId = ...)` — the two-step split keeps this conversion pure and the caller
-     * free to vary the inheritance rule without changing this signature.
+     * then hands the resolved surrogate ids here. `billId` is the resolved-ancestor bill id (caller walks the
+     * `parentAmendmentId` chain to find it); `parentAmendmentId` is the immediate parent. One column per concept —
+     * there is no separate denormalized "effective" bill id.
      */
     def toDO(
       billId: Option[Long],
@@ -114,15 +114,12 @@ object AmendmentConversions {
           purpose = dto.purpose,
           sponsorMemberId = sponsorMemberId,
           submittedDate = DateParsing.toLocalDate(dto.submittedDate),
-          proposedDate = DateParsing.toLocalDate(dto.proposedDate),
           latestActionDate = DateParsing.toLocalDate(dto.latestAction.map(_.actionDate)),
           latestActionTime = dto.latestAction.flatMap(_.actionTime),
           latestActionText = dto.latestAction.map(_.text),
           updateDate = DateParsing.toInstant(dto.updateDate),
           apiUrl = None,
           parentAmendmentId = parentAmendmentId,
-          // Caller computes effectiveBillId post-conversion — see step 9 of §7.3.
-          effectiveBillId = None,
           // §7.5 sets lastTextCheckAt only on a successful text check — None on initial insert.
           lastTextCheckAt = None,
           createdAt = None,

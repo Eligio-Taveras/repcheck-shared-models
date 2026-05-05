@@ -68,7 +68,6 @@ final case class AmendmentDetailDTO(
   purpose: Option[String],
   sponsors: Option[List[SponsorDTO]],
   submittedDate: Option[String],
-  proposedDate: Option[String],
   latestAction: Option[LatestActionDTO],
   updateDate: Option[String],
   actions: Option[List[LatestActionDTO]],
