@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dto.common
 
-import io.circe.generic.semiauto.deriveEncoder
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, HCursor, Json}
 
 final case class PaginationInfoDTO(
@@ -21,6 +21,24 @@ object PaginationInfoDTO {
     } yield PaginationInfoDTO(count = count, url = url)
   }
 
+}
+
+/**
+ * Generic `{count, url}` link sub-object that Congress.gov detail responses use to point at sibling endpoints (e.g.
+ * `actions`, `textVersions`, `cosponsors`, `amendmentsToAmendment` on `/amendment/{c}/{t}/{n}`). The detail endpoint
+ * does NOT inline these collections — it returns a count + the URL to fetch them from.
+ *
+ * Distinct from [[PaginationInfoDTO]] semantically (which represents next-page chaining); same shape but reusing
+ * pagination types for non-pagination link references obscures intent. New code should prefer this type.
+ */
+final case class ResourceLinkDTO(
+  count: Option[Int],
+  url: Option[String],
+)
+
+object ResourceLinkDTO {
+  implicit val encoder: Encoder[ResourceLinkDTO] = deriveEncoder[ResourceLinkDTO]
+  implicit val decoder: Decoder[ResourceLinkDTO] = deriveDecoder[ResourceLinkDTO]
 }
 
 final case class ApiListResponseDTO[T](

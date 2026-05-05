@@ -16,8 +16,18 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     congress = 118,
     number = "200",
     amendmentType = Some("SAMDT"),
-    amendedBill =
-      Some(AmendedBillDTO(Some(118), Some(5678), Some("Senate"), Some("S"), Some("Test Bill"), Some("s"), None, None)),
+    amendedBill = Some(
+      AmendedBillDTO(
+        Some(118),
+        Some("5678"),
+        Some("Senate"),
+        Some("S"),
+        Some("Test Bill"),
+        Some("s"),
+        None,
+        None,
+      )
+    ),
     amendedAmendment = None,
     chamber = Some("Senate"),
     description = Some("Amendment description"),
@@ -26,10 +36,13 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
       List(SponsorDTO("S000033", Some("Bernard"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))
     ),
     submittedDate = Some("2024-02-15"),
+    proposedDate = Some("2024-02-16"),
     latestAction = Some(LatestActionDTO(actionDate = "2024-03-01", text = "Submitted", actionTime = Some("14:30:00"))),
     updateDate = Some("2024-03-15"),
     actions = None,
     textVersions = None,
+    cosponsors = None,
+    amendmentsToAmendment = None,
   )
 
   "AmendmentDetailDTO.toDO (parameterless)" should "produce AmendmentDO with correct natural key" in {
@@ -38,7 +51,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     result.naturalKey shouldBe "118-SAMDT-200"
   }
 
-  it should "map all fields correctly including new latestActionTime" in {
+  it should "map all fields correctly including new latestActionTime and proposedDate" in {
     val Right(a) = validAmendmentDetail.toDO: @unchecked
     val _        = a.congress shouldBe 118
     val _        = a.amendmentType shouldBe Some(AmendmentType.SAMDT)
@@ -48,12 +61,24 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     val _        = a.purpose shouldBe Some("To improve the bill")
     val _        = a.sponsorMemberId shouldBe None
     val _        = a.submittedDate shouldBe Some(LocalDate.parse("2024-02-15"))
+    val _        = a.proposedDate shouldBe Some(LocalDate.parse("2024-02-16"))
     val _        = a.latestActionDate shouldBe Some(LocalDate.parse("2024-03-01"))
     val _        = a.latestActionTime shouldBe Some("14:30:00")
     val _        = a.latestActionText shouldBe Some("Submitted")
     val _        = a.updateDate shouldBe Some(Instant.parse("2024-03-15T00:00:00Z"))
     val _        = a.parentAmendmentId shouldBe None
     a.lastTextCheckAt shouldBe None
+  }
+
+  it should "parse proposedDate from ISO datetime with offset (real-API shape)" in {
+    val dto      = validAmendmentDetail.copy(proposedDate = Some("2021-08-01T04:00:00Z"))
+    val Right(a) = dto.toDO: @unchecked
+    a.proposedDate shouldBe Some(LocalDate.parse("2021-08-01"))
+  }
+
+  it should "leave proposedDate as None when DTO has no proposedDate" in {
+    val Right(a) = validAmendmentDetail.copy(proposedDate = None).toDO: @unchecked
+    a.proposedDate shouldBe None
   }
 
   it should "leave latestActionTime as None when latestAction has no actionTime" in {
@@ -165,6 +190,11 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.parentAmendmentId shouldBe Some(99L)
   }
 
+  it should "populate proposedDate identically under the overload" in {
+    val Right(a) = validAmendmentDetail.toDO(Some(1L), Some(2L), Some(3L)): @unchecked
+    a.proposedDate shouldBe Some(LocalDate.parse("2024-02-16"))
+  }
+
   it should "keep all parsed fields identical to the parameterless form when ids are None" in {
     val Right(parameterless) = validAmendmentDetail.toDO: @unchecked
     val Right(overload)      = validAmendmentDetail.toDO(None, None, None): @unchecked
@@ -185,12 +215,13 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
   }
 
   "buildBillIdFromAmendedBill" should "construct billId when all fields present" in {
-    AmendmentConversions.buildBillIdFromAmendedBill(Some(118), Some("hr"), Some(1234)) shouldBe Some("118-HR-1234")
+    AmendmentConversions
+      .buildBillIdFromAmendedBill(Some(118), Some("hr"), Some("1234")) shouldBe Some("118-HR-1234")
   }
 
   it should "return None when any field is missing" in {
-    val _ = AmendmentConversions.buildBillIdFromAmendedBill(None, Some("hr"), Some(1234)) shouldBe None
-    val _ = AmendmentConversions.buildBillIdFromAmendedBill(Some(118), None, Some(1234)) shouldBe None
+    val _ = AmendmentConversions.buildBillIdFromAmendedBill(None, Some("hr"), Some("1234")) shouldBe None
+    val _ = AmendmentConversions.buildBillIdFromAmendedBill(Some(118), None, Some("1234")) shouldBe None
     AmendmentConversions.buildBillIdFromAmendedBill(Some(118), Some("hr"), None) shouldBe None
   }
 

@@ -25,6 +25,7 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     purpose = Some("To strike section 3 and replace with new language"),
     sponsorMemberId = Some(3L),
     submittedDate = Some(LocalDate.parse("2024-02-15")),
+    proposedDate = Some(LocalDate.parse("2024-02-16")),
     latestActionDate = Some(LocalDate.parse("2024-03-01")),
     latestActionTime = Some("14:30:00"),
     latestActionText = Some("Amendment agreed to by voice vote"),
@@ -42,6 +43,11 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     decoded shouldBe Right(sampleAmendment)
   }
 
+  it should "preserve proposedDate through Circe round-trip" in {
+    val decoded = sampleAmendment.asJson.as[AmendmentDO]
+    decoded.map(_.proposedDate) shouldBe Right(Some(LocalDate.parse("2024-02-16")))
+  }
+
   it should "round-trip with optional fields as None and chamber Senate" in {
     val minimal = AmendmentDO(
       amendmentId = 4L,
@@ -55,6 +61,7 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
       purpose = None,
       sponsorMemberId = None,
       submittedDate = None,
+      proposedDate = None,
       latestActionDate = None,
       latestActionTime = None,
       latestActionText = None,

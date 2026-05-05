@@ -49,13 +49,13 @@ object AmendmentConversions {
   private[conversions] def buildBillIdFromAmendedBill(
     congress: Option[Int],
     billType: Option[String],
-    number: Option[Int],
+    number: Option[String],
   ): Option[String] =
     for {
       c  <- congress
       bt <- billType
       n  <- number
-    } yield BillConversions.buildBillNaturalKey(c, bt, n.toString)
+    } yield BillConversions.buildBillNaturalKey(c, bt, n)
 
   implicit class AmendmentDetailDTOOps(private val dto: AmendmentDetailDTO) extends AnyVal {
 
@@ -114,6 +114,7 @@ object AmendmentConversions {
           purpose = dto.purpose,
           sponsorMemberId = sponsorMemberId,
           submittedDate = DateParsing.toLocalDate(dto.submittedDate),
+          proposedDate = DateParsing.toLocalDate(dto.proposedDate),
           latestActionDate = DateParsing.toLocalDate(dto.latestAction.map(_.actionDate)),
           latestActionTime = dto.latestAction.flatMap(_.actionTime),
           latestActionText = dto.latestAction.map(_.text),
