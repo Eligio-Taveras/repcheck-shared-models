@@ -110,4 +110,28 @@ class SharedDTOsSpec extends AnyFlatSpec with Matchers {
     decodeAccumulating[ApiListResponseDTO[PaginationInfoDTO]]("""{"items":[]}""").isValid shouldBe true
   }
 
+  "ResourceLinkDTO" should "round-trip with both count and url" in {
+    val dto = ResourceLinkDTO(
+      count = Some(18),
+      url = Some("https://api.congress.gov/v3/amendment/117/samdt/2137/actions?format=json"),
+    )
+    dto.asJson.as[ResourceLinkDTO] shouldBe Right(dto)
+  }
+
+  it should "decode realistic Congress.gov link sub-object" in {
+    val json =
+      """{"count": 18, "url": "https://api.congress.gov/v3/amendment/117/samdt/2137/actions?format=json"}"""
+    val result = decode[ResourceLinkDTO](json)
+    val _      = result.map(_.count) shouldBe Right(Some(18))
+    result.map(_.url.exists(_.contains("/actions"))) shouldBe Right(true)
+  }
+
+  it should "decode with both fields missing" in {
+    decode[ResourceLinkDTO]("{}") shouldBe Right(ResourceLinkDTO(None, None))
+  }
+
+  it should "decode with null url" in {
+    decode[ResourceLinkDTO]("""{"count": 0, "url": null}""") shouldBe Right(ResourceLinkDTO(Some(0), None))
+  }
+
 }

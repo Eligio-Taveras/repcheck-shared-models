@@ -152,22 +152,28 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
   it should "have zero/empty defaults for required non-Option fields" in {
     val placeholder = HasPlaceholder[AmendmentDO].placeholder("hamdt-500-118")
     val _           = placeholder.congress shouldBe 0
-    placeholder.number shouldBe ""
+    val _           = placeholder.number shouldBe ""
+    // chamber is NOT NULL per L9; placeholder uses Chamber.House as a benign sentinel until the owning
+    // pipeline overwrites it (same pattern BillDO uses with BillType.HR).
+    placeholder.chamber shouldBe repcheck.shared.models.congress.common.Chamber.House
   }
 
   it should "have all optional fields set to None" in {
     val placeholder = HasPlaceholder[AmendmentDO].placeholder("hamdt-500-118")
     val _           = placeholder.amendmentType shouldBe None
     val _           = placeholder.billId shouldBe None
-    val _           = placeholder.chamber shouldBe None
     val _           = placeholder.description shouldBe None
     val _           = placeholder.purpose shouldBe None
     val _           = placeholder.sponsorMemberId shouldBe None
     val _           = placeholder.submittedDate shouldBe None
+    val _           = placeholder.proposedDate shouldBe None
     val _           = placeholder.latestActionDate shouldBe None
+    val _           = placeholder.latestActionTime shouldBe None
     val _           = placeholder.latestActionText shouldBe None
     val _           = placeholder.updateDate shouldBe None
     val _           = placeholder.apiUrl shouldBe None
+    val _           = placeholder.parentAmendmentId shouldBe None
+    val _           = placeholder.lastTextCheckAt shouldBe None
     val _           = placeholder.createdAt shouldBe None
     placeholder.updatedAt shouldBe None
   }

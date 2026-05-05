@@ -8,6 +8,7 @@ import repcheck.shared.models.congress.dto.common.{PagedObject, PaginationInfoDT
 final case class LatestActionDTO(
   actionDate: String,
   text: String,
+  actionTime: Option[String] = None,
 )
 
 object LatestActionDTO {
