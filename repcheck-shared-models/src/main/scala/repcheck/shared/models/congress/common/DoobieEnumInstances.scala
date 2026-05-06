@@ -79,6 +79,15 @@ object DoobieEnumInstances {
   implicit val amendmentTypeGet: Get[AmendmentType] = amendmentTypeMeta.get
   implicit val amendmentTypePut: Put[AmendmentType] = amendmentTypeMeta.put
 
+  private val legislationKindMeta = doobie.postgres.implicits.pgEnumStringOpt(
+    "legislation_kind_enum",
+    s => LegislationKind.fromString(s).toOption,
+    _.apiValue,
+  )
+
+  implicit val legislationKindGet: Get[LegislationKind] = legislationKindMeta.get
+  implicit val legislationKindPut: Put[LegislationKind] = legislationKindMeta.put
+
   private val committeeTypeMeta = doobie.postgres.implicits.pgEnumStringOpt(
     "committee_type_enum",
     s => CommitteeType.fromString(s).toOption,

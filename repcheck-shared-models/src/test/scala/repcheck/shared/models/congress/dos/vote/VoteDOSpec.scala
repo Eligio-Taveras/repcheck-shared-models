@@ -7,12 +7,14 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.{BillType, Chamber}
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.{BillType, Chamber, LegislationKind}
 import repcheck.shared.models.congress.vote.{VoteMethod, VoteType}
+import repcheck.shared.models.placeholder.HasPlaceholder
 
 class VoteDOSpec extends AnyFlatSpec with Matchers {
 
-  private val sampleVote = VoteDO(
+  private val billVote = VoteDO(
     voteId = 1L,
     naturalKey = "118-House-1-123",
     congress = 118,
@@ -26,7 +28,9 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
     result = Some("Passed"),
     voteDate = Some(LocalDate.parse("2024-03-15")),
     legislationNumber = Some("H.R. 1234"),
-    legislationType = Some(BillType.HR),
+    legislationType = Some(LegislationKind.BILL),
+    billType = Some(BillType.HR),
+    amendmentType = None,
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
     sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll123.xml"),
     updateDate = Some(Instant.parse("2024-03-16T10:00:00Z")),
@@ -34,35 +38,62 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
     updatedAt = Some(Instant.parse("2024-03-16T12:00:00Z")),
   )
 
-  "VoteDO Circe codec" should "round-trip with all fields populated" in {
-    val json    = sampleVote.asJson
+  private val amendmentVote = billVote.copy(
+    voteId = 2L,
+    naturalKey = "118-Senate-1-50",
+    chamber = Chamber.Senate,
+    rollNumber = 50,
+    legislationNumber = Some("5000"),
+    legislationType = Some(LegislationKind.AMENDMENT),
+    billType = None,
+    amendmentType = Some(AmendmentType.SAMDT),
+  )
+
+  private val proceduralVote = VoteDO(
+    voteId = 3L,
+    naturalKey = "118-Senate-2-456",
+    congress = 118,
+    chamber = Chamber.Senate,
+    rollNumber = 456,
+    sessionNumber = None,
+    billId = None,
+    question = None,
+    voteType = None,
+    voteMethod = None,
+    result = None,
+    voteDate = None,
+    legislationNumber = None,
+    legislationType = None,
+    billType = None,
+    amendmentType = None,
+    legislationUrl = None,
+    sourceDataUrl = None,
+    updateDate = None,
+    createdAt = None,
+    updatedAt = None,
+  )
+
+  "VoteDO Circe codec" should "round-trip a bill-linked vote" in {
+    val json    = billVote.asJson
     val decoded = json.as[VoteDO]
-    decoded shouldBe Right(sampleVote)
+    decoded shouldBe Right(billVote)
   }
 
-  it should "round-trip with optional fields as None" in {
-    val minimal = VoteDO(
-      voteId = 2L,
-      naturalKey = "118-Senate-2-456",
-      congress = 118,
-      chamber = Chamber.Senate,
-      rollNumber = 456,
-      sessionNumber = None,
-      billId = None,
-      question = None,
-      voteType = None,
-      voteMethod = None,
-      result = None,
-      voteDate = None,
-      legislationNumber = None,
-      legislationType = None,
-      legislationUrl = None,
-      sourceDataUrl = None,
-      updateDate = None,
-      createdAt = None,
-      updatedAt = None,
-    )
-    minimal.asJson.as[VoteDO] shouldBe Right(minimal)
+  it should "round-trip an amendment-linked vote" in {
+    val json    = amendmentVote.asJson
+    val decoded = json.as[VoteDO]
+    decoded shouldBe Right(amendmentVote)
+  }
+
+  it should "round-trip a procedural vote with all legislation columns None" in {
+    proceduralVote.asJson.as[VoteDO] shouldBe Right(proceduralVote)
+  }
+
+  it should "encode the discriminator using LegislationKind.apiValue (uppercase)" in {
+    val json = billVote.asJson.noSpaces
+    val _    = json.contains(""""legislationType":"BILL"""") shouldBe true
+    val amd  = amendmentVote.asJson.noSpaces
+    amd.contains(""""legislationType":"AMENDMENT"""") shouldBe true
   }
 
   it should "fail on missing required field voteId" in {
@@ -102,6 +133,22 @@ class VoteDOSpec extends AnyFlatSpec with Matchers {
     import doobie.postgres.implicits._
     import repcheck.shared.models.congress.common.DoobieEnumInstances._
     implicitly[Write[VoteDO]].shouldBe(a[AnyRef])
+  }
+
+  // ---------------------------------------------------------------------------
+  // HasPlaceholder
+  // ---------------------------------------------------------------------------
+
+  "HasPlaceholder[VoteDO]" should "produce a placeholder with all three legislation columns None" in {
+    val placeholder = HasPlaceholder[VoteDO].placeholder("118-House-1-1")
+    val _           = placeholder.legislationType shouldBe None
+    val _           = placeholder.billType shouldBe None
+    placeholder.amendmentType shouldBe None
+  }
+
+  it should "round-trip via Circe codec" in {
+    val placeholder = HasPlaceholder[VoteDO].placeholder("118-House-1-1")
+    placeholder.asJson.as[VoteDO] shouldBe Right(placeholder)
   }
 
   "Vote DO package" should "accumulate decode errors for VoteDO" in {

@@ -4,7 +4,8 @@ import cats.Applicative
 import cats.syntax.functor._
 import cats.syntax.traverse._
 
-import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.{BillType, Chamber, LegislationKind, Party, UsState}
 import repcheck.shared.models.congress.dos.results.{UnresolvedVotePosition, VoteConversionResult}
 import repcheck.shared.models.congress.dos.vote.VoteDO
 import repcheck.shared.models.congress.dto.vote.{SenateVoteXmlDTO, VoteMembersDTO, VoteResultDTO}
@@ -24,10 +25,39 @@ object VoteConversions {
   private def parseChamber(raw: String): Either[String, Chamber] =
     Chamber.fromString(raw).left.map(_.getMessage)
 
-  private def parseLegislationType(raw: Option[String]): Either[String, Option[BillType]] =
+  /**
+   * Triple of legislation columns derived from a raw `legislationType` string. Exactly one of `billType` /
+   * `amendmentType` is populated, and `legislationType` (the discriminator) matches.
+   */
+  final case class ParsedLegislationKind(
+    legislationType: Option[LegislationKind],
+    billType: Option[BillType],
+    amendmentType: Option[AmendmentType],
+  )
+
+  /**
+   * Parse a raw `legislationType` string into the three storage columns.
+   *
+   *   - `None` (procedural vote, no legislation) → all three columns None.
+   *   - Recognized [[BillType]] → `(Some(BILL), Some(billType), None)`.
+   *   - Recognized [[AmendmentType]] → `(Some(AMENDMENT), None, Some(amendmentType))`.
+   *   - Unrecognized → `Left` with both parser messages joined for diagnostics.
+   */
+  private[conversions] def parseLegislationType(raw: Option[String]): Either[String, ParsedLegislationKind] =
     raw match {
-      case None    => Right(None)
-      case Some(s) => BillType.fromString(s).left.map(_.getMessage).map(Some(_))
+      case None => Right(ParsedLegislationKind(None, None, None))
+      case Some(s) =>
+        BillType.fromString(s) match {
+          case Right(bt) =>
+            Right(ParsedLegislationKind(Some(LegislationKind.BILL), Some(bt), None))
+          case Left(billErr) =>
+            AmendmentType.fromString(s) match {
+              case Right(at) =>
+                Right(ParsedLegislationKind(Some(LegislationKind.AMENDMENT), None, Some(at)))
+              case Left(amdErr) =>
+                Left(s"${billErr.getMessage}; ${amdErr.getMessage}")
+            }
+        }
     }
 
   /**
@@ -82,19 +112,29 @@ object VoteConversions {
     }
 
   /**
-   * Construct the bill natural key when the DTO has the required legislation fields. Returns `None` for procedural
-   * votes (no bill linkage). Used by the processor in Phase 2 to look up (or placeholder-create) the bill and set
-   * [[VoteDO.billId]]. Delegates to [[BillConversions.buildBillNaturalKey]] to avoid format drift.
+   * Construct the bill or amendment natural key when the DTO has the required legislation fields. Returns `None` for
+   * procedural votes (no legislation linkage).
+   *
+   *   - Bill branch → delegates to [[BillConversions.buildBillNaturalKey]] (format `"$congress-${type}-$number"`).
+   *   - Amendment branch → builds the canonical amendment natural key
+   *     `"$congress-${amendmentType.apiValue.toUpperCase}-$number"` (matches the parser used by
+   *     `AmendmentRepository.upsertPlaceholder` per Component 7 §7.2).
+   *
+   * The caller supplies the parsed kind (already discriminated) and the raw number string from the DTO.
    */
-  private def buildOptionalBillNaturalKey(
+  private[conversions] def buildOptionalLegislationNaturalKey(
     congress: Int,
-    legislationType: Option[String],
+    parsed: ParsedLegislationKind,
     legislationNumber: Option[String],
   ): Option[String] =
-    for {
-      t <- legislationType
-      n <- legislationNumber
-    } yield BillConversions.buildBillNaturalKey(congress, t, n)
+    legislationNumber.flatMap { n =>
+      parsed.legislationType.flatMap {
+        case LegislationKind.BILL =>
+          parsed.billType.map(bt => BillConversions.buildBillNaturalKey(congress, bt.apiValue, n))
+        case LegislationKind.AMENDMENT =>
+          parsed.amendmentType.map(at => s"$congress-${at.apiValue.toUpperCase}-$n")
+      }
+    }
 
   implicit class VoteMembersDTOOps(private val dto: VoteMembersDTO) extends AnyVal {
 
@@ -138,9 +178,9 @@ object VoteConversions {
 
             val pureValidation: Either[String, (Option[Long] => VoteDO, Option[String], List[UnresolvedVotePosition])] =
               for {
-                chamber         <- parseChamber(dto.chamber)
-                legislationType <- parseLegislationType(dto.legislationType)
-                voteMethod      <- parseVoteMethod(dto.voteType)
+                chamber    <- parseChamber(dto.chamber)
+                parsedKind <- parseLegislationType(dto.legislationType)
+                voteMethod <- parseVoteMethod(dto.voteType)
                 positions <- dto.results
                   .getOrElse(List.empty)
                   .filter(_.memberId.isDefined)
@@ -163,8 +203,11 @@ object VoteConversions {
                   }
               } yield {
                 val naturalKey = buildVoteNaturalKey(dto.congress, dto.chamber, session, dto.rollCallNumber)
+                // billNaturalKey carries either a bill or amendment natural key. The processor decides which
+                // repository to look up against based on parsedKind.legislationType — this conversion stays
+                // schema-agnostic. Name is preserved for back-compat with existing callers.
                 val billNaturalKey =
-                  buildOptionalBillNaturalKey(dto.congress, dto.legislationType, dto.legislationNumber)
+                  buildOptionalLegislationNaturalKey(dto.congress, parsedKind, dto.legislationNumber)
 
                 val buildVoteDO: Option[Long] => VoteDO = resolvedBillId =>
                   VoteDO(
@@ -181,7 +224,9 @@ object VoteConversions {
                     result = dto.result,
                     voteDate = DateParsing.toLocalDate(dto.startDate),
                     legislationNumber = dto.legislationNumber,
-                    legislationType = legislationType,
+                    legislationType = parsedKind.legislationType,
+                    billType = parsedKind.billType,
+                    amendmentType = parsedKind.amendmentType,
                     legislationUrl = dto.legislationUrl,
                     sourceDataUrl = dto.sourceDataUrl.orElse(dto.url),
                     updateDate = DateParsing.toInstant(dto.updateDate),

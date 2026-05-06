@@ -6,7 +6,8 @@ import cats.Id
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.{BillType, Chamber, LegislationKind, Party, UsState}
 import repcheck.shared.models.congress.dto.conversions.VoteConversions._
 import repcheck.shared.models.congress.dto.vote._
 import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod, VoteType}
@@ -64,7 +65,9 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
     val _ = v.result shouldBe Some("Passed")
     val _ = v.voteDate shouldBe Some(LocalDate.parse("2024-01-15"))
     val _ = v.legislationNumber shouldBe Some("1234")
-    val _ = v.legislationType shouldBe Some(BillType.HR)
+    val _ = v.legislationType shouldBe Some(LegislationKind.BILL)
+    val _ = v.billType shouldBe Some(BillType.HR)
+    val _ = v.amendmentType shouldBe None
     val _ = v.legislationUrl shouldBe Some("https://congress.gov/bill/118/hr/1234")
     val _ = v.sourceDataUrl shouldBe Some("https://clerk.house.gov/evs/2024/roll042.xml")
     // billId stays None at the pure conversion layer — processor resolves via billNaturalKey.
@@ -342,7 +345,76 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
   it should "handle None legislationType" in {
     val dto           = validVoteMembers.copy(legislationType = None)
     val Right(result) = dto.toDO(noBillLookup): @unchecked
-    result.vote.legislationType shouldBe None
+    val _             = result.vote.legislationType shouldBe None
+    val _             = result.vote.billType shouldBe None
+    result.vote.amendmentType shouldBe None
+  }
+
+  // ---------------------------------------------------------------------------
+  // Amendment branch — LegislationKind discriminator
+  // ---------------------------------------------------------------------------
+
+  it should "produce LegislationKind.AMENDMENT + populated amendmentType when legislationType is an amendment kind" in {
+    val dto = validVoteMembers.copy(
+      legislationType = Some("SAMDT"),
+      legislationNumber = Some("5000"),
+    )
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val _             = result.vote.legislationType shouldBe Some(LegislationKind.AMENDMENT)
+    val _             = result.vote.billType shouldBe None
+    val _             = result.vote.amendmentType shouldBe Some(AmendmentType.SAMDT)
+    // Amendment natural key shape per Component 7 §7.2: "$congress-${apiValue.toUpperCase}-$number"
+    result.billNaturalKey shouldBe Some("118-SAMDT-5000")
+  }
+
+  it should "produce LegislationKind.AMENDMENT for HAMDT" in {
+    val dto = validVoteMembers.copy(
+      legislationType = Some("hamdt"),
+      legislationNumber = Some("17"),
+    )
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val _             = result.vote.legislationType shouldBe Some(LegislationKind.AMENDMENT)
+    val _             = result.vote.amendmentType shouldBe Some(AmendmentType.HAMDT)
+    result.billNaturalKey shouldBe Some("118-HAMDT-17")
+  }
+
+  it should "produce LegislationKind.AMENDMENT for SUAMDT" in {
+    val dto = validVoteMembers.copy(
+      legislationType = Some("SUAMDT"),
+      legislationNumber = Some("9"),
+    )
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val _             = result.vote.legislationType shouldBe Some(LegislationKind.AMENDMENT)
+    val _             = result.vote.amendmentType shouldBe Some(AmendmentType.SUAMDT)
+    result.billNaturalKey shouldBe Some("118-SUAMDT-9")
+  }
+
+  it should "produce LegislationKind.BILL for a bill type that doesn't match any amendment type" in {
+    val dto           = validVoteMembers.copy(legislationType = Some("HR"))
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val _             = result.vote.legislationType shouldBe Some(LegislationKind.BILL)
+    val _             = result.vote.billType shouldBe Some(BillType.HR)
+    result.vote.amendmentType shouldBe None
+  }
+
+  it should "leave billNaturalKey None when legislationNumber is missing on an amendment vote" in {
+    val dto = validVoteMembers.copy(
+      legislationType = Some("SAMDT"),
+      legislationNumber = None,
+    )
+    val Right(result) = dto.toDO(noBillLookup): @unchecked
+    val _             = result.vote.amendmentType shouldBe Some(AmendmentType.SAMDT)
+    result.billNaturalKey shouldBe None
+  }
+
+  it should "fail when legislationType matches neither BillType nor AmendmentType" in {
+    val dto    = validVoteMembers.copy(legislationType = Some("totally_made_up"))
+    val result = dto.toDO(noBillLookup)
+    val _      = result.isLeft shouldBe true
+    val _      = result.left.map(_.contains("totally_made_up")) shouldBe Left(true)
+    // Diagnostic should mention both attempted parsers
+    val _ = result.left.map(_.contains("BillType")) shouldBe Left(true)
+    result.left.map(_.contains("AmendmentType")) shouldBe Left(true)
   }
 
   // SenateVoteXmlDTO conversion tests
@@ -361,6 +433,9 @@ class VoteConversionsSpec extends AnyFlatSpec with Matchers {
       documentName = "S. 500",
       documentTitle = "A bill for testing purposes.",
       documentShortTitle = None,
+      amendmentNumber = None,
+      amendmentToDocumentNumber = None,
+      amendmentToDocumentShortTitle = None,
     ),
     members = List(
       SenateVoteMemberXmlDTO("S0001", "John", "Smith", "D", "NY", "Yea"),
