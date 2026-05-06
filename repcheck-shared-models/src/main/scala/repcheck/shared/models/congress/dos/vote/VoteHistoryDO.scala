@@ -5,9 +5,15 @@ import java.time.{Instant, LocalDate}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.{BillType, Chamber, LegislationKind, Party, UsState}
 import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod, VoteType}
 
+/**
+ * Vote history snapshot. Mirrors [[VoteDO]] field-for-field except for the surrogate id and `archivedAt` in place of
+ * `createdAt`/`updatedAt`. The legislation columns split the same way (`legislationType` discriminator + one of
+ * `billType` / `amendmentType` populated). Field order MUST match the corresponding history repository SELECT.
+ */
 final case class VoteHistoryDO(
   id: Long,
   voteId: Long,
@@ -22,7 +28,9 @@ final case class VoteHistoryDO(
   result: Option[String],
   voteDate: Option[LocalDate],
   legislationNumber: Option[String],
-  legislationType: Option[BillType],
+  legislationType: Option[LegislationKind],
+  billType: Option[BillType],
+  amendmentType: Option[AmendmentType],
   legislationUrl: Option[String],
   sourceDataUrl: Option[String],
   updateDate: Option[Instant],

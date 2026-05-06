@@ -28,6 +28,11 @@ object SenateVoteMemberXmlDTO {
  * Consumers that need a `BillType` normalize the string at the call site; see the votes-pipeline's
  * `SenateVoteConverter` for the mapping.
  *
+ * Amendment-vote support: when the underlying vote is on an amendment (and not on the bill itself), senate.gov emits a
+ * sibling `<amendment_*>` block on the same `<roll_call_vote>` document. Those fields are folded in here as optional
+ * top-level entries so the consumer can detect amendment votes off a single DTO. They are `None` for bill or nomination
+ * votes.
+ *
  * @param documentCongress
  *   Congress number the document belongs to. Usually matches the vote's own `congress`, but senate.gov carries it
  *   separately on the document.
@@ -48,6 +53,15 @@ object SenateVoteMemberXmlDTO {
  * @param documentShortTitle
  *   Optional shorthand title used by senate.gov for well-known bills. Often empty — populated only when the document
  *   has a widely recognized short form.
+ * @param amendmentNumber
+ *   Raw senate.gov amendment number string when the vote is on an amendment (e.g. `"S.Amdt. 5000"`). `None` for votes
+ *   that are not on an amendment.
+ * @param amendmentToDocumentNumber
+ *   Raw underlying document the amendment modifies (e.g. `"H.R. 1234"`). Present when an amendment vote ties back to a
+ *   bill. `None` otherwise.
+ * @param amendmentToDocumentShortTitle
+ *   Optional senate.gov short title of the amended document. Often empty even when the other amendment fields are
+ *   populated.
  */
 final case class SenateVoteDocumentDTO(
   documentCongress: Int,
@@ -56,6 +70,9 @@ final case class SenateVoteDocumentDTO(
   documentName: String,
   documentTitle: String,
   documentShortTitle: Option[String],
+  amendmentNumber: Option[String],
+  amendmentToDocumentNumber: Option[String],
+  amendmentToDocumentShortTitle: Option[String],
 )
 
 object SenateVoteDocumentDTO {

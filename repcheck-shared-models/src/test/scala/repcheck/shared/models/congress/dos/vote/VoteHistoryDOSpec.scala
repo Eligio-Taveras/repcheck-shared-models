@@ -7,12 +7,13 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.common.{BillType, Chamber, Party, UsState}
+import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.common.{BillType, Chamber, LegislationKind, Party, UsState}
 import repcheck.shared.models.congress.vote.{VoteCast, VoteMethod, VoteType}
 
 class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
-  private val sampleHistory = VoteHistoryDO(
+  private val billHistory = VoteHistoryDO(
     id = 1L,
     voteId = 1L,
     congress = 118,
@@ -26,11 +27,23 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
     result = Some("Passed"),
     voteDate = Some(LocalDate.parse("2024-03-15")),
     legislationNumber = Some("H.R. 1234"),
-    legislationType = Some(BillType.HR),
+    legislationType = Some(LegislationKind.BILL),
+    billType = Some(BillType.HR),
+    amendmentType = None,
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
     sourceDataUrl = Some("https://clerk.house.gov/evs/2024/roll123.xml"),
     updateDate = Some(Instant.parse("2024-03-16T10:00:00Z")),
     archivedAt = Some(Instant.parse("2024-03-16T12:00:00Z")),
+  )
+
+  private val amendmentHistory = billHistory.copy(
+    id = 2L,
+    voteId = 2L,
+    chamber = Chamber.Senate,
+    legislationNumber = Some("5000"),
+    legislationType = Some(LegislationKind.AMENDMENT),
+    billType = None,
+    amendmentType = Some(AmendmentType.SAMDT),
   )
 
   private val sampleHistoryPosition = VoteHistoryPositionDO(
@@ -43,16 +56,22 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
 
   // --- VoteHistoryDO ---
 
-  "VoteHistoryDO Circe codec" should "round-trip with all fields populated" in {
-    val json    = sampleHistory.asJson
+  "VoteHistoryDO Circe codec" should "round-trip a bill-linked history row" in {
+    val json    = billHistory.asJson
     val decoded = json.as[VoteHistoryDO]
-    decoded shouldBe Right(sampleHistory)
+    decoded shouldBe Right(billHistory)
   }
 
-  it should "round-trip with optional fields as None" in {
+  it should "round-trip an amendment-linked history row" in {
+    val json    = amendmentHistory.asJson
+    val decoded = json.as[VoteHistoryDO]
+    decoded shouldBe Right(amendmentHistory)
+  }
+
+  it should "round-trip with all legislation columns None (procedural)" in {
     val minimal = VoteHistoryDO(
-      id = 2L,
-      voteId = 2L,
+      id = 3L,
+      voteId = 3L,
       congress = 118,
       chamber = Chamber.Senate,
       rollNumber = 456,
@@ -65,6 +84,8 @@ class VoteHistoryDOSpec extends AnyFlatSpec with Matchers {
       voteDate = None,
       legislationNumber = None,
       legislationType = None,
+      billType = None,
+      amendmentType = None,
       legislationUrl = None,
       sourceDataUrl = None,
       updateDate = None,

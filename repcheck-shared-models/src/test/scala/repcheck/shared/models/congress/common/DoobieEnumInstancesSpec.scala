@@ -72,6 +72,13 @@ class DoobieEnumInstancesSpec extends AnyFlatSpec with Matchers {
     }
   }
 
+  it should "round-trip LegislationKind via H2" in {
+    LegislationKind.values.foreach { v =>
+      val result = sql"SELECT ${v.apiValue}".query[LegislationKind].unique.transact(xa).unsafeRunSync()
+      result shouldBe v
+    }
+  }
+
   it should "round-trip CommitteeType via H2" in {
     CommitteeType.values.foreach { v =>
       val result = sql"SELECT ${v.apiValue}".query[CommitteeType].unique.transact(xa).unsafeRunSync()

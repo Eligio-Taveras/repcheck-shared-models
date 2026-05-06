@@ -130,6 +130,8 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     val _           = placeholder.voteDate shouldBe None
     val _           = placeholder.legislationNumber shouldBe None
     val _           = placeholder.legislationType shouldBe None
+    val _           = placeholder.billType shouldBe None
+    val _           = placeholder.amendmentType shouldBe None
     val _           = placeholder.legislationUrl shouldBe None
     val _           = placeholder.sourceDataUrl shouldBe None
     val _           = placeholder.updateDate shouldBe None
