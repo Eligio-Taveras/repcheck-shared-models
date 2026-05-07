@@ -80,7 +80,7 @@ object DoobieEnumInstances {
   implicit val amendmentTypePut: Put[AmendmentType] = amendmentTypeMeta.put
 
   private val legislationKindMeta = doobie.postgres.implicits.pgEnumStringOpt(
-    "legislation_kind_enum",
+    "legislation_type_enum",
     s => LegislationKind.fromString(s).toOption,
     _.apiValue,
   )
