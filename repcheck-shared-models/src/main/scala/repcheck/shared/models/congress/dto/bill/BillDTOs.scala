@@ -32,7 +32,7 @@ sealed trait SponsorDTO
 
 object SponsorDTO {
 
-  final case class MemberSponsor(
+  final case class MemberSponsorDTO(
     bioguideId: String,
     firstName: Option[String],
     lastName: Option[String],
@@ -45,22 +45,22 @@ object SponsorDTO {
     url: Option[String],
   ) extends SponsorDTO
 
-  final case class CommitteeSponsor(
+  final case class CommitteeSponsorDTO(
     name: String,
     url: String,
   ) extends SponsorDTO
 
-  implicit val memberSponsorDecoder: Decoder[MemberSponsor]       = deriveDecoder[MemberSponsor]
-  implicit val committeeSponsorDecoder: Decoder[CommitteeSponsor] = deriveDecoder[CommitteeSponsor]
-  implicit val memberSponsorEncoder: Encoder[MemberSponsor]       = deriveEncoder[MemberSponsor]
-  implicit val committeeSponsorEncoder: Encoder[CommitteeSponsor] = deriveEncoder[CommitteeSponsor]
+  implicit val memberSponsorDecoder: Decoder[MemberSponsorDTO]       = deriveDecoder[MemberSponsorDTO]
+  implicit val committeeSponsorDecoder: Decoder[CommitteeSponsorDTO] = deriveDecoder[CommitteeSponsorDTO]
+  implicit val memberSponsorEncoder: Encoder[MemberSponsorDTO]       = deriveEncoder[MemberSponsorDTO]
+  implicit val committeeSponsorEncoder: Encoder[CommitteeSponsorDTO] = deriveEncoder[CommitteeSponsorDTO]
 
   implicit val decoder: Decoder[SponsorDTO] =
-    Decoder[MemberSponsor].widen[SponsorDTO] or Decoder[CommitteeSponsor].widen[SponsorDTO]
+    Decoder[MemberSponsorDTO].widen[SponsorDTO] or Decoder[CommitteeSponsorDTO].widen[SponsorDTO]
 
   implicit val encoder: Encoder[SponsorDTO] = Encoder.instance {
-    case ms: MemberSponsor    => Encoder[MemberSponsor].apply(ms)
-    case cs: CommitteeSponsor => Encoder[CommitteeSponsor].apply(cs)
+    case ms: MemberSponsorDTO    => Encoder[MemberSponsorDTO].apply(ms)
+    case cs: CommitteeSponsorDTO => Encoder[CommitteeSponsorDTO].apply(cs)
   }
 
 }

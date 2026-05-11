@@ -124,7 +124,7 @@ class AmendmentDTOsSpec extends AnyFlatSpec with Matchers {
       purpose = Some("To improve the bill"),
       sponsors = Some(
         List(
-          SponsorDTO.MemberSponsor(
+          SponsorDTO.MemberSponsorDTO(
             "S000033",
             Some("Bernard"),
             Some("Sanders"),

@@ -104,7 +104,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     committees = None,
     sponsors = Some(
       List(
-        SponsorDTO.MemberSponsor(
+        SponsorDTO.MemberSponsorDTO(
           "S000033",
           Some("Bernie"),
           Some("Sanders"),
