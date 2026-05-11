@@ -102,8 +102,22 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     policyArea = Some("Transportation"),
     actions = None,
     committees = None,
-    sponsors =
-      Some(List(SponsorDTO("S000033", Some("Bernie"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))),
+    sponsors = Some(
+      List(
+        SponsorDTO.MemberSponsor(
+          "S000033",
+          Some("Bernie"),
+          Some("Sanders"),
+          None,
+          None,
+          None,
+          Some("I"),
+          Some("VT"),
+          None,
+          None,
+        )
+      )
+    ),
     cosponsors = Some(PaginationInfoDTO(Some(25), None)),
     subjects = Some(
       BillSubjectsDTO(
