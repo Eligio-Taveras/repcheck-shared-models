@@ -1,5 +1,7 @@
 package repcheck.shared.models.congress.dto.bill
 
+import cats.syntax.functor._
+
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, HCursor, Json}
 
@@ -26,21 +28,41 @@ object SourceSystemDTO {
   implicit val decoder: Decoder[SourceSystemDTO] = deriveDecoder[SourceSystemDTO]
 }
 
-final case class SponsorDTO(
-  bioguideId: String,
-  firstName: Option[String],
-  lastName: Option[String],
-  fullName: Option[String],
-  middleName: Option[String],
-  isByRequest: Option[String],
-  party: Option[String],
-  state: Option[String],
-  url: Option[String],
-)
+sealed trait SponsorDTO
 
 object SponsorDTO {
-  implicit val encoder: Encoder[SponsorDTO] = deriveEncoder[SponsorDTO]
-  implicit val decoder: Decoder[SponsorDTO] = deriveDecoder[SponsorDTO]
+
+  final case class MemberSponsorDTO(
+    bioguideId: String,
+    firstName: Option[String],
+    lastName: Option[String],
+    fullName: Option[String],
+    middleName: Option[String],
+    isByRequest: Option[String],
+    party: Option[String],
+    state: Option[String],
+    district: Option[Int],
+    url: Option[String],
+  ) extends SponsorDTO
+
+  final case class CommitteeSponsorDTO(
+    name: String,
+    url: String,
+  ) extends SponsorDTO
+
+  implicit val memberSponsorDecoder: Decoder[MemberSponsorDTO]       = deriveDecoder[MemberSponsorDTO]
+  implicit val committeeSponsorDecoder: Decoder[CommitteeSponsorDTO] = deriveDecoder[CommitteeSponsorDTO]
+  implicit val memberSponsorEncoder: Encoder[MemberSponsorDTO]       = deriveEncoder[MemberSponsorDTO]
+  implicit val committeeSponsorEncoder: Encoder[CommitteeSponsorDTO] = deriveEncoder[CommitteeSponsorDTO]
+
+  implicit val decoder: Decoder[SponsorDTO] =
+    Decoder[MemberSponsorDTO].widen[SponsorDTO] or Decoder[CommitteeSponsorDTO].widen[SponsorDTO]
+
+  implicit val encoder: Encoder[SponsorDTO] = Encoder.instance {
+    case ms: MemberSponsorDTO    => Encoder[MemberSponsorDTO].apply(ms)
+    case cs: CommitteeSponsorDTO => Encoder[CommitteeSponsorDTO].apply(cs)
+  }
+
 }
 
 final case class CoSponsorDTO(

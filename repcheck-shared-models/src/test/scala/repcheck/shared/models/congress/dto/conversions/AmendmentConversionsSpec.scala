@@ -33,7 +33,20 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     description = Some("Amendment description"),
     purpose = Some("To improve the bill"),
     sponsors = Some(
-      List(SponsorDTO("S000033", Some("Bernard"), Some("Sanders"), None, None, None, Some("I"), Some("VT"), None))
+      List(
+        SponsorDTO.MemberSponsorDTO(
+          "S000033",
+          Some("Bernard"),
+          Some("Sanders"),
+          None,
+          None,
+          None,
+          Some("I"),
+          Some("VT"),
+          None,
+          None,
+        )
+      )
     ),
     submittedDate = Some("2024-02-15"),
     proposedDate = Some("2024-02-16"),

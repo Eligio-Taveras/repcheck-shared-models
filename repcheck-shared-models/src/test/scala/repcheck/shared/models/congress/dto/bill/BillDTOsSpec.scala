@@ -23,8 +23,8 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decode[SourceSystemDTO]("{}") shouldBe Right(SourceSystemDTO(None, None))
   }
 
-  "SponsorDTO" should "round-trip with all fields" in {
-    val dto = SponsorDTO(
+  "SponsorDTO.MemberSponsorDTO" should "round-trip with all fields" in {
+    val dto: SponsorDTO = SponsorDTO.MemberSponsorDTO(
       bioguideId = "B001297",
       firstName = Some("Ken"),
       lastName = Some("Buck"),
@@ -33,6 +33,7 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       isByRequest = Some("N"),
       party = Some("R"),
       state = Some("CO"),
+      district = Some(4),
       url = Some("https://api.congress.gov/v3/member/B001297"),
     )
     decode[SponsorDTO](dto.asJson.noSpaces) shouldBe Right(dto)
@@ -222,7 +223,7 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       committees = Some(List("https://api.congress.gov/v3/bill/118/s/5678/committees")),
       sponsors = Some(
         List(
-          SponsorDTO(
+          SponsorDTO.MemberSponsorDTO(
             "S000033",
             Some("Bernie"),
             Some("Sanders"),
@@ -231,6 +232,7 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
             None,
             Some("I"),
             Some("VT"),
+            None,
             None,
           )
         )
@@ -316,8 +318,8 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decode[BillSummaryDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
-  "SponsorDTO" should "round-trip with only required field" in {
-    val dto = SponsorDTO(
+  "SponsorDTO.MemberSponsorDTO" should "round-trip with only required field" in {
+    val dto: SponsorDTO = SponsorDTO.MemberSponsorDTO(
       bioguideId = "B001297",
       firstName = None,
       lastName = None,
@@ -326,6 +328,7 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
       isByRequest = None,
       party = None,
       state = None,
+      district = None,
       url = None,
     )
     decode[SponsorDTO](dto.asJson.noSpaces) shouldBe Right(dto)
@@ -387,8 +390,42 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decodeAccumulating[SourceSystemDTO]("""{}""").isValid shouldBe true
   }
 
-  "SponsorDTO decodeAccumulating" should "succeed on valid JSON" in {
+  "SponsorDTO.CommitteeSponsorDTO" should "round-trip" in {
+    val dto: SponsorDTO = SponsorDTO.CommitteeSponsorDTO(
+      name = "Rules Committee",
+      url = "https://api.congress.gov/v3/committee/house/hsru00?format=json",
+    )
+    decode[SponsorDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  "SponsorDTO" should "decode committee sponsor JSON without bioguideId" in {
+    val json   = """{"name":"Rules Committee","url":"https://api.congress.gov/v3/committee/house/hsru00?format=json"}"""
+    val result = decode[SponsorDTO](json)
+    val _      = result.isRight shouldBe true
+    result shouldBe Right(
+      SponsorDTO.CommitteeSponsorDTO(
+        "Rules Committee",
+        "https://api.congress.gov/v3/committee/house/hsru00?format=json",
+      )
+    )
+  }
+
+  it should "decode member sponsor JSON with bioguideId" in {
+    val json   = """{"bioguideId":"B001297","firstName":"Ken","district":4}"""
+    val result = decode[SponsorDTO](json)
+    val _      = result.isRight shouldBe true
+    result.map {
+      case ms: SponsorDTO.MemberSponsorDTO => ms.bioguideId
+      case _                               => fail("Expected MemberSponsorDTO")
+    } shouldBe Right("B001297")
+  }
+
+  "SponsorDTO decodeAccumulating" should "succeed on valid member JSON" in {
     decodeAccumulating[SponsorDTO]("""{"bioguideId":"B001297"}""").isValid shouldBe true
+  }
+
+  it should "succeed on valid committee JSON" in {
+    decodeAccumulating[SponsorDTO]("""{"name":"Rules","url":"https://example.com"}""").isValid shouldBe true
   }
 
   "CoSponsorDTO decodeAccumulating" should "succeed on valid JSON" in {
