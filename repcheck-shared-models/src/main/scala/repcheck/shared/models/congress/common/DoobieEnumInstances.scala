@@ -2,7 +2,7 @@ package repcheck.shared.models.congress.common
 
 import doobie.{Get, Put}
 
-import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.amendment.{AmendmentType, SponsorType}
 import repcheck.shared.models.congress.bill.TextVersionCode
 import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
 import repcheck.shared.models.congress.member.MemberType
@@ -78,6 +78,15 @@ object DoobieEnumInstances {
 
   implicit val amendmentTypeGet: Get[AmendmentType] = amendmentTypeMeta.get
   implicit val amendmentTypePut: Put[AmendmentType] = amendmentTypeMeta.put
+
+  private val sponsorTypeMeta = doobie.postgres.implicits.pgEnumStringOpt(
+    "sponsor_type_enum",
+    s => SponsorType.fromString(s).toOption,
+    _.apiValue,
+  )
+
+  implicit val sponsorTypeGet: Get[SponsorType] = sponsorTypeMeta.get
+  implicit val sponsorTypePut: Put[SponsorType] = sponsorTypeMeta.put
 
   private val legislationKindMeta = doobie.postgres.implicits.pgEnumStringOpt(
     "legislation_type_enum",

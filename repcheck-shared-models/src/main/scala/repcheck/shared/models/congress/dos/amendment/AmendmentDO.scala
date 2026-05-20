@@ -5,7 +5,7 @@ import java.time.{Instant, LocalDate}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.amendment.{AmendmentType, SponsorType}
 import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.placeholder.HasPlaceholder
 
@@ -20,6 +20,8 @@ final case class AmendmentDO(
   description: Option[String],
   purpose: Option[String],
   sponsorMemberId: Option[Long],
+  sponsorCommitteeId: Option[Long],
+  sponsorType: Option[SponsorType],
   submittedDate: Option[LocalDate],
   proposedDate: Option[LocalDate],
   latestActionDate: Option[LocalDate],
@@ -57,6 +59,8 @@ object AmendmentDO {
         description = None,
         purpose = None,
         sponsorMemberId = None,
+        sponsorCommitteeId = None,
+        sponsorType = None,
         submittedDate = None,
         proposedDate = None,
         latestActionDate = None,

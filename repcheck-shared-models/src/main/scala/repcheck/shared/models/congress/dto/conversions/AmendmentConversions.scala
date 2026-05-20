@@ -1,6 +1,6 @@
 package repcheck.shared.models.congress.dto.conversions
 
-import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.amendment.{AmendmentType, SponsorType}
 import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.congress.dos.amendment.AmendmentDO
 import repcheck.shared.models.congress.dto.amendment.AmendmentDetailDTO
@@ -68,28 +68,43 @@ object AmendmentConversions {
      * amendment repositories.
      */
     def toDO: Either[String, AmendmentDO] =
-      buildDO(billId = None, sponsorMemberId = None, parentAmendmentId = None)
+      buildDO(
+        billId = None,
+        sponsorMemberId = None,
+        sponsorCommitteeId = None,
+        sponsorType = None,
+        parentAmendmentId = None,
+      )
 
     /**
      * Build an `AmendmentDO` with caller-resolved surrogate ids substituted in.
      *
-     * Per
-     * [P7.0](../../../../../../../../../docs/architecture/acceptance-criteria/07-amendments-pipeline/PRODUCTION_TASKS.md)
-     * — the amendments-pipeline `processAmendment` flow walks the parent / sponsor / bill chains via repository calls,
+     * The amendments-pipeline `processAmendment` flow walks the parent / sponsor / bill chains via repository calls,
      * then hands the resolved surrogate ids here. `billId` is the resolved-ancestor bill id (caller walks the
-     * `parentAmendmentId` chain to find it); `parentAmendmentId` is the immediate parent. One column per concept —
-     * there is no separate denormalized "effective" bill id.
+     * `parentAmendmentId` chain to find it); `parentAmendmentId` is the immediate parent. `sponsorMemberId` and
+     * `sponsorCommitteeId` are mutually exclusive — exactly one is set when a sponsor exists, with `sponsorType`
+     * discriminating.
      */
     def toDO(
       billId: Option[Long],
       sponsorMemberId: Option[Long],
+      sponsorCommitteeId: Option[Long],
+      sponsorType: Option[SponsorType],
       parentAmendmentId: Option[Long],
     ): Either[String, AmendmentDO] =
-      buildDO(billId = billId, sponsorMemberId = sponsorMemberId, parentAmendmentId = parentAmendmentId)
+      buildDO(
+        billId = billId,
+        sponsorMemberId = sponsorMemberId,
+        sponsorCommitteeId = sponsorCommitteeId,
+        sponsorType = sponsorType,
+        parentAmendmentId = parentAmendmentId,
+      )
 
     private def buildDO(
       billId: Option[Long],
       sponsorMemberId: Option[Long],
+      sponsorCommitteeId: Option[Long],
+      sponsorType: Option[SponsorType],
       parentAmendmentId: Option[Long],
     ): Either[String, AmendmentDO] =
       if (dto.congress <= 0) {
@@ -113,6 +128,8 @@ object AmendmentConversions {
           description = dto.description,
           purpose = dto.purpose,
           sponsorMemberId = sponsorMemberId,
+          sponsorCommitteeId = sponsorCommitteeId,
+          sponsorType = sponsorType,
           submittedDate = DateParsing.toLocalDate(dto.submittedDate),
           proposedDate = DateParsing.toLocalDate(dto.proposedDate),
           latestActionDate = DateParsing.toLocalDate(dto.latestAction.map(_.actionDate)),

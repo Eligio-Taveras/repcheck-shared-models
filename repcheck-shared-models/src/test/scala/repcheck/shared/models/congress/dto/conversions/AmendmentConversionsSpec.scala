@@ -4,7 +4,7 @@ import java.time.{Instant, LocalDate}
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.amendment.{AmendmentType, SponsorType}
 import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.congress.dto.amendment._
 import repcheck.shared.models.congress.dto.bill.{LatestActionDTO, SponsorDTO}
@@ -100,10 +100,12 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.latestActionTime shouldBe None
   }
 
-  it should "set billId / sponsorMemberId / parentAmendmentId to None (caller resolves)" in {
+  it should "set billId / sponsorMemberId / sponsorCommitteeId / sponsorType / parentAmendmentId to None (caller resolves)" in {
     val Right(a) = validAmendmentDetail.toDO: @unchecked
     val _        = a.billId shouldBe None
     val _        = a.sponsorMemberId shouldBe None
+    val _        = a.sponsorCommitteeId shouldBe None
+    val _        = a.sponsorType shouldBe None
     a.parentAmendmentId shouldBe None
   }
 
@@ -192,33 +194,50 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.billId shouldBe None // number is None, so billId can't be constructed
   }
 
-  "AmendmentDetailDTO.toDO (3-arg overload)" should "substitute resolved billId / sponsorMemberId / parentAmendmentId" in {
+  "AmendmentDetailDTO.toDO (5-arg overload)" should "substitute resolved billId / sponsor / parentAmendmentId" in {
     val Right(a) = validAmendmentDetail.toDO(
       billId = Some(42L),
       sponsorMemberId = Some(7L),
+      sponsorCommitteeId = None,
+      sponsorType = Some(SponsorType.Member),
       parentAmendmentId = Some(99L),
     ): @unchecked
     val _ = a.billId shouldBe Some(42L)
     val _ = a.sponsorMemberId shouldBe Some(7L)
+    val _ = a.sponsorCommitteeId shouldBe None
+    val _ = a.sponsorType shouldBe Some(SponsorType.Member)
     a.parentAmendmentId shouldBe Some(99L)
   }
 
+  it should "set committee sponsor fields when sponsor is a committee" in {
+    val Right(a) = validAmendmentDetail.toDO(
+      billId = Some(42L),
+      sponsorMemberId = None,
+      sponsorCommitteeId = Some(15L),
+      sponsorType = Some(SponsorType.Committee),
+      parentAmendmentId = None,
+    ): @unchecked
+    val _ = a.sponsorMemberId shouldBe None
+    val _ = a.sponsorCommitteeId shouldBe Some(15L)
+    a.sponsorType shouldBe Some(SponsorType.Committee)
+  }
+
   it should "populate proposedDate identically under the overload" in {
-    val Right(a) = validAmendmentDetail.toDO(Some(1L), Some(2L), Some(3L)): @unchecked
+    val Right(a) = validAmendmentDetail.toDO(Some(1L), Some(2L), None, Some(SponsorType.Member), Some(3L)): @unchecked
     a.proposedDate shouldBe Some(LocalDate.parse("2024-02-16"))
   }
 
   it should "keep all parsed fields identical to the parameterless form when ids are None" in {
     val Right(parameterless) = validAmendmentDetail.toDO: @unchecked
-    val Right(overload)      = validAmendmentDetail.toDO(None, None, None): @unchecked
+    val Right(overload)      = validAmendmentDetail.toDO(None, None, None, None, None): @unchecked
     overload shouldBe parameterless
   }
 
   it should "still validate congress / number / amendmentType / chamber under the overload" in {
-    val r = validAmendmentDetail.copy(congress = 0).toDO(Some(1L), Some(2L), Some(3L))
+    val r = validAmendmentDetail.copy(congress = 0).toDO(Some(1L), Some(2L), None, Some(SponsorType.Member), Some(3L))
     val _ = r.isLeft shouldBe true
 
-    val r2 = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO(Some(1L), None, None)
+    val r2 = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO(Some(1L), None, None, None, None)
     r2.isLeft shouldBe true
   }
 
