@@ -4,6 +4,7 @@ import repcheck.shared.models.congress.amendment.{AmendmentType, SponsorType}
 import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.congress.dos.amendment.AmendmentDO
 import repcheck.shared.models.congress.dto.amendment.AmendmentDetailDTO
+import repcheck.shared.models.congress.dto.bill.SponsorDTO
 
 object AmendmentConversions {
 
@@ -57,55 +58,28 @@ object AmendmentConversions {
       n  <- number
     } yield BillConversions.buildBillNaturalKey(c, bt, n)
 
+  /** Derive sponsor type from the DTO's sponsor list shape. */
+  private def deriveSponsorType(sponsors: Option[List[SponsorDTO]]): Option[SponsorType] =
+    sponsors.flatMap(_.headOption).map {
+      case _: SponsorDTO.MemberSponsorDTO    => SponsorType.Member
+      case _: SponsorDTO.CommitteeSponsorDTO => SponsorType.Committee
+    }
+
   implicit class AmendmentDetailDTOOps(private val dto: AmendmentDetailDTO) extends AnyVal {
 
     /**
-     * Build an `AmendmentDO` with surrogate ids unresolved (`billId`, `sponsorMemberId`, `parentAmendmentId`,
-     * `lastTextCheckAt` all `None`).
+     * Build an `AmendmentDO`, optionally substituting caller-resolved surrogate ids.
      *
-     * Used by callers that don't need the resolved cross-entity ids (initial DTO inspection, change detection, tests).
-     * The amendments-pipeline ingest path uses the 3-arg overload below to inject ids resolved from the member / bill /
-     * amendment repositories.
-     */
-    def toDO: Either[String, AmendmentDO] =
-      buildDO(
-        billId = None,
-        sponsorMemberId = None,
-        sponsorCommitteeId = None,
-        sponsorType = None,
-        parentAmendmentId = None,
-      )
-
-    /**
-     * Build an `AmendmentDO` with caller-resolved surrogate ids substituted in.
-     *
-     * The amendments-pipeline `processAmendment` flow walks the parent / sponsor / bill chains via repository calls,
-     * then hands the resolved surrogate ids here. `billId` is the resolved-ancestor bill id (caller walks the
-     * `parentAmendmentId` chain to find it); `parentAmendmentId` is the immediate parent. `sponsorMemberId` and
-     * `sponsorCommitteeId` are mutually exclusive — exactly one is set when a sponsor exists, with `sponsorType`
-     * discriminating.
+     * `sponsorType` defaults to a value derived from the DTO's sponsor list shape (`MemberSponsorDTO` → Member,
+     * `CommitteeSponsorDTO` → Committee, absent → None). Callers that don't need resolved cross-entity ids can call
+     * `dto.toDO()`; the amendments-pipeline passes resolved ids after repository lookups.
      */
     def toDO(
-      billId: Option[Long],
-      sponsorMemberId: Option[Long],
-      sponsorCommitteeId: Option[Long],
-      sponsorType: Option[SponsorType],
-      parentAmendmentId: Option[Long],
-    ): Either[String, AmendmentDO] =
-      buildDO(
-        billId = billId,
-        sponsorMemberId = sponsorMemberId,
-        sponsorCommitteeId = sponsorCommitteeId,
-        sponsorType = sponsorType,
-        parentAmendmentId = parentAmendmentId,
-      )
-
-    private def buildDO(
-      billId: Option[Long],
-      sponsorMemberId: Option[Long],
-      sponsorCommitteeId: Option[Long],
-      sponsorType: Option[SponsorType],
-      parentAmendmentId: Option[Long],
+      billId: Option[Long] = None,
+      sponsorMemberId: Option[Long] = None,
+      sponsorCommitteeId: Option[Long] = None,
+      sponsorType: Option[SponsorType] = deriveSponsorType(dto.sponsors),
+      parentAmendmentId: Option[Long] = None,
     ): Either[String, AmendmentDO] =
       if (dto.congress <= 0) {
         Left(s"congress must be > 0, got: ${dto.congress}")
@@ -138,7 +112,6 @@ object AmendmentConversions {
           updateDate = DateParsing.toInstant(dto.updateDate),
           apiUrl = None,
           parentAmendmentId = parentAmendmentId,
-          // §7.5 sets lastTextCheckAt only on a successful text check — None on initial insert.
           lastTextCheckAt = None,
           createdAt = None,
           updatedAt = None,
