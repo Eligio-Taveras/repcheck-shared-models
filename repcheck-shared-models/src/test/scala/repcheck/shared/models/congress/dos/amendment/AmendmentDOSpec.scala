@@ -7,7 +7,7 @@ import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.amendment.{AmendmentType, SponsorType}
 import repcheck.shared.models.congress.common.Chamber
 import repcheck.shared.models.placeholder.HasPlaceholder
 
@@ -24,6 +24,8 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     description = Some("An amendment to improve section 3"),
     purpose = Some("To strike section 3 and replace with new language"),
     sponsorMemberId = Some(3L),
+    sponsorCommitteeId = None,
+    sponsorType = Some(SponsorType.Member),
     submittedDate = Some(LocalDate.parse("2024-02-15")),
     proposedDate = Some(LocalDate.parse("2024-02-16")),
     latestActionDate = Some(LocalDate.parse("2024-03-01")),
@@ -60,6 +62,8 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
       description = None,
       purpose = None,
       sponsorMemberId = None,
+      sponsorCommitteeId = None,
+      sponsorType = None,
       submittedDate = None,
       proposedDate = None,
       latestActionDate = None,
@@ -115,6 +119,8 @@ class AmendmentDOSpec extends AnyFlatSpec with Matchers {
     val _           = placeholder.number shouldBe ""
     val _           = placeholder.chamber shouldBe Chamber.House
     val _           = placeholder.billId shouldBe None
+    val _           = placeholder.sponsorCommitteeId shouldBe None
+    val _           = placeholder.sponsorType shouldBe None
     val _           = placeholder.latestActionTime shouldBe None
     val _           = placeholder.parentAmendmentId shouldBe None
     placeholder.lastTextCheckAt shouldBe None
