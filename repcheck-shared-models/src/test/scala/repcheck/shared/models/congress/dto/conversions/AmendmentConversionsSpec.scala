@@ -217,12 +217,10 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.billId shouldBe None // number is None, so billId can't be constructed
   }
 
-  it should "substitute resolved billId / sponsor / parentAmendmentId when provided" in {
+  it should "substitute resolved billId / sponsorMemberId / parentAmendmentId and derive Member type" in {
     val Right(a) = validAmendmentDetail.toDO(
       billId = Some(42L),
       sponsorMemberId = Some(7L),
-      sponsorCommitteeId = None,
-      sponsorType = Some(SponsorType.Member),
       parentAmendmentId = Some(99L),
     ): @unchecked
     val _ = a.billId shouldBe Some(42L)
@@ -232,23 +230,29 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.parentAmendmentId shouldBe Some(99L)
   }
 
-  it should "set committee sponsor fields when sponsor is a committee" in {
+  it should "derive Committee type from sponsorCommitteeId" in {
     val Right(a) = validAmendmentDetail.toDO(
       billId = Some(42L),
-      sponsorMemberId = None,
       sponsorCommitteeId = Some(15L),
-      sponsorType = Some(SponsorType.Committee),
-      parentAmendmentId = None,
     ): @unchecked
     val _ = a.sponsorMemberId shouldBe None
     val _ = a.sponsorCommitteeId shouldBe Some(15L)
     a.sponsorType shouldBe Some(SponsorType.Committee)
   }
 
-  it should "allow caller to override derived sponsorType" in {
-    // Fixture has MemberSponsorDTO → derives Member, but caller overrides to None
-    val Right(a) = validAmendmentDetail.toDO(sponsorType = None): @unchecked
-    a.sponsorType shouldBe None
+  it should "fail when both sponsorMemberId and sponsorCommitteeId are provided" in {
+    val result = validAmendmentDetail.toDO(
+      sponsorMemberId = Some(7L),
+      sponsorCommitteeId = Some(15L),
+    )
+    val _ = result.isLeft shouldBe true
+    result.left.map(_.contains("mutually exclusive")) shouldBe Left(true)
+  }
+
+  it should "derive sponsorType from DTO when no sponsor IDs are provided" in {
+    // Fixture has MemberSponsorDTO → derives Member even without resolved ID
+    val Right(a) = validAmendmentDetail.toDO(): @unchecked
+    a.sponsorType shouldBe Some(SponsorType.Member)
   }
 
   it should "populate proposedDate identically with explicit args" in {

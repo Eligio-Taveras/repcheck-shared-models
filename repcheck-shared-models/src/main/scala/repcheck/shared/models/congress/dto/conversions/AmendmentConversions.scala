@@ -58,11 +58,30 @@ object AmendmentConversions {
       n  <- number
     } yield BillConversions.buildBillNaturalKey(c, bt, n)
 
-  /** Derive sponsor type from the DTO's sponsor list shape. */
-  private def deriveSponsorType(sponsors: Option[List[SponsorDTO]]): Option[SponsorType] =
+  /** Derive sponsor type from the DTO's sponsor list shape when no resolved IDs are available. */
+  private def deriveSponsorTypeFromDTO(sponsors: Option[List[SponsorDTO]]): Option[SponsorType] =
     sponsors.flatMap(_.headOption).map {
       case _: SponsorDTO.MemberSponsorDTO    => SponsorType.Member
       case _: SponsorDTO.CommitteeSponsorDTO => SponsorType.Committee
+    }
+
+  /**
+   * Resolve `sponsorType` from the provided IDs, falling back to DTO derivation.
+   *
+   * Priority: resolved IDs take precedence (they reflect the actual DB state); DTO shape is the fallback for callers
+   * that haven't resolved IDs yet. Both member and committee IDs set simultaneously is rejected — the schema enforces
+   * mutual exclusivity.
+   */
+  private def resolveSponsorType(
+    sponsorMemberId: Option[Long],
+    sponsorCommitteeId: Option[Long],
+    sponsors: Option[List[SponsorDTO]],
+  ): Either[String, Option[SponsorType]] =
+    (sponsorMemberId, sponsorCommitteeId) match {
+      case (Some(_), Some(_)) => Left("sponsorMemberId and sponsorCommitteeId are mutually exclusive")
+      case (Some(_), None)    => Right(Some(SponsorType.Member))
+      case (None, Some(_))    => Right(Some(SponsorType.Committee))
+      case (None, None)       => Right(deriveSponsorTypeFromDTO(sponsors))
     }
 
   implicit class AmendmentDetailDTOOps(private val dto: AmendmentDetailDTO) extends AnyVal {
@@ -70,15 +89,14 @@ object AmendmentConversions {
     /**
      * Build an `AmendmentDO`, optionally substituting caller-resolved surrogate ids.
      *
-     * `sponsorType` defaults to a value derived from the DTO's sponsor list shape (`MemberSponsorDTO` → Member,
-     * `CommitteeSponsorDTO` → Committee, absent → None). Callers that don't need resolved cross-entity ids can call
-     * `dto.toDO()`; the amendments-pipeline passes resolved ids after repository lookups.
+     * `sponsorType` is computed automatically: from the provided sponsor IDs when present (member ID → Member,
+     * committee ID → Committee), falling back to the DTO's sponsor list shape. Passing both `sponsorMemberId` and
+     * `sponsorCommitteeId` is rejected. Callers that don't need resolved cross-entity ids can call `dto.toDO()`.
      */
     def toDO(
       billId: Option[Long] = None,
       sponsorMemberId: Option[Long] = None,
       sponsorCommitteeId: Option[Long] = None,
-      sponsorType: Option[SponsorType] = deriveSponsorType(dto.sponsors),
       parentAmendmentId: Option[Long] = None,
     ): Either[String, AmendmentDO] =
       if (dto.congress <= 0) {
@@ -91,6 +109,7 @@ object AmendmentConversions {
         for {
           amendmentType <- parseOptAmendmentType(dto.amendmentType)
           chamber       <- resolveChamber(dto.chamber, amendmentType)
+          sponsorType   <- resolveSponsorType(sponsorMemberId, sponsorCommitteeId, dto.sponsors)
         } yield AmendmentDO(
           amendmentId = 0L,
           naturalKey = naturalKey,
