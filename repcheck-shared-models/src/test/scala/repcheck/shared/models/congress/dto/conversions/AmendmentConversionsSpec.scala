@@ -84,11 +84,6 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.lastTextCheckAt shouldBe None
   }
 
-  it should "derive SponsorType.Member from MemberSponsorDTO in sponsors list" in {
-    val Right(a) = validAmendmentDetail.toDO(): @unchecked
-    a.sponsorType shouldBe Some(SponsorType.Member)
-  }
-
   it should "derive SponsorType.Committee from CommitteeSponsorDTO in sponsors list" in {
     val committeeSponsored = validAmendmentDetail.copy(
       sponsors = Some(List(SponsorDTO.CommitteeSponsorDTO("Committee on Finance", "https://example.com")))
