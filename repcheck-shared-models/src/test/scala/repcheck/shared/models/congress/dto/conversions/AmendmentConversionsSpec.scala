@@ -58,14 +58,14 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     amendmentsToAmendment = None,
   )
 
-  "AmendmentDetailDTO.toDO (parameterless)" should "produce AmendmentDO with correct natural key" in {
-    val Right(result) = validAmendmentDetail.toDO: @unchecked
+  "AmendmentDetailDTO.toDO()" should "produce AmendmentDO with correct natural key" in {
+    val Right(result) = validAmendmentDetail.toDO(): @unchecked
     val _             = result.amendmentId shouldBe 0L
     result.naturalKey shouldBe "118-SAMDT-200"
   }
 
-  it should "map all fields correctly including new latestActionTime and proposedDate" in {
-    val Right(a) = validAmendmentDetail.toDO: @unchecked
+  it should "map all fields correctly including latestActionTime, proposedDate, and derived sponsorType" in {
+    val Right(a) = validAmendmentDetail.toDO(): @unchecked
     val _        = a.congress shouldBe 118
     val _        = a.amendmentType shouldBe Some(AmendmentType.SAMDT)
     val _        = a.number shouldBe "200"
@@ -73,6 +73,7 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     val _        = a.description shouldBe Some("Amendment description")
     val _        = a.purpose shouldBe Some("To improve the bill")
     val _        = a.sponsorMemberId shouldBe None
+    val _        = a.sponsorType shouldBe Some(SponsorType.Member)
     val _        = a.submittedDate shouldBe Some(LocalDate.parse("2024-02-15"))
     val _        = a.proposedDate shouldBe Some(LocalDate.parse("2024-02-16"))
     val _        = a.latestActionDate shouldBe Some(LocalDate.parse("2024-03-01"))
@@ -83,35 +84,52 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.lastTextCheckAt shouldBe None
   }
 
+  it should "derive SponsorType.Committee from CommitteeSponsorDTO in sponsors list" in {
+    val committeeSponsored = validAmendmentDetail.copy(
+      sponsors = Some(List(SponsorDTO.CommitteeSponsorDTO("Committee on Finance", "https://example.com")))
+    )
+    val Right(a) = committeeSponsored.toDO(): @unchecked
+    a.sponsorType shouldBe Some(SponsorType.Committee)
+  }
+
+  it should "leave sponsorType as None when sponsors list is empty" in {
+    val Right(a) = validAmendmentDetail.copy(sponsors = Some(Nil)).toDO(): @unchecked
+    a.sponsorType shouldBe None
+  }
+
+  it should "leave sponsorType as None when sponsors is None" in {
+    val Right(a) = validAmendmentDetail.copy(sponsors = None).toDO(): @unchecked
+    a.sponsorType shouldBe None
+  }
+
   it should "parse proposedDate from ISO datetime with offset (real-API shape)" in {
     val dto      = validAmendmentDetail.copy(proposedDate = Some("2021-08-01T04:00:00Z"))
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     a.proposedDate shouldBe Some(LocalDate.parse("2021-08-01"))
   }
 
   it should "leave proposedDate as None when DTO has no proposedDate" in {
-    val Right(a) = validAmendmentDetail.copy(proposedDate = None).toDO: @unchecked
+    val Right(a) = validAmendmentDetail.copy(proposedDate = None).toDO(): @unchecked
     a.proposedDate shouldBe None
   }
 
   it should "leave latestActionTime as None when latestAction has no actionTime" in {
     val Right(a) =
-      validAmendmentDetail.copy(latestAction = Some(LatestActionDTO("2024-03-01", "Submitted"))).toDO: @unchecked
+      validAmendmentDetail.copy(latestAction = Some(LatestActionDTO("2024-03-01", "Submitted"))).toDO(): @unchecked
     a.latestActionTime shouldBe None
   }
 
-  it should "set billId / sponsorMemberId / sponsorCommitteeId / sponsorType / parentAmendmentId to None (caller resolves)" in {
-    val Right(a) = validAmendmentDetail.toDO: @unchecked
+  it should "default billId / sponsorMemberId / sponsorCommitteeId / parentAmendmentId to None" in {
+    val Right(a) = validAmendmentDetail.toDO(): @unchecked
     val _        = a.billId shouldBe None
     val _        = a.sponsorMemberId shouldBe None
     val _        = a.sponsorCommitteeId shouldBe None
-    val _        = a.sponsorType shouldBe None
     a.parentAmendmentId shouldBe None
   }
 
   it should "use UNKNOWN in natural key when amendmentType is None and an explicit chamber is provided" in {
     val dto      = validAmendmentDetail.copy(amendmentType = None)
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     val _        = a.amendmentId shouldBe 0L
     val _        = a.naturalKey shouldBe "118-UNKNOWN-200"
     val _        = a.amendmentType shouldBe None
@@ -120,68 +138,68 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "handle None amendedBill" in {
     val dto      = validAmendmentDetail.copy(amendedBill = None)
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     a.billId shouldBe None
   }
 
   it should "handle None sponsors" in {
     val dto      = validAmendmentDetail.copy(sponsors = None)
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     a.sponsorMemberId shouldBe None
   }
 
   it should "handle None latestAction" in {
     val dto      = validAmendmentDetail.copy(latestAction = None)
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     val _        = a.latestActionDate shouldBe None
     val _        = a.latestActionTime shouldBe None
     a.latestActionText shouldBe None
   }
 
   it should "fail when congress <= 0" in {
-    val result = validAmendmentDetail.copy(congress = 0).toDO
+    val result = validAmendmentDetail.copy(congress = 0).toDO()
     val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("congress")) shouldBe Left(true)
   }
 
   it should "fail when number is empty" in {
-    val result = validAmendmentDetail.copy(number = "").toDO
+    val result = validAmendmentDetail.copy(number = "").toDO()
     val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("number")) shouldBe Left(true)
   }
 
   it should "fail when chamber is unrecognized" in {
-    val result = validAmendmentDetail.copy(chamber = Some("InvalidChamber")).toDO
+    val result = validAmendmentDetail.copy(chamber = Some("InvalidChamber")).toDO()
     val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("InvalidChamber")) shouldBe Left(true)
   }
 
   it should "fail when amendmentType is unrecognized" in {
-    val result = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO
+    val result = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO()
     val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("BADTYPE")) shouldBe Left(true)
   }
 
   it should "derive Senate chamber from SAMDT when DTO chamber is missing" in {
     val dto      = validAmendmentDetail.copy(chamber = None)
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     a.chamber shouldBe Chamber.Senate
   }
 
   it should "derive House chamber from HAMDT when DTO chamber is missing" in {
     val dto      = validAmendmentDetail.copy(chamber = None, amendmentType = Some("HAMDT"))
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     a.chamber shouldBe Chamber.House
   }
 
   it should "derive Senate chamber from SUAMDT when DTO chamber is missing" in {
     val dto      = validAmendmentDetail.copy(chamber = None, amendmentType = Some("SUAMDT"))
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     a.chamber shouldBe Chamber.Senate
   }
 
   it should "fail when both chamber and amendmentType are missing — can't satisfy NOT NULL" in {
-    val result = validAmendmentDetail.copy(chamber = None, amendmentType = None).toDO
+    val result = validAmendmentDetail.copy(chamber = None, amendmentType = None).toDO()
     val _      = result.isLeft shouldBe true
     result.left.map(msg => msg.contains("Cannot resolve chamber")) shouldBe Left(true)
   }
@@ -190,16 +208,14 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     val dto = validAmendmentDetail.copy(
       amendedBill = Some(AmendedBillDTO(Some(118), None, None, None, None, Some("hr"), None, None))
     )
-    val Right(a) = dto.toDO: @unchecked
+    val Right(a) = dto.toDO(): @unchecked
     a.billId shouldBe None // number is None, so billId can't be constructed
   }
 
-  "AmendmentDetailDTO.toDO (5-arg overload)" should "substitute resolved billId / sponsor / parentAmendmentId" in {
+  it should "substitute resolved billId / sponsorMemberId / parentAmendmentId and derive Member type" in {
     val Right(a) = validAmendmentDetail.toDO(
       billId = Some(42L),
       sponsorMemberId = Some(7L),
-      sponsorCommitteeId = None,
-      sponsorType = Some(SponsorType.Member),
       parentAmendmentId = Some(99L),
     ): @unchecked
     val _ = a.billId shouldBe Some(42L)
@@ -209,35 +225,47 @@ class AmendmentConversionsSpec extends AnyFlatSpec with Matchers {
     a.parentAmendmentId shouldBe Some(99L)
   }
 
-  it should "set committee sponsor fields when sponsor is a committee" in {
+  it should "derive Committee type from sponsorCommitteeId" in {
     val Right(a) = validAmendmentDetail.toDO(
       billId = Some(42L),
-      sponsorMemberId = None,
       sponsorCommitteeId = Some(15L),
-      sponsorType = Some(SponsorType.Committee),
-      parentAmendmentId = None,
     ): @unchecked
     val _ = a.sponsorMemberId shouldBe None
     val _ = a.sponsorCommitteeId shouldBe Some(15L)
     a.sponsorType shouldBe Some(SponsorType.Committee)
   }
 
-  it should "populate proposedDate identically under the overload" in {
-    val Right(a) = validAmendmentDetail.toDO(Some(1L), Some(2L), None, Some(SponsorType.Member), Some(3L)): @unchecked
+  it should "fail when both sponsorMemberId and sponsorCommitteeId are provided" in {
+    val result = validAmendmentDetail.toDO(
+      sponsorMemberId = Some(7L),
+      sponsorCommitteeId = Some(15L),
+    )
+    val _ = result.isLeft shouldBe true
+    result.left.map(_.contains("mutually exclusive")) shouldBe Left(true)
+  }
+
+  it should "derive sponsorType from DTO when no sponsor IDs are provided" in {
+    // Fixture has MemberSponsorDTO → derives Member even without resolved ID
+    val Right(a) = validAmendmentDetail.toDO(): @unchecked
+    a.sponsorType shouldBe Some(SponsorType.Member)
+  }
+
+  it should "populate proposedDate identically with explicit args" in {
+    val Right(a) = validAmendmentDetail.toDO(
+      billId = Some(1L),
+      sponsorMemberId = Some(2L),
+      parentAmendmentId = Some(3L),
+    ): @unchecked
     a.proposedDate shouldBe Some(LocalDate.parse("2024-02-16"))
   }
 
-  it should "keep all parsed fields identical to the parameterless form when ids are None" in {
-    val Right(parameterless) = validAmendmentDetail.toDO: @unchecked
-    val Right(overload)      = validAmendmentDetail.toDO(None, None, None, None, None): @unchecked
-    overload shouldBe parameterless
-  }
-
-  it should "still validate congress / number / amendmentType / chamber under the overload" in {
-    val r = validAmendmentDetail.copy(congress = 0).toDO(Some(1L), Some(2L), None, Some(SponsorType.Member), Some(3L))
+  it should "still validate congress / number / amendmentType / chamber with explicit args" in {
+    val r = validAmendmentDetail
+      .copy(congress = 0)
+      .toDO(billId = Some(1L), sponsorMemberId = Some(2L), parentAmendmentId = Some(3L))
     val _ = r.isLeft shouldBe true
 
-    val r2 = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO(Some(1L), None, None, None, None)
+    val r2 = validAmendmentDetail.copy(amendmentType = Some("BADTYPE")).toDO(billId = Some(1L))
     r2.isLeft shouldBe true
   }
 
