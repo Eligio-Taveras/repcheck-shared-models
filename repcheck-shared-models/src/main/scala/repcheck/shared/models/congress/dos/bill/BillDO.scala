@@ -6,7 +6,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 import repcheck.shared.models.congress.bill.TextVersionCode
-import repcheck.shared.models.congress.common.{BillType, Chamber, FormatType}
+import repcheck.shared.models.congress.common.{BillType, Chamber}
 import repcheck.shared.models.placeholder.HasPlaceholder
 
 final case class BillDO(
@@ -24,14 +24,10 @@ final case class BillDO(
   latestActionText: Option[String],
   constitutionalAuthorityText: Option[String],
   sponsorMemberId: Option[Long],
-  textUrl: Option[String],
-  textFormat: Option[FormatType],
+  // textVersionType is the bill's current text stage. Read from bill_text_versions (via
+  // bills.latest_text_version_id), not the retired bills.text_version_type column. The other
+  // text_*/summary_* columns moved to bill_text_versions / bill_summaries and were dropped.
   textVersionType: Option[TextVersionCode],
-  textDate: Option[LocalDate],
-  textContent: Option[String],
-  summaryText: Option[String],
-  summaryActionDesc: Option[String],
-  summaryActionDate: Option[LocalDate],
   updateDate: Option[Instant],
   updateDateIncludingText: Option[Instant],
   legislationUrl: Option[String],
@@ -65,14 +61,7 @@ object BillDO {
         latestActionText = None,
         constitutionalAuthorityText = None,
         sponsorMemberId = None,
-        textUrl = None,
-        textFormat = None,
         textVersionType = None,
-        textDate = None,
-        textContent = None,
-        summaryText = None,
-        summaryActionDesc = None,
-        summaryActionDate = None,
         updateDate = None,
         updateDateIncludingText = None,
         legislationUrl = None,

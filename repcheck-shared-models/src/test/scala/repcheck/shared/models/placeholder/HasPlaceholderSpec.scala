@@ -83,14 +83,7 @@ class HasPlaceholderSpec extends AnyFlatSpec with Matchers {
     val _           = placeholder.latestActionText shouldBe None
     val _           = placeholder.constitutionalAuthorityText shouldBe None
     val _           = placeholder.sponsorMemberId shouldBe None
-    val _           = placeholder.textUrl shouldBe None
-    val _           = placeholder.textFormat shouldBe None
     val _           = placeholder.textVersionType shouldBe None
-    val _           = placeholder.textDate shouldBe None
-    val _           = placeholder.textContent shouldBe None
-    val _           = placeholder.summaryText shouldBe None
-    val _           = placeholder.summaryActionDesc shouldBe None
-    val _           = placeholder.summaryActionDate shouldBe None
     val _           = placeholder.updateDate shouldBe None
     val _           = placeholder.updateDateIncludingText shouldBe None
     val _           = placeholder.legislationUrl shouldBe None
