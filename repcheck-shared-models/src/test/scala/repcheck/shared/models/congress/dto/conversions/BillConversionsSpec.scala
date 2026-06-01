@@ -5,7 +5,7 @@ import java.time.{Instant, LocalDate}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.bill.TextVersionCode
-import repcheck.shared.models.congress.common.{BillType, Chamber, FormatType}
+import repcheck.shared.models.congress.common.{BillType, Chamber}
 import repcheck.shared.models.congress.dto.bill._
 import repcheck.shared.models.congress.dto.common.PaginationInfoDTO
 import repcheck.shared.models.congress.dto.conversions.BillConversions._
@@ -52,8 +52,6 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     val _           = bill.introducedDate shouldBe None
     val _           = bill.policyArea shouldBe None
     val _           = bill.sponsorMemberId shouldBe None
-    val _           = bill.textUrl shouldBe None
-    val _           = bill.summaryText shouldBe None
     bill.legislationUrl shouldBe None
   }
 
@@ -161,19 +159,9 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
     result.bill.legislationUrl shouldBe Some("https://congress.gov/bill/118/s/5678")
   }
 
-  it should "extract text info from first textVersion" in {
+  it should "extract the text version code from the first textVersion" in {
     val Right(result) = validBillDetail.toDO: @unchecked
-    val _             = result.bill.textUrl shouldBe Some("https://example.com/text")
-    val _             = result.bill.textFormat shouldBe Some(FormatType.FormattedText)
-    val _             = result.bill.textVersionType shouldBe Some(TextVersionCode.IS)
-    result.bill.textDate shouldBe Some(LocalDate.parse("2024-01-10"))
-  }
-
-  it should "extract summary from first summary" in {
-    val Right(result) = validBillDetail.toDO: @unchecked
-    val _             = result.bill.summaryText shouldBe Some("Summary text")
-    val _             = result.bill.summaryActionDesc shouldBe Some("Introduced in Senate")
-    result.bill.summaryActionDate shouldBe Some(LocalDate.parse("2024-01-10"))
+    result.bill.textVersionType shouldBe Some(TextVersionCode.IS)
   }
 
   it should "produce subjects list from legislativeSubjects" in {
@@ -201,8 +189,7 @@ class BillConversionsSpec extends AnyFlatSpec with Matchers {
 
   it should "handle None text versions" in {
     val Right(result) = validBillDetail.copy(textVersions = None).toDO: @unchecked
-    val _             = result.bill.textUrl shouldBe None
-    result.bill.textFormat shouldBe None
+    result.bill.textVersionType shouldBe None
   }
 
   it should "fail when textVersionCode is unrecognized" in {

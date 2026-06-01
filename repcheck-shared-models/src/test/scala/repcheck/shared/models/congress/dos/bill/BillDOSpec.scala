@@ -8,7 +8,7 @@ import io.circe.syntax._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import repcheck.shared.models.congress.bill.TextVersionCode
-import repcheck.shared.models.congress.common.{BillType, Chamber, FormatType}
+import repcheck.shared.models.congress.common.{BillType, Chamber}
 
 class BillDOSpec extends AnyFlatSpec with Matchers {
 
@@ -27,14 +27,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
     latestActionText = Some("Referred to committee"),
     constitutionalAuthorityText = Some("Article I, Section 8"),
     sponsorMemberId = Some(1L),
-    textUrl = Some("https://congress.gov/bill/118/hr/1234/text"),
-    textFormat = Some(FormatType.FormattedXml),
     textVersionType = Some(TextVersionCode.IH),
-    textDate = Some(LocalDate.parse("2024-01-15")),
-    textContent = Some("Full text of the bill"),
-    summaryText = Some("A summary of the bill"),
-    summaryActionDesc = Some("Introduced in House"),
-    summaryActionDate = Some(LocalDate.parse("2024-01-15")),
     updateDate = Some(Instant.parse("2024-03-01T12:00:00Z")),
     updateDateIncludingText = Some(Instant.parse("2024-03-01T12:00:00Z")),
     legislationUrl = Some("https://congress.gov/bill/118/hr/1234"),
@@ -66,14 +59,7 @@ class BillDOSpec extends AnyFlatSpec with Matchers {
       latestActionText = None,
       constitutionalAuthorityText = None,
       sponsorMemberId = None,
-      textUrl = None,
-      textFormat = None,
       textVersionType = None,
-      textDate = None,
-      textContent = None,
-      summaryText = None,
-      summaryActionDesc = None,
-      summaryActionDate = None,
       updateDate = None,
       updateDateIncludingText = None,
       legislationUrl = None,

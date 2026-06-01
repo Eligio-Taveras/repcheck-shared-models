@@ -1,7 +1,7 @@
 package repcheck.shared.models.congress.dto.conversions
 
 import repcheck.shared.models.congress.bill.TextVersionCode
-import repcheck.shared.models.congress.common.{BillType, Chamber, FormatType}
+import repcheck.shared.models.congress.common.{BillType, Chamber}
 import repcheck.shared.models.congress.dos.bill.{BillCosponsorDO, BillDO, BillSubjectDO}
 import repcheck.shared.models.congress.dos.results.BillConversionResult
 import repcheck.shared.models.congress.dto.bill.{BillDetailDTO, BillListItemDTO}
@@ -12,12 +12,6 @@ object BillConversions {
     raw match {
       case None    => Right(None)
       case Some(s) => Chamber.fromString(s).left.map(_.getMessage).map(Some(_))
-    }
-
-  private def parseFormatType(raw: Option[String]): Either[String, Option[FormatType]] =
-    raw match {
-      case None    => Right(None)
-      case Some(s) => FormatType.fromString(s).left.map(_.getMessage).map(Some(_))
     }
 
   private def parseTextVersionCode(raw: Option[String]): Either[String, Option[TextVersionCode]] =
@@ -74,14 +68,7 @@ object BillConversions {
         latestActionText = dto.latestAction.map(_.text),
         constitutionalAuthorityText = None,
         sponsorMemberId = None,
-        textUrl = None,
-        textFormat = None,
         textVersionType = None,
-        textDate = None,
-        textContent = None,
-        summaryText = None,
-        summaryActionDesc = None,
-        summaryActionDate = None,
         updateDate = DateParsing.toInstant(dto.updateDate),
         updateDateIncludingText = DateParsing.toInstant(dto.updateDateIncludingText),
         legislationUrl = None,
@@ -97,24 +84,14 @@ object BillConversions {
 
     def toDO: Either[String, BillConversionResult] = {
       val firstTextVersion = dto.textVersions.flatMap(_.headOption)
-      val firstFormat      = firstTextVersion.flatMap(_.formats).flatMap(_.headOption)
 
       for {
         _               <- validateBillFields(dto.congress, dto.number, dto.title)
         billType        <- parseBillType(dto.billType)
         originChamber   <- parseChamber(dto.originChamber)
-        textFormatVal   <- parseFormatType(firstFormat.map(_.type_))
         textVersionType <- parseTextVersionCode(firstTextVersion.flatMap(_.type_))
       } yield {
         val naturalKey = buildBillNaturalKey(dto.congress, dto.billType, dto.number)
-
-        val textUrl  = firstFormat.map(_.url)
-        val textDate = firstTextVersion.flatMap(_.date)
-
-        val firstSummary      = dto.summaries.flatMap(_.headOption)
-        val summaryText       = firstSummary.flatMap(_.text)
-        val summaryActionDesc = firstSummary.flatMap(_.actionDesc)
-        val summaryActionDate = firstSummary.flatMap(_.actionDate)
 
         val bill = BillDO(
           billId = 0L,
@@ -131,14 +108,7 @@ object BillConversions {
           latestActionText = dto.latestAction.map(_.text),
           constitutionalAuthorityText = dto.constitutionalAuthorityStatementText,
           sponsorMemberId = None,
-          textUrl = textUrl,
-          textFormat = textFormatVal,
           textVersionType = textVersionType,
-          textDate = DateParsing.toLocalDate(textDate),
-          textContent = None,
-          summaryText = summaryText,
-          summaryActionDesc = summaryActionDesc,
-          summaryActionDate = DateParsing.toLocalDate(summaryActionDate),
           updateDate = DateParsing.toInstant(dto.updateDate),
           updateDateIncludingText = DateParsing.toInstant(dto.updateDateIncludingText),
           legislationUrl = dto.legislationUrl,
