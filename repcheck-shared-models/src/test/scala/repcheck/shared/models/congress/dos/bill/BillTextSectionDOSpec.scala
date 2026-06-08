@@ -15,11 +15,13 @@ class BillTextSectionDOSpec extends AnyFlatSpec with Matchers {
     versionId = 2L,
     billId = 1L,
     sectionIndex = 0,
+    subIndex = 0,
     sectionIdentifier = Some("Sec. 1"),
     heading = Some("Short Title"),
     content = "This Act may be cited as the Example Act.",
     embedding = None,
     createdAt = Some(Instant.parse("2024-06-01T12:00:00Z")),
+    updatedAt = Some(Instant.parse("2024-06-01T12:00:00Z")),
   )
 
   "BillTextSectionDO Circe codec" should "round-trip with all fields populated" in {
@@ -34,6 +36,7 @@ class BillTextSectionDOSpec extends AnyFlatSpec with Matchers {
       heading = None,
       embedding = None,
       createdAt = None,
+      updatedAt = None,
     )
     minimal.asJson.as[BillTextSectionDO] shouldBe Right(minimal)
   }
