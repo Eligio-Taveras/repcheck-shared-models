@@ -70,10 +70,14 @@ lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
     libraryDependencies ++= circe ++ doobie ++ Seq(
       // ScalaCheck is compile-scope: StructuredCodec.sampleGen (Gen[A]) is part of the contract — the single source
       // for both property tests and varied samples shown to the LLM (master §5b / 01-F1 diagram).
-      "org.scalacheck"    %% "scalacheck"            % "1.17.0",
-      "org.scalatestplus" %% "scalacheck-1-17"       % "3.2.18.0" % Test,
-      "com.networknt"      % "json-schema-validator" % "1.5.1"    % Test, // §10c #5b schema-validity law
-      "com.h2database"     % "h2"                    % "2.2.224"  % Test,
+      "org.scalacheck" %% "scalacheck" % "1.17.0",
+      // StructuredCodec.jsonSchema is DERIVED from the type (no hand-authored schema): tapir Schema.derived →
+      // TapirSchemaToJsonSchema → circe Json. tapir-apispec-docs transitively pulls tapir-core + jsonschema-circe.
+      "com.softwaremill.sttp.tapir"   %% "tapir-apispec-docs" % "1.13.19",
+      "com.softwaremill.sttp.apispec" %% "jsonschema-circe"   % "0.11.10",
+      "org.scalatestplus"             %% "scalacheck-1-17"    % "3.2.18.0" % Test,
+      "com.networknt"                  % "json-schema-validator" % "1.5.1" % Test, // §10c #5b schema-validity law
+      "com.h2database"                 % "h2"                 % "2.2.224"  % Test,
     ),
     // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
     scalacOptions += "-Xmax-inlines:64",

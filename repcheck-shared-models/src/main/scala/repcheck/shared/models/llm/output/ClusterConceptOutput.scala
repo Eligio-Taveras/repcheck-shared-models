@@ -1,11 +1,11 @@
 package repcheck.shared.models.llm.output
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.literal._
-import io.circe.{Decoder, Encoder, Json}
+import io.circe.{Decoder, Encoder}
 
 import org.scalacheck.Gen
 import repcheck.shared.models.llm.codec.StructuredCodec
+import sttp.tapir.Schema
 
 /**
  * LLM output of the per-cluster concept step (D4): the extracted concept `label` + `summary` for a section cluster,
@@ -17,19 +17,9 @@ final case class ClusterConceptOutput(label: String, summary: String, selectedNo
 object ClusterConceptOutput {
 
   given StructuredCodec[ClusterConceptOutput] = new StructuredCodec[ClusterConceptOutput] {
-    val encoder: Encoder[ClusterConceptOutput] = deriveEncoder[ClusterConceptOutput]
-    val decoder: Decoder[ClusterConceptOutput] = deriveDecoder[ClusterConceptOutput]
-
-    val jsonSchema: Json = json"""{
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["label", "summary", "selectedNodeIds"],
-      "properties": {
-        "label": { "type": "string" },
-        "summary": { "type": "string" },
-        "selectedNodeIds": { "type": "array", "items": { "type": "integer" } }
-      }
-    }"""
+    val encoder: Encoder[ClusterConceptOutput]    = deriveEncoder[ClusterConceptOutput]
+    val decoder: Decoder[ClusterConceptOutput]    = deriveDecoder[ClusterConceptOutput]
+    val tapirSchema: Schema[ClusterConceptOutput] = Schema.derived[ClusterConceptOutput]
 
     val canonicalExample: ClusterConceptOutput =
       ClusterConceptOutput(

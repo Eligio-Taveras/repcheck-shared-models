@@ -1,9 +1,13 @@
 package repcheck.shared.models.llm.codec
 
+import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json}
 
 import org.scalacheck.Gen
 import org.scalacheck.rng.Seed
+import sttp.apispec.circe._
+import sttp.tapir.Schema
+import sttp.tapir.docs.apispec.schema.TapirSchemaToJsonSchema
 
 /**
  * One instance per schema-bound (LLM-boundary) type, defined in that type's companion object — no central registry.
@@ -16,9 +20,16 @@ import org.scalacheck.rng.Seed
 trait StructuredCodec[A] {
   def encoder: Encoder[A]
   def decoder: Decoder[A]
-  def jsonSchema: Json
+  def tapirSchema: Schema[A]
   def canonicalExample: A
   def sampleGen: Gen[A]
+
+  /**
+   * JSON Schema derived from the type via tapir — no hand-authoring. Options are marked nullable to match circe's
+   * `None` → `null` encoding; the §10c #5b law verifies encodings actually validate against this.
+   */
+  final def jsonSchema: Json =
+    TapirSchemaToJsonSchema(tapirSchema, markOptionsAsNullable = true).asJson.deepDropNullValues
 
   /** The curated example, encoded — valid against `jsonSchema` by construction (law-checked). */
   final def exampleJson: Json = encoder(canonicalExample)
