@@ -1,5 +1,6 @@
 package repcheck.shared.models.congress.bill
 
+import io.circe.parser.decode
 import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -38,6 +39,13 @@ class ChangeTypeSpec extends AnyFlatSpec with Matchers {
     val _ = ChangeType.Removed.asJson.noSpaces shouldBe """"removed""""
     val _ = ChangeType.Modified.asJson.noSpaces shouldBe """"modified""""
     ChangeType.Renumbered.asJson.noSpaces shouldBe """"renumbered""""
+  }
+
+  it should "decode an invalid string to Left" in {
+    decode[ChangeType](""""Replaced"""") match {
+      case Left(_)  => succeed
+      case Right(r) => fail(s"expected Left for invalid ChangeType, got $r")
+    }
   }
 
 }

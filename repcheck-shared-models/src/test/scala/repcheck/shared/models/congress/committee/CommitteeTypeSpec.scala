@@ -1,5 +1,6 @@
 package repcheck.shared.models.congress.committee
 
+import io.circe.parser.decode
 import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -31,6 +32,13 @@ class CommitteeTypeSpec extends AnyFlatSpec with Matchers {
       val json    = ct.asJson
       val decoded = json.as[CommitteeType]
       decoded shouldBe Right(ct)
+    }
+  }
+
+  it should "decode an invalid string to Left" in {
+    decode[CommitteeType](""""Temporary"""") match {
+      case Left(_)  => succeed
+      case Right(r) => fail(s"expected Left for invalid CommitteeType, got $r")
     }
   }
 

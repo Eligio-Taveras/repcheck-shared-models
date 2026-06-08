@@ -1,5 +1,6 @@
 package repcheck.shared.models.llm
 
+import io.circe.parser.decode
 import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -41,6 +42,13 @@ class FindingTypeSpec extends AnyFlatSpec with Matchers {
       val json    = ft.asJson
       val decoded = json.as[FindingType]
       decoded shouldBe Right(ft)
+    }
+  }
+
+  it should "decode an invalid string to Left" in {
+    decode[FindingType](""""Unknown"""") match {
+      case Left(_)  => succeed
+      case Right(r) => fail(s"expected Left for invalid FindingType, got $r")
     }
   }
 

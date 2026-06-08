@@ -14,6 +14,17 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decode[LatestActionDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
+  it should "round-trip with actionTime present" in {
+    val dto = LatestActionDTO(actionDate = "2024-01-15", text = "Passed House", actionTime = Some("14:30:00"))
+    val _   = dto.asJson.hcursor.downField("actionTime").as[String] shouldBe Right("14:30:00")
+    decode[LatestActionDTO](dto.asJson.noSpaces) shouldBe Right(dto)
+  }
+
+  it should "decode JSON that supplies actionTime" in {
+    val json = """{"actionDate":"2024-01-15","text":"Passed House","actionTime":"09:15:00"}"""
+    decode[LatestActionDTO](json).map(_.actionTime) shouldBe Right(Some("09:15:00"))
+  }
+
   "SourceSystemDTO" should "round-trip" in {
     val dto = SourceSystemDTO(code = Some(9), name = Some("Library of Congress"))
     decode[SourceSystemDTO](dto.asJson.noSpaces) shouldBe Right(dto)
@@ -98,6 +109,20 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     decode[BillSummaryDTO](dto.asJson.noSpaces) shouldBe Right(dto)
   }
 
+  it should "round-trip with a bill reference present" in {
+    val dto = BillSummaryDTO(
+      actionDate = Some("2024-01-15"),
+      actionDesc = Some("Introduced in House"),
+      text = Some("<p>Summary.</p>"),
+      updateDate = Some("2024-02-01"),
+      versionCode = Some("00"),
+      bill = Some(BillReferenceDTO(congress = 118, billType = "hr", number = 30L)),
+    )
+    val decoded = decode[BillSummaryDTO](dto.asJson.noSpaces)
+    val _       = decoded shouldBe Right(dto)
+    decoded.map(_.bill.map(_.naturalKey)) shouldBe Right(Some("118-HR-30"))
+  }
+
   "RelationshipDetailDTO" should "encode 'type' field and round-trip" in {
     val dto  = RelationshipDetailDTO(identifiedBy = Some("CRS"), relationshipType = Some("Related bill"))
     val json = dto.asJson
@@ -179,6 +204,12 @@ class BillDTOsSpec extends AnyFlatSpec with Matchers {
     val json   = """{"congress":118,"number":"1","type":"hr","title":"Test","url":"https://example.com"}"""
     val result = decode[BillListItemDTO](json)
     result.map(_.billType) shouldBe Right("hr")
+  }
+
+  it should "decode JSON using the 'billType' key fallback when 'type' is absent" in {
+    val json   = """{"congress":118,"number":"1","billType":"hres","title":"Test","url":"https://example.com"}"""
+    val result = decode[BillListItemDTO](json)
+    result.map(_.billType) shouldBe Right("hres")
   }
 
   it should "decode with missing optional fields" in {

@@ -46,4 +46,25 @@ class DoobieArrayCodecsSpec extends AnyFlatSpec with Matchers {
     DoobieArrayCodecs.arrayToList(DoobieArrayCodecs.listToArray(original)) shouldBe original
   }
 
+  "DoobieArrayCodecs.intArrayToList" should "convert int array to list preserving order" in {
+    DoobieArrayCodecs.intArrayToList(Array(1, 2, 3)) shouldBe List(1, 2, 3)
+  }
+
+  it should "handle empty int array" in {
+    DoobieArrayCodecs.intArrayToList(Array.empty[Int]) shouldBe List.empty[Int]
+  }
+
+  "DoobieArrayCodecs.intListToArray" should "convert int list to array preserving order" in {
+    DoobieArrayCodecs.intListToArray(List(1, 2, 3)).toSeq shouldBe Seq(1, 2, 3)
+  }
+
+  it should "handle empty int list" in {
+    DoobieArrayCodecs.intListToArray(List.empty[Int]) shouldBe empty
+  }
+
+  "intArrayToList and intListToArray" should "form inverse pair" in {
+    val original = List(4, 5, 6)
+    DoobieArrayCodecs.intArrayToList(DoobieArrayCodecs.intListToArray(original)) shouldBe original
+  }
+
 }

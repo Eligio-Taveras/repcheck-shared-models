@@ -8,7 +8,7 @@ import doobie.implicits._
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import repcheck.shared.models.congress.amendment.AmendmentType
+import repcheck.shared.models.congress.amendment.{AmendmentType, SponsorType}
 import repcheck.shared.models.congress.bill.TextVersionCode
 import repcheck.shared.models.congress.committee.{CommitteePosition, CommitteeSide, CommitteeType}
 import repcheck.shared.models.congress.member.MemberType
@@ -136,6 +136,33 @@ class DoobieEnumInstancesSpec extends AnyFlatSpec with Matchers {
     CommitteeSide.values.foreach { v =>
       val result = sql"SELECT ${v.apiValue}".query[CommitteeSide].unique.transact(xa).unsafeRunSync()
       result shouldBe v
+    }
+  }
+
+  it should "round-trip SponsorType via H2" in {
+    SponsorType.values.foreach { v =>
+      val result = sql"SELECT ${v.apiValue}".query[SponsorType].unique.transact(xa).unsafeRunSync()
+      result shouldBe v
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // temap Left paths — invalid value read from H2 surfaces as a failed effect
+  // ---------------------------------------------------------------------------
+
+  it should "fail to read an invalid UsState string from H2" in {
+    val outcome = sql"SELECT 'NOT_A_STATE'".query[UsState].unique.transact(xa).attempt.unsafeRunSync()
+    outcome match {
+      case Left(_)  => succeed
+      case Right(r) => fail(s"expected a failed read for invalid UsState, got $r")
+    }
+  }
+
+  it should "fail to read an invalid CommitteeSide string from H2" in {
+    val outcome = sql"SELECT 'Neutral'".query[CommitteeSide].unique.transact(xa).attempt.unsafeRunSync()
+    outcome match {
+      case Left(_)  => succeed
+      case Right(r) => fail(s"expected a failed read for invalid CommitteeSide, got $r")
     }
   }
 

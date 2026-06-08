@@ -1,5 +1,6 @@
 package repcheck.shared.models.congress.common
 
+import io.circe.parser.decode
 import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -33,6 +34,13 @@ class FormatTypeSpec extends AnyFlatSpec with Matchers {
       val json    = ft.asJson
       val decoded = json.as[FormatType]
       decoded shouldBe Right(ft)
+    }
+  }
+
+  it should "decode an invalid string to Left" in {
+    decode[FormatType](""""HTML"""") match {
+      case Left(_)  => succeed
+      case Right(r) => fail(s"expected Left for invalid FormatType, got $r")
     }
   }
 

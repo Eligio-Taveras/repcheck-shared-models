@@ -43,4 +43,25 @@ class InstructionBlockSpec extends AnyFlatSpec with Matchers {
     decode[InstructionBlock]("""{"name":"test","stage":"system","weight":0.5}""").isLeft shouldBe true
   }
 
+  it should "reject an out-of-range weight built from a valid block" in {
+    val outOfRange = sampleBlock.copy(weight = 2.0)
+    outOfRange.asJson.as[InstructionBlock] match {
+      // Reading the failure's history/message forces the by-name args of DecodingFailure
+      case Left(df) =>
+        val _ = df.history.length should be >= 0
+        df.getMessage should include("weight must be between")
+      case Right(r) => fail(s"expected Left for weight 2.0, got $r")
+    }
+  }
+
+  it should "reject a negative weight built from a valid block" in {
+    val negative = sampleBlock.copy(weight = -0.5)
+    negative.asJson.as[InstructionBlock] match {
+      case Left(df) =>
+        val _ = df.history.length should be >= 0
+        df.getMessage should include("weight must be between")
+      case Right(r) => fail(s"expected Left for weight -0.5, got $r")
+    }
+  }
+
 }
