@@ -1,11 +1,8 @@
 package repcheck.shared.models.llm.codec
 
-import scala.jdk.CollectionConverters._
-
 import io.circe.Json
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.networknt.schema.{JsonSchemaFactory, SpecVersion}
+import net.reactivecore.cjs.{DocumentValidator, Loader}
 import org.scalacheck.Arbitrary
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -22,12 +19,14 @@ abstract class StructuredCodecLaws[A](name: String)(using sc: StructuredCodec[A]
     with Matchers
     with ScalaCheckPropertyChecks {
 
-  private val mapper  = new ObjectMapper()
-  private val factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012)
-  private val schema  = factory.getSchema(sc.jsonSchema.noSpaces)
+  private val validator: DocumentValidator =
+    Loader.empty.fromJson(sc.jsonSchema) match {
+      case Right(v) => v
+      case Left(e)  => fail(s"$name: jsonSchema is not a valid JSON Schema: $e")
+    }
 
-  private def schemaErrors(instance: Json): Set[String] =
-    schema.validate(mapper.readTree(instance.noSpaces)).asScala.map(_.getMessage).toSet
+  private def schemaErrors(instance: Json): Seq[String] =
+    validator.validate(instance).violations.map(_.toString)
 
   private given Arbitrary[A] = Arbitrary(sc.sampleGen)
 
