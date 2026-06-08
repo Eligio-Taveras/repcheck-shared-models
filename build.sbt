@@ -26,6 +26,11 @@ lazy val commonSettings = Seq(
     "org.scalatest" %% "scalatest" % "3.2.18" % Test
   ),
   semanticdbEnabled := true,
+  // Suppress Scala 3 ScalaTest-matcher warnings in TEST sources only (mirrors data-ingestion / bill-decomposition):
+  //   - "unused value of type Assertion" from chained assertions (tpolecat -Wnonunit-statement)
+  //   - "is not declared infix" from the matcher DSL
+  Test / scalacOptions += "-Wconf:msg=unused value of type:s",
+  Test / scalacOptions += "-Wconf:msg=is not declared infix:s",
   tpolecatScalacOptions ++= ScalaCConfig.scalaCOptions,
   tpolecatScalacOptions ++= {
     if (isScala212.value) ScalaCConfig.scalaCOption2_12
@@ -63,7 +68,12 @@ lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
   .settings(
     commonSettings,
     libraryDependencies ++= circe ++ doobie ++ Seq(
-      "com.h2database" % "h2" % "2.2.224" % Test,
+      // ScalaCheck is compile-scope: StructuredCodec.sampleGen (Gen[A]) is part of the contract — the single source
+      // for both property tests and varied samples shown to the LLM (master §5b / 01-F1 diagram).
+      "org.scalacheck"    %% "scalacheck"            % "1.17.0",
+      "org.scalatestplus" %% "scalacheck-1-17"       % "3.2.18.0" % Test,
+      "com.networknt"      % "json-schema-validator" % "1.5.1"    % Test, // §10c #5b schema-validity law
+      "com.h2database"     % "h2"                    % "2.2.224"  % Test,
     ),
     // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
     scalacOptions += "-Xmax-inlines:64",
