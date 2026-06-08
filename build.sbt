@@ -81,6 +81,12 @@ lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
     ),
     // BillDO has 29 fields; Circe semi-auto derivation exceeds the default 32 inline limit
     scalacOptions += "-Xmax-inlines:64",
+    // Coverage gate: every file must be >= 95% statement coverage or CI (`sbt coverage test coverageReport`) fails.
+    coverageMinimumStmtPerFile := 95,
+    coverageFailOnMinimum      := true,
+    // Only exclusion: TapirSchemas isolates the tapir `Schema.derived` macros, whose expansion can't be exercised by
+    // tests. The case classes/codecs/generators stay coverable; the §10c #5b law still validates these schemas.
+    coverageExcludedFiles := ".*TapirSchemas.*",
     exceptionUniquenessRootPackages := Seq("com.repcheck", "repcheck")
   )
 

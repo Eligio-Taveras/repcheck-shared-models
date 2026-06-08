@@ -5,7 +5,6 @@ import io.circe.{Decoder, Encoder}
 
 import org.scalacheck.Gen
 import repcheck.shared.models.llm.codec.StructuredCodec
-import sttp.tapir.Schema
 
 /**
  * One proposed taxonomy node from a taxonomy-build run: a concept name, its description, and (for hierarchy) the name
@@ -16,7 +15,6 @@ final case class ProposedNode(name: String, description: String, parentName: Opt
 object ProposedNode {
   given Encoder[ProposedNode] = deriveEncoder[ProposedNode]
   given Decoder[ProposedNode] = deriveDecoder[ProposedNode]
-  given Schema[ProposedNode]  = Schema.derived[ProposedNode]
 }
 
 /** LLM output of the open-set taxonomy build (D16): the set of proposed nodes curated from emergent concepts. */
@@ -25,9 +23,9 @@ final case class TaxonomyOutput(proposedNodes: List[ProposedNode])
 object TaxonomyOutput {
 
   given StructuredCodec[TaxonomyOutput] = new StructuredCodec[TaxonomyOutput] {
-    val encoder: Encoder[TaxonomyOutput]    = deriveEncoder[TaxonomyOutput]
-    val decoder: Decoder[TaxonomyOutput]    = deriveDecoder[TaxonomyOutput]
-    val tapirSchema: Schema[TaxonomyOutput] = Schema.derived[TaxonomyOutput]
+    val encoder: Encoder[TaxonomyOutput] = deriveEncoder[TaxonomyOutput]
+    val decoder: Decoder[TaxonomyOutput] = deriveDecoder[TaxonomyOutput]
+    val tapirSchema                      = TapirSchemas.taxonomyOutput
 
     val canonicalExample: TaxonomyOutput = TaxonomyOutput(
       List(

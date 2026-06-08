@@ -5,7 +5,6 @@ import io.circe.{Decoder, Encoder}
 
 import org.scalacheck.Gen
 import repcheck.shared.models.llm.codec.StructuredCodec
-import sttp.tapir.Schema
 
 /**
  * LLM output of the per-cluster concept step (D4): the extracted concept `label` + `summary` for a section cluster,
@@ -17,9 +16,9 @@ final case class ClusterConceptOutput(label: String, summary: String, selectedNo
 object ClusterConceptOutput {
 
   given StructuredCodec[ClusterConceptOutput] = new StructuredCodec[ClusterConceptOutput] {
-    val encoder: Encoder[ClusterConceptOutput]    = deriveEncoder[ClusterConceptOutput]
-    val decoder: Decoder[ClusterConceptOutput]    = deriveDecoder[ClusterConceptOutput]
-    val tapirSchema: Schema[ClusterConceptOutput] = Schema.derived[ClusterConceptOutput]
+    val encoder: Encoder[ClusterConceptOutput] = deriveEncoder[ClusterConceptOutput]
+    val decoder: Decoder[ClusterConceptOutput] = deriveDecoder[ClusterConceptOutput]
+    val tapirSchema                            = TapirSchemas.clusterConceptOutput
 
     val canonicalExample: ClusterConceptOutput =
       ClusterConceptOutput(

@@ -199,6 +199,38 @@ class CommitteeConversionsSpec extends AnyFlatSpec with Matchers {
     result.parentCommitteeId shouldBe None
   }
 
+  it should "fail when chamber string is unrecognized" in {
+    val dto = CommitteeListItemDTO(
+      chamber = Some("NotAChamber"),
+      committeeTypeCode = None,
+      name = "Committee on Finance",
+      systemCode = "ssfi00",
+      updateDate = None,
+      url = None,
+      parent = None,
+      subcommittees = None,
+    )
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(_.contains("NotAChamber")) shouldBe Left(true)
+  }
+
+  it should "fail when committeeTypeCode string is unrecognized" in {
+    val dto = CommitteeListItemDTO(
+      chamber = Some("Senate"),
+      committeeTypeCode = Some("NotAType"),
+      name = "Committee on Finance",
+      systemCode = "ssfi00",
+      updateDate = None,
+      url = None,
+      parent = None,
+      subcommittees = None,
+    )
+    val result = dto.toDO
+    val _      = result.isLeft shouldBe true
+    result.left.map(_.contains("NotAType")) shouldBe Left(true)
+  }
+
   it should "fail when systemCode is blank" in {
     val dto = CommitteeListItemDTO(
       chamber = None,

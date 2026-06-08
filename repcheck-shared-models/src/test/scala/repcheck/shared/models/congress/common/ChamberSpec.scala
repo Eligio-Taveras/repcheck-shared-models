@@ -1,5 +1,6 @@
 package repcheck.shared.models.congress.common
 
+import io.circe.parser.decode
 import io.circe.syntax._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -47,6 +48,13 @@ class ChamberSpec extends AnyFlatSpec with Matchers {
     val _ = Chamber.House.asJson.asString shouldBe Some("House")
     val _ = Chamber.Senate.asJson.asString shouldBe Some("Senate")
     Chamber.Joint.asJson.asString shouldBe Some("Joint")
+  }
+
+  it should "decode an invalid string to Left" in {
+    decode[Chamber](""""Council"""") match {
+      case Left(_)  => succeed
+      case Right(r) => fail(s"expected Left for invalid Chamber, got $r")
+    }
   }
 
 }
