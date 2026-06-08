@@ -19,11 +19,12 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
     id = 1L,
     versionId = 2L,
     billId = 1L,
-    groupId = "group-1",
-    title = "Healthcare Provisions",
-    simplifiedText = "Simplified text about healthcare",
+    label = "Healthcare Provisions",
+    conceptSummary = "Provisions expanding healthcare coverage and reducing costs.",
     embedding = None,
+    taxonomyVersion = Some(1),
     createdAt = Some(now),
+    updatedAt = Some(now),
   )
 
   "BillConceptGroupDO Circe codec" should "round-trip with all fields populated" in {
@@ -31,7 +32,7 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with optional fields as None" in {
-    val minimal = sampleConceptGroup.copy(embedding = None, createdAt = None)
+    val minimal = sampleConceptGroup.copy(embedding = None, taxonomyVersion = None, createdAt = None, updatedAt = None)
     minimal.asJson.as[BillConceptGroupDO] shouldBe Right(minimal)
   }
 
@@ -493,6 +494,77 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Write instance" in {
     import doobie._
     implicitly[Write[FindingTypeDO]].shouldBe(a[AnyRef])
+  }
+
+  // ---- BillConceptGroupTaxonomyDO ----
+
+  private val sampleGroupTaxonomy = BillConceptGroupTaxonomyDO(groupId = 1L, taxonomyNodeId = 7L, score = 0.82f)
+
+  "BillConceptGroupTaxonomyDO Circe codec" should "round-trip" in {
+    sampleGroupTaxonomy.asJson.as[BillConceptGroupTaxonomyDO] shouldBe Right(sampleGroupTaxonomy)
+  }
+
+  it should "fail on missing required field" in {
+    decode[BillConceptGroupTaxonomyDO]("""{"groupId":1}""").isLeft shouldBe true
+  }
+
+  it should "accumulate decode errors" in {
+    val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
+    val result = Decoder[BillConceptGroupTaxonomyDO].decodeAccumulating(bad.hcursor)
+    result.isInvalid should be(true)
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    implicitly[Read[BillConceptGroupTaxonomyDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    implicitly[Write[BillConceptGroupTaxonomyDO]].shouldBe(a[AnyRef])
+  }
+
+  // ---- TaxonomyNodeDO ----
+
+  private val sampleTaxonomyNode = TaxonomyNodeDO(
+    id = 1L,
+    name = "Healthcare",
+    parentId = None,
+    description = "Laws affecting medical care, insurance, and public health.",
+    embedding = None,
+    version = 1,
+    status = "active",
+  )
+
+  "TaxonomyNodeDO Circe codec" should "round-trip with all fields populated" in {
+    sampleTaxonomyNode.asJson.as[TaxonomyNodeDO] shouldBe Right(sampleTaxonomyNode)
+  }
+
+  it should "round-trip with optional fields as None" in {
+    val minimal = sampleTaxonomyNode.copy(parentId = Some(3L), embedding = None)
+    minimal.asJson.as[TaxonomyNodeDO] shouldBe Right(minimal)
+  }
+
+  it should "fail on missing required field" in {
+    decode[TaxonomyNodeDO]("""{"id":1}""").isLeft shouldBe true
+  }
+
+  it should "accumulate decode errors" in {
+    val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
+    val result = Decoder[TaxonomyNodeDO].decodeAccumulating(bad.hcursor)
+    result.isInvalid should be(true)
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    implicitly[Read[TaxonomyNodeDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    implicitly[Write[TaxonomyNodeDO]].shouldBe(a[AnyRef])
   }
 
 }
