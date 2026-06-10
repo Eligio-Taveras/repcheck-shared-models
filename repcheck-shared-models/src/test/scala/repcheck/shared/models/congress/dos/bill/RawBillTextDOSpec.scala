@@ -59,14 +59,14 @@ class RawBillTextDOSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayGet
     implicitly[Read[RawBillTextDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
     implicitly[Write[RawBillTextDO]].shouldBe(a[AnyRef])
   }
 

@@ -32,7 +32,7 @@ final case class RawBillTextDO(
 
 object RawBillTextDO {
 
-  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+  import com.repcheck.utils.doobie.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
 
   implicit val encoder: Encoder[RawBillTextDO] = deriveEncoder[RawBillTextDO]
   implicit val decoder: Decoder[RawBillTextDO] = deriveDecoder[RawBillTextDO]

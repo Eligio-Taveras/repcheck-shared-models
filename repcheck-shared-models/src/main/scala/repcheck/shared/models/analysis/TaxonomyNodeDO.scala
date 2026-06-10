@@ -20,7 +20,7 @@ final case class TaxonomyNodeDO(
 
 object TaxonomyNodeDO {
 
-  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+  import com.repcheck.utils.doobie.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
 
   implicit val encoder: Encoder[TaxonomyNodeDO] = deriveEncoder[TaxonomyNodeDO]
   implicit val decoder: Decoder[TaxonomyNodeDO] = deriveDecoder[TaxonomyNodeDO]

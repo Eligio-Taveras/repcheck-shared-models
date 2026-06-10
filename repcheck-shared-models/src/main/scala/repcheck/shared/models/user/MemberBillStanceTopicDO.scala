@@ -5,7 +5,7 @@ import java.time.Instant
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.codecs.VectorCodec._
+import com.repcheck.utils.doobie.VectorCodec._
 
 final case class MemberBillStanceTopicDO(
   id: Long,

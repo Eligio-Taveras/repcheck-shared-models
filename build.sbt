@@ -76,7 +76,8 @@ lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
   .enablePlugins(com.repcheck.sbt.ExceptionUniquenessPlugin)
   .settings(
     commonSettings,
-    libraryDependencies += "com.repcheck" %% "repcheck-utils" % "0.1.1", // base behaviors (codecs/DateTimeCodecs)
+    libraryDependencies += "com.repcheck" %% "repcheck-utils"        % "0.1.3", // base behaviors (codecs/DateTimeCodecs)
+    libraryDependencies += "com.repcheck" %% "repcheck-utils-doobie" % "0.1.3", // pgvector + Postgres array codecs
     libraryDependencies ++= circe ++ doobie ++ Seq(
       // ScalaCheck is compile-scope: StructuredCodec.sampleGen (Gen[A]) is part of the contract — the single source
       // for both property tests and varied samples shown to the LLM (master §5b / 01-F1 diagram).

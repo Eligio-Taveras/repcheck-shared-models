@@ -113,16 +113,16 @@ class ScoreDOSpec extends AnyFlatSpec with Matchers {
   "ScoreDO" should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Read[ScoreDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Write[ScoreDO]].shouldBe(a[AnyRef])
   }
 

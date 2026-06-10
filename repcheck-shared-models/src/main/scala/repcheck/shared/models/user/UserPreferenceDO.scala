@@ -24,7 +24,7 @@ final case class UserPreferenceDO(
 
 object UserPreferenceDO {
 
-  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+  import com.repcheck.utils.doobie.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
 
   implicit val encoder: Encoder[UserPreferenceDO] = deriveEncoder[UserPreferenceDO]
   implicit val decoder: Decoder[UserPreferenceDO] = deriveDecoder[UserPreferenceDO]

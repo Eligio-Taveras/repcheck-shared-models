@@ -49,14 +49,14 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayGet
     implicitly[Read[BillConceptGroupDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
     implicitly[Write[BillConceptGroupDO]].shouldBe(a[AnyRef])
   }
 
@@ -173,16 +173,16 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayGet
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
     implicitly[Read[BillAnalysisDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
     implicitly[Write[BillAnalysisDO]].shouldBe(a[AnyRef])
   }
 
@@ -232,16 +232,16 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayGet
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
     implicitly[Read[BillConceptSummaryDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
     implicitly[Write[BillConceptSummaryDO]].shouldBe(a[AnyRef])
   }
 
@@ -338,14 +338,14 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayGet
     implicitly[Read[BillFindingDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
     implicitly[Write[BillFindingDO]].shouldBe(a[AnyRef])
   }
 
@@ -391,14 +391,14 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
     implicitly[Read[BillFiscalEstimateDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.DoobieArrayCodecs._
+    import com.repcheck.utils.doobie.DoobieArrayCodecs._
     implicitly[Write[BillFiscalEstimateDO]].shouldBe(a[AnyRef])
   }
 
@@ -447,14 +447,14 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   it should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayGet
     implicitly[Read[AmendmentFindingDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
     implicitly[Write[AmendmentFindingDO]].shouldBe(a[AnyRef])
   }
 
@@ -557,13 +557,13 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
 
   it should "have Doobie Read instance" in {
     import doobie._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayGet
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayGet
     implicitly[Read[TaxonomyNodeDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
-    import repcheck.shared.models.codecs.VectorCodec.floatArrayPut
+    import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
     implicitly[Write[TaxonomyNodeDO]].shouldBe(a[AnyRef])
   }
 

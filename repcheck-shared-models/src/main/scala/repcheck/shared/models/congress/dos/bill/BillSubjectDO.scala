@@ -14,7 +14,7 @@ final case class BillSubjectDO(
 
 object BillSubjectDO {
 
-  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+  import com.repcheck.utils.doobie.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
 
   implicit val encoder: Encoder[BillSubjectDO] = deriveEncoder[BillSubjectDO]
   implicit val decoder: Decoder[BillSubjectDO] = deriveDecoder[BillSubjectDO]
