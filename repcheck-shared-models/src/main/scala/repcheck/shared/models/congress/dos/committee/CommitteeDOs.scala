@@ -58,7 +58,7 @@ final case class CommitteeMemberDO(
 )
 
 object CommitteeMemberDO {
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[CommitteeMemberDO] = deriveEncoder[CommitteeMemberDO]
   implicit val decoder: Decoder[CommitteeMemberDO] = deriveDecoder[CommitteeMemberDO]
@@ -74,7 +74,7 @@ final case class BillCommitteeReferralDO(
 )
 
 object BillCommitteeReferralDO {
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[BillCommitteeReferralDO] = deriveEncoder[BillCommitteeReferralDO]
   implicit val decoder: Decoder[BillCommitteeReferralDO] = deriveDecoder[BillCommitteeReferralDO]

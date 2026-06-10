@@ -26,7 +26,7 @@ final case class BillSummaryDO(
 
 object BillSummaryDO {
 
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[BillSummaryDO] = deriveEncoder[BillSummaryDO]
   implicit val decoder: Decoder[BillSummaryDO] = deriveDecoder[BillSummaryDO]

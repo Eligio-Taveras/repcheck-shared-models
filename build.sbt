@@ -17,11 +17,20 @@ lazy val commonSettings = Seq(
     "GitHub Packages" at s"https://maven.pkg.github.com/Eligio-Taveras/repcheck-shared-models"
   ),
   publishMavenStyle := true,
-  credentials += {
-    val ghUser  = sys.env.getOrElse("GITHUB_ACTOR", "")
-    val ghToken = sys.env.getOrElse("GITHUB_TOKEN", "")
-    Credentials("GitHub Package Registry", "maven.pkg.github.com", ghUser, ghToken)
+  credentials ++= {
+    val envCreds = for {
+      user  <- sys.env.get("GITHUB_ACTOR")
+      token <- sys.env.get("GITHUB_TOKEN")
+    } yield Credentials("GitHub Package Registry", "maven.pkg.github.com", user, token)
+
+    val fileCreds = {
+      val f = Path.userHome / ".sbt" / ".github-packages-credentials"
+      if (f.exists) Some(Credentials(f)) else None
+    }
+
+    envCreds.orElse(fileCreds).toSeq
   },
+  resolvers += "GitHub Packages - repcheck-utils" at "https://maven.pkg.github.com/Eligio-Taveras/repcheck-utils",
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.18" % Test
   ),
@@ -67,6 +76,7 @@ lazy val repchecksharedmodels = (project in file("repcheck-shared-models"))
   .enablePlugins(com.repcheck.sbt.ExceptionUniquenessPlugin)
   .settings(
     commonSettings,
+    libraryDependencies += "com.repcheck" %% "repcheck-utils" % "0.1.1", // base behaviors (codecs/DateTimeCodecs)
     libraryDependencies ++= circe ++ doobie ++ Seq(
       // ScalaCheck is compile-scope: StructuredCodec.sampleGen (Gen[A]) is part of the contract — the single source
       // for both property tests and varied samples shown to the LLM (master §5b / 01-F1 diagram).

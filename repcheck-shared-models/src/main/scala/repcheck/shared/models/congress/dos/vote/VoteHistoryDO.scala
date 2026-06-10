@@ -39,7 +39,7 @@ final case class VoteHistoryDO(
 
 object VoteHistoryDO {
 
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[VoteHistoryDO] = deriveEncoder[VoteHistoryDO]
   implicit val decoder: Decoder[VoteHistoryDO] = deriveDecoder[VoteHistoryDO]

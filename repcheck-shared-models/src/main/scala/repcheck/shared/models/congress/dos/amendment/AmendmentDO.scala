@@ -37,7 +37,7 @@ final case class AmendmentDO(
 
 object AmendmentDO {
 
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[AmendmentDO] = deriveEncoder[AmendmentDO]
   implicit val decoder: Decoder[AmendmentDO] = deriveDecoder[AmendmentDO]
