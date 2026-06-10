@@ -14,7 +14,7 @@ final case class BillCosponsorDO(
 
 object BillCosponsorDO {
 
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[BillCosponsorDO] = deriveEncoder[BillCosponsorDO]
   implicit val decoder: Decoder[BillCosponsorDO] = deriveDecoder[BillCosponsorDO]

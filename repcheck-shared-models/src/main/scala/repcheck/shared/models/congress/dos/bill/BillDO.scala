@@ -39,7 +39,7 @@ final case class BillDO(
 
 object BillDO {
 
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[BillDO] = deriveEncoder[BillDO]
   implicit val decoder: Decoder[BillDO] = deriveDecoder[BillDO]

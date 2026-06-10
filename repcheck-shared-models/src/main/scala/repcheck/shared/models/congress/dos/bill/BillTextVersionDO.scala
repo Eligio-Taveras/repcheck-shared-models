@@ -28,7 +28,7 @@ final case class BillTextVersionDO(
 
 object BillTextVersionDO {
 
-  import repcheck.shared.models.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
+  import com.repcheck.utils.codecs.DateTimeCodecs.{localDateDecoder, localDateEncoder}
 
   implicit val encoder: Encoder[BillTextVersionDO] = deriveEncoder[BillTextVersionDO]
   implicit val decoder: Decoder[BillTextVersionDO] = deriveDecoder[BillTextVersionDO]
