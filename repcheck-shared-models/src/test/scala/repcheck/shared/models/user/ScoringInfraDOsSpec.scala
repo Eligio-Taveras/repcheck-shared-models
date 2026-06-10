@@ -104,14 +104,14 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   "MemberBillStanceTopicDO" should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Read[MemberBillStanceTopicDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Write[MemberBillStanceTopicDO]].shouldBe(a[AnyRef])
   }
 
@@ -152,14 +152,14 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   "UserBillAlignmentDO" should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Read[UserBillAlignmentDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Write[UserBillAlignmentDO]].shouldBe(a[AnyRef])
   }
 
@@ -202,14 +202,14 @@ class ScoringInfraDOsSpec extends AnyFlatSpec with Matchers {
   "UserAmendmentAlignmentDO" should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Read[UserAmendmentAlignmentDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Write[UserAmendmentAlignmentDO]].shouldBe(a[AnyRef])
   }
 

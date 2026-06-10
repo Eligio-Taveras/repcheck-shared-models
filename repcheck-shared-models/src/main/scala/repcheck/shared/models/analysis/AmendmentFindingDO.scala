@@ -21,7 +21,7 @@ final case class AmendmentFindingDO(
 
 object AmendmentFindingDO {
 
-  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+  import com.repcheck.utils.doobie.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
 
   implicit val encoder: Encoder[AmendmentFindingDO] = deriveEncoder[AmendmentFindingDO]
   implicit val decoder: Decoder[AmendmentFindingDO] = deriveDecoder[AmendmentFindingDO]

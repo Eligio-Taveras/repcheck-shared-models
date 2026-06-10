@@ -6,7 +6,7 @@ import java.util.UUID
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-import repcheck.shared.models.codecs.VectorCodec._
+import com.repcheck.utils.doobie.VectorCodec._
 
 final case class UserBillAlignmentDO(
   userId: UUID,

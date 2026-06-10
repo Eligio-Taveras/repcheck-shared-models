@@ -116,14 +116,14 @@ class ScoreHistoryDOSpec extends AnyFlatSpec with Matchers {
   "ScoreHistoryDO" should "have Doobie Read instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Read[ScoreHistoryDO]].shouldBe(a[AnyRef])
   }
 
   it should "have Doobie Write instance" in {
     import doobie._
     import doobie.postgres.implicits._
-    import repcheck.shared.models.codecs.VectorCodec._
+    import com.repcheck.utils.doobie.VectorCodec._
     implicitly[Write[ScoreHistoryDO]].shouldBe(a[AnyRef])
   }
 

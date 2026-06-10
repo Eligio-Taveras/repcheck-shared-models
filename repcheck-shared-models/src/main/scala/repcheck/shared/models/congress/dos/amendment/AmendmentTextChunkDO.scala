@@ -32,7 +32,7 @@ final case class AmendmentTextChunkDO(
 
 object AmendmentTextChunkDO {
 
-  import repcheck.shared.models.codecs.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
+  import com.repcheck.utils.doobie.VectorCodec.{floatArrayDecoder, floatArrayEncoder}
 
   implicit val encoder: Encoder[AmendmentTextChunkDO] = deriveEncoder[AmendmentTextChunkDO]
   implicit val decoder: Decoder[AmendmentTextChunkDO] = deriveDecoder[AmendmentTextChunkDO]
