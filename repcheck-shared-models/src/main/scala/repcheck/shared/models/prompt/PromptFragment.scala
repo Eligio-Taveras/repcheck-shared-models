@@ -3,7 +3,11 @@ package repcheck.shared.models.prompt
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.{Decoder, DecodingFailure, Encoder, HCursor}
 
-final case class InstructionBlock(
+/**
+ * A reusable, stage-tagged fragment of a prompt: its text (`content`), where it sits (`stage`), and its emphasis
+ * (`weight`, 0.0-1.0). Fragments are composed into a full prompt by [[ChainAssembler]] per a [[PromptProfile]] chain.
+ */
+final case class PromptFragment(
   name: String,
   stage: PromptStage,
   weight: Double,
@@ -11,12 +15,12 @@ final case class InstructionBlock(
   content: String,
 )
 
-object InstructionBlock {
+object PromptFragment {
 
-  implicit val encoder: Encoder[InstructionBlock] = deriveEncoder[InstructionBlock]
+  implicit val encoder: Encoder[PromptFragment] = deriveEncoder[PromptFragment]
 
-  implicit val decoder: Decoder[InstructionBlock] = new Decoder[InstructionBlock] {
-    def apply(c: HCursor): Decoder.Result[InstructionBlock] =
+  implicit val decoder: Decoder[PromptFragment] = new Decoder[PromptFragment] {
+    def apply(c: HCursor): Decoder.Result[PromptFragment] =
       for {
         name   <- c.downField("name").as[String]
         stage  <- c.downField("stage").as[PromptStage]
@@ -29,7 +33,7 @@ object InstructionBlock {
           }
         version <- c.downField("version").as[String]
         content <- c.downField("content").as[String]
-      } yield InstructionBlock(name, stage, weight, version, content)
+      } yield PromptFragment(name, stage, weight, version, content)
   }
 
 }

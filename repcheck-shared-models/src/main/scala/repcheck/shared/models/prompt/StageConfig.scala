@@ -5,7 +5,7 @@ import io.circe.{Decoder, Encoder}
 
 final case class StageConfig(
   stage: PromptStage,
-  blockNames: List[String],
+  promptFragmentNames: List[String],
   weight: Double,
 )
 

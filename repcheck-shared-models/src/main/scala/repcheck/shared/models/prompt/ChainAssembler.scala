@@ -4,7 +4,7 @@ trait ChainAssembler {
 
   def assemble(
     profile: PromptProfile,
-    blocks: Map[String, InstructionBlock],
+    promptFragments: Map[String, PromptFragment],
     context: Map[String, String],
   ): Either[String, String]
 
@@ -16,26 +16,26 @@ object DefaultChainAssembler extends ChainAssembler {
 
   def assemble(
     profile: PromptProfile,
-    blocks: Map[String, InstructionBlock],
+    promptFragments: Map[String, PromptFragment],
     context: Map[String, String],
   ): Either[String, String] = {
     val sortedStages = profile.chain.sortBy(_.stage.stageOrder)
 
-    val allBlockNames = sortedStages.flatMap(_.blockNames)
-    val missingNames  = allBlockNames.filterNot(blocks.contains)
+    val allPromptFragmentNames = sortedStages.flatMap(_.promptFragmentNames)
+    val missingNames           = allPromptFragmentNames.filterNot(promptFragments.contains)
 
     if (missingNames.nonEmpty) {
-      Left(s"Missing blocks: ${missingNames.mkString(", ")}")
+      Left(s"Missing prompt fragments: ${missingNames.mkString(", ")}")
     } else {
       val stageSections = sortedStages.map { stageConfig =>
-        val stageBlocks = stageConfig.blockNames.flatMap(blocks.get)
-        val rendered = stageBlocks.map { block =>
-          val content = if (block.stage == PromptStage.Context) {
-            replacePlaceholders(block.content, context)
+        val stagePromptFragments = stageConfig.promptFragmentNames.flatMap(promptFragments.get)
+        val rendered = stagePromptFragments.map { promptFragment =>
+          val content = if (promptFragment.stage == PromptStage.Context) {
+            replacePlaceholders(promptFragment.content, context)
           } else {
-            block.content
+            promptFragment.content
           }
-          WeightTranslator.translate(block.weight, content)
+          WeightTranslator.translate(promptFragment.weight, content)
         }
         rendered.mkString("\n")
       }
