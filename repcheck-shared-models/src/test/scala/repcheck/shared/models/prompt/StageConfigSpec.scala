@@ -11,16 +11,16 @@ class StageConfigSpec extends AnyFlatSpec with Matchers {
   "StageConfig Circe codec" should "round-trip with all fields" in {
     val config = StageConfig(
       stage = PromptStage.System,
-      blockNames = List("intro", "context", "task"),
+      promptFragmentNames = List("intro", "context", "task"),
       weight = 1.0,
     )
     config.asJson.as[StageConfig] shouldBe Right(config)
   }
 
-  it should "round-trip with empty blockNames" in {
+  it should "round-trip with empty promptFragmentNames" in {
     val config = StageConfig(
       stage = PromptStage.Persona,
-      blockNames = List.empty,
+      promptFragmentNames = List.empty,
       weight = 0.5,
     )
     config.asJson.as[StageConfig] shouldBe Right(config)
@@ -37,22 +37,22 @@ class StageConfigSpec extends AnyFlatSpec with Matchers {
       PromptStage.Output,
     )
     stages.foreach { stage =>
-      val config = StageConfig(stage = stage, blockNames = List("block-a"), weight = 0.8)
+      val config = StageConfig(stage = stage, promptFragmentNames = List("prompt-fragment-a"), weight = 0.8)
       config.asJson.as[StageConfig] shouldBe Right(config)
     }
   }
 
-  it should "round-trip with multiple blockNames" in {
+  it should "round-trip with multiple promptFragmentNames" in {
     val config = StageConfig(
       stage = PromptStage.Context,
-      blockNames = List("bill-text", "vote-history", "member-profile"),
+      promptFragmentNames = List("bill-text", "vote-history", "member-profile"),
       weight = 2.5,
     )
     config.asJson.as[StageConfig] shouldBe Right(config)
   }
 
   it should "round-trip with weight of 0.0" in {
-    val config = StageConfig(stage = PromptStage.Guardrails, blockNames = List("safety"), weight = 0.0)
+    val config = StageConfig(stage = PromptStage.Guardrails, promptFragmentNames = List("safety"), weight = 0.0)
     config.asJson.as[StageConfig] shouldBe Right(config)
   }
 
@@ -61,20 +61,20 @@ class StageConfigSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "encode stage using apiValue" in {
-    val config = StageConfig(stage = PromptStage.Output, blockNames = List("result"), weight = 1.0)
+    val config = StageConfig(stage = PromptStage.Output, promptFragmentNames = List("result"), weight = 1.0)
     val json   = config.asJson
     val _      = json.hcursor.downField("stage").as[String] shouldBe Right("output")
     val _      = json.hcursor.downField("weight").as[Double] shouldBe Right(1.0)
-    json.hcursor.downField("blockNames").as[List[String]] shouldBe Right(List("result"))
+    json.hcursor.downField("promptFragmentNames").as[List[String]] shouldBe Right(List("result"))
   }
 
   it should "decodeAccumulating valid JSON" in {
-    val json = """{"stage":"system","blockNames":["intro"],"weight":1.0}"""
+    val json = """{"stage":"system","promptFragmentNames":["intro"],"weight":1.0}"""
     decodeAccumulating[StageConfig](json).isValid shouldBe true
   }
 
   it should "decodeAccumulating invalid field types" in {
-    val json = """{"stage":123,"blockNames":"not-a-list","weight":"bad"}"""
+    val json = """{"stage":123,"promptFragmentNames":"not-a-list","weight":"bad"}"""
     decodeAccumulating[StageConfig](json).isInvalid should be(true)
   }
 

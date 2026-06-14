@@ -7,30 +7,39 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
 
   private val assembler = DefaultChainAssembler
 
-  private val systemBlock  = InstructionBlock("system-base", PromptStage.System, 1.0, "1.0.0", "You are an assistant.")
-  private val personaBlock = InstructionBlock("analyst", PromptStage.Persona, 0.8, "1.0.0", "Act as a policy analyst.")
-  private val lensBlock1   = InstructionBlock("fiscal-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on fiscal impact.")
-  private val lensBlock2   = InstructionBlock("social-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on social impact.")
+  private val systemPromptFragment =
+    PromptFragment("system-base", PromptStage.System, 1.0, "1.0.0", "You are an assistant.")
 
-  private val contextBlock =
-    InstructionBlock("bill-context", PromptStage.Context, 0.8, "1.0.0", "Bill text: {{bill_text}}")
+  private val personaPromptFragment =
+    PromptFragment("analyst", PromptStage.Persona, 0.8, "1.0.0", "Act as a policy analyst.")
 
-  private val guardrailsBlock = InstructionBlock("safety", PromptStage.Guardrails, 1.0, "1.0.0", "Do not hallucinate.")
-  private val outputBlock     = InstructionBlock("json-out", PromptStage.Output, 1.0, "1.0.0", "Return JSON.")
-  private val customBlock     = InstructionBlock("custom-1", PromptStage.Custom, 0.6, "1.0.0", "Extra instruction.")
+  private val lensPromptFragment1 =
+    PromptFragment("fiscal-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on fiscal impact.")
 
-  private val allBlocks: Map[String, InstructionBlock] = Map(
-    "system-base"  -> systemBlock,
-    "analyst"      -> personaBlock,
-    "fiscal-lens"  -> lensBlock1,
-    "social-lens"  -> lensBlock2,
-    "bill-context" -> contextBlock,
-    "safety"       -> guardrailsBlock,
-    "json-out"     -> outputBlock,
-    "custom-1"     -> customBlock,
+  private val lensPromptFragment2 =
+    PromptFragment("social-lens", PromptStage.Lens, 0.5, "1.0.0", "Focus on social impact.")
+
+  private val contextPromptFragment =
+    PromptFragment("bill-context", PromptStage.Context, 0.8, "1.0.0", "Bill text: {{bill_text}}")
+
+  private val guardrailsPromptFragment =
+    PromptFragment("safety", PromptStage.Guardrails, 1.0, "1.0.0", "Do not hallucinate.")
+
+  private val outputPromptFragment = PromptFragment("json-out", PromptStage.Output, 1.0, "1.0.0", "Return JSON.")
+  private val customPromptFragment = PromptFragment("custom-1", PromptStage.Custom, 0.6, "1.0.0", "Extra instruction.")
+
+  private val allPromptFragments: Map[String, PromptFragment] = Map(
+    "system-base"  -> systemPromptFragment,
+    "analyst"      -> personaPromptFragment,
+    "fiscal-lens"  -> lensPromptFragment1,
+    "social-lens"  -> lensPromptFragment2,
+    "bill-context" -> contextPromptFragment,
+    "safety"       -> guardrailsPromptFragment,
+    "json-out"     -> outputPromptFragment,
+    "custom-1"     -> customPromptFragment,
   )
 
-  "DefaultChainAssembler" should "assemble with one block per stage in correct order" in {
+  "DefaultChainAssembler" should "assemble with one PromptFragment per stage in correct order" in {
     val profile = PromptProfile(
       "test",
       List(
@@ -40,7 +49,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
         StageConfig(PromptStage.Guardrails, List("safety"), 1.0),
       ),
     )
-    val result = assembler.assemble(profile, allBlocks, Map.empty)
+    val result = assembler.assemble(profile, allPromptFragments, Map.empty)
     val _      = result.isRight shouldBe true
     result.foreach { assembled =>
       val sections = assembled.split("\n\n")
@@ -52,7 +61,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
     }
   }
 
-  it should "assemble with multiple Lens blocks together" in {
+  it should "assemble with multiple Lens PromptFragments together" in {
     val profile = PromptProfile(
       "test",
       List(
@@ -60,7 +69,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
         StageConfig(PromptStage.Lens, List("fiscal-lens", "social-lens"), 0.5),
       ),
     )
-    val result = assembler.assemble(profile, allBlocks, Map.empty)
+    val result = assembler.assemble(profile, allPromptFragments, Map.empty)
     val _      = result.isRight shouldBe true
     result.foreach { assembled =>
       val _ = assembled should include("When possible: Focus on fiscal impact.")
@@ -68,18 +77,18 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
     }
   }
 
-  it should "return Left with missing block names" in {
+  it should "return Left with missing PromptFragment names" in {
     val profile = PromptProfile(
       "test",
       List(
-        StageConfig(PromptStage.System, List("system-base", "nonexistent-block"), 1.0),
+        StageConfig(PromptStage.System, List("system-base", "nonexistent-fragment"), 1.0),
         StageConfig(PromptStage.Lens, List("missing-lens"), 0.5),
       ),
     )
-    val result = assembler.assemble(profile, allBlocks, Map.empty)
+    val result = assembler.assemble(profile, allPromptFragments, Map.empty)
     val _      = result.isLeft shouldBe true
     result.swap.foreach { error =>
-      val _ = error should include("nonexistent-block")
+      val _ = error should include("nonexistent-fragment")
       error should include("missing-lens")
     }
   }
@@ -92,7 +101,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val context = Map("bill_text" -> "This is the actual bill text.")
-    val result  = assembler.assemble(profile, allBlocks, context)
+    val result  = assembler.assemble(profile, allPromptFragments, context)
     val _       = result.isRight shouldBe true
     result.foreach(assembled => assembled should include("Bill text: This is the actual bill text."))
   }
@@ -104,7 +113,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
         StageConfig(PromptStage.Context, List("bill-context"), 0.8)
       ),
     )
-    val result = assembler.assemble(profile, allBlocks, Map.empty)
+    val result = assembler.assemble(profile, allPromptFragments, Map.empty)
     val _      = result.isRight shouldBe true
     result.foreach(assembled => assembled should include("{{bill_text}}"))
   }
@@ -123,7 +132,7 @@ class ChainAssemblerSpec extends AnyFlatSpec with Matchers {
       ),
     )
     val context = Map("bill_text" -> "Some bill")
-    val result  = assembler.assemble(profile, allBlocks, context)
+    val result  = assembler.assemble(profile, allPromptFragments, context)
     val _       = result.isRight shouldBe true
     result.foreach { assembled =>
       val sysIdx = assembled.indexOf("You are an assistant.")
