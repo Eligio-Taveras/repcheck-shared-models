@@ -30,7 +30,7 @@ Assembled prompt string → scoring-pipeline (Component 11) → LLM adapter → 
 
 ### Relationship to Component 8
 
-Components 8 and 9 share the **identical assembly mechanism** — both build on the base traits from Component 1 §1.7 (`ChainAssembler`, `WeightTranslator`, `InstructionBlock`, `PromptProfile`). The differences are:
+Components 8 and 9 share the **identical assembly mechanism** — both build on the base traits from Component 1 §1.7 (`ChainAssembler`, `WeightTranslator`, `PromptFragment`, `PromptProfile`). The differences are:
 
 | Aspect | Component 8 (Bills) | Component 9 (Users) |
 |--------|---------------------|---------------------|
@@ -61,7 +61,7 @@ The scoring-pipeline (Component 11) uses different profiles depending on the sco
 | Type | Source | Role |
 |------|--------|------|
 | `PromptStage` | §1.7 | Enum: System, Persona, Lens, Context, Guardrails, Output, Custom |
-| `InstructionBlock` | §1.7 | Atomic prompt fragment: name, stage, weight, version, content |
+| `PromptFragment` | §1.7 | Atomic prompt fragment: name, stage, weight, version, content |
 | `StageConfig` | §1.7 | Stage + block names + weight for a profile entry |
 | `PromptProfile` | §1.7 | Named chain of `StageConfig` entries defining a complete prompt |
 | `ChainAssembler` | §1.7 | Trait that orders stages, applies weights, merges blocks, injects context |
@@ -169,7 +169,7 @@ repcheck-prompt-engine-users/
 ```
 repcheck-prompt-engine-users
 ├── repcheck-shared-models               (published artifact — Component 1)
-│   ├── PromptStage, InstructionBlock, StageConfig, PromptProfile   (§1.7)
+│   ├── PromptStage, PromptFragment, StageConfig, PromptProfile   (§1.7)
 │   ├── ChainAssembler, WeightTranslator                            (§1.7)
 │   └── AlignmentScoreOutput, TopicAlignmentScore, etc.             (§1.6, referenced by name only)
 └── GCS Java SDK                         (runtime dependency)

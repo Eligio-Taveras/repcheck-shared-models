@@ -11,16 +11,16 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 // Atomic unit of prompt composition — stored as JSON/YAML in GCS
-case class InstructionBlock(
+case class PromptFragment(
   name: String,
   stage: String,
   weight: Double,
   version: String,
   content: String
 )
-object InstructionBlock {
-  implicit val decoder: Decoder[InstructionBlock] = deriveDecoder
-  implicit val encoder: Encoder[InstructionBlock] = deriveEncoder
+object PromptFragment {
+  implicit val decoder: Decoder[PromptFragment] = deriveDecoder
+  implicit val encoder: Encoder[PromptFragment] = deriveEncoder
 }
 
 // Defines which blocks compose a specific analysis type
@@ -50,7 +50,7 @@ object StageConfig {
 trait ChainAssembler[F[_]] {
   def assemble(
     profile: PromptProfile,
-    blocks: Map[String, InstructionBlock],
+    blocks: Map[String, PromptFragment],
     runtimeContext: Map[String, String]  // e.g., bill text, user prefs injected at runtime
   ): F[String]
 }
@@ -77,12 +77,12 @@ class GcsBlockLoader[F[_]: Sync](
   bucket: String,
   basePath: String  // e.g., "bills/blocks" or "users/blocks"
 ) {
-  def loadAllBlocks(): F[Map[String, InstructionBlock]] =
+  def loadAllBlocks(): F[Map[String, PromptFragment]] =
     for {
       paths  <- gcsClient.listObjects(bucket, basePath)
       blocks <- paths.traverse { path =>
         gcsClient.readObject(bucket, path)
-          .flatMap(json => Sync[F].fromEither(decode[InstructionBlock](json)))
+          .flatMap(json => Sync[F].fromEither(decode[PromptFragment](json)))
       }
     } yield blocks.map(b => b.name -> b).toMap
 
@@ -95,7 +95,7 @@ class GcsBlockLoader[F[_]: Sync](
 ### Rules
 - **Zero** prompt content in code — all fragments live in GCS
 - Prompt engine repos are purely loaders + assemblers
-- `InstructionBlock`, `PromptProfile`, `StageConfig`, `ChainAssembler` trait live in `repcheck-shared-models`
+- `PromptFragment`, `PromptProfile`, `StageConfig`, `ChainAssembler` trait live in `repcheck-shared-models`
 - Weight translation converts numeric weights to prompt language patterns
 - Runtime context (bill text, user preferences) is injected during assembly, not stored in GCS
 - GCS bucket: `repcheck-prompt-configs` with paths `bills/blocks/`, `bills/profiles/`, `users/blocks/`, `users/profiles/`
