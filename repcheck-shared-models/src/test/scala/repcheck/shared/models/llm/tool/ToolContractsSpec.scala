@@ -29,9 +29,7 @@ class ToolContractsSpec extends AnyFlatSpec with Matchers {
   }
 
   // A concrete tool exercising the typed-both-ways contract.
-  private object LengthTool extends LlmTool[Option] {
-    type In  = String
-    type Out = Int
+  private object LengthTool extends LlmTool[Option, String, Int] {
     val spec: ToolSpec = ToolSpec("length", "string length", Json.obj(), Json.obj(), Json.obj(), Json.obj())
 
     def decode(arguments: Json): Either[ToolInputError, String] =
@@ -46,6 +44,11 @@ class ToolContractsSpec extends AnyFlatSpec with Matchers {
     LengthTool.decode(Json.fromInt(3)) shouldBe Left(ToolInputError("arguments", "expected a string"))
     LengthTool.execute("abcd") shouldBe Some(4)
     LengthTool.encodeResult(4) shouldBe Json.fromInt(4)
+  }
+
+  "LlmTool.invoke" should "run the full json round-trip, surfacing decode errors as Left" in {
+    LengthTool.invoke(Json.fromString("abcd")) shouldBe Some(Right(Json.fromInt(4)))
+    LengthTool.invoke(Json.fromInt(3)) shouldBe Some(Left(ToolInputError("arguments", "expected a string")))
   }
 
 }
