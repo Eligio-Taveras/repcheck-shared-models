@@ -18,7 +18,7 @@
   - `PorkDetection`: identified riders, earmarks, unrelated provisions
   - `ImpactAnalysis`: affected demographics, sectors, regions
   - `FiscalEstimate`: projected cost/savings
-- **Prompt Chain Base Traits**: `InstructionBlock`, `PromptProfile`, `ChainAssembler`, weight translation logic
+- **Prompt Chain Base Traits**: `PromptFragment`, `PromptProfile`, `ChainAssembler`, weight translation logic
 - **Serializers & Constants**: Shared serialization (Circe codecs for ZonedDateTime, etc.)
 
 **Depends on**: Nothing (root domain library, no external repcheck dependencies)

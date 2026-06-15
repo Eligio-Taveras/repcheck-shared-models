@@ -16,7 +16,7 @@
 | 1.4 Bill Text Versioning | New | Multi-version text storage + text diff analysis |
 | 1.5 User Domain Objects | New | User, preference, Q&A, and stance domain objects |
 | 1.6 LLM Output Schemas | New | Structured JSON schemas for LLM responses |
-| 1.7 Prompt Chain Base Traits | New | InstructionBlock, PromptProfile, ChainAssembler |
+| 1.7 Prompt Chain Base Traits | New | PromptFragment, PromptProfile, ChainAssembler |
 | 1.8 Shared Serializers & Constants | Migrate + Extend | Common Circe codecs, enums, constants |
 | 1.9 Analysis Domain Objects | New | BillAnalysisDO, BillFindingDO, BillConceptSummaryDO, AmendmentFindingDO, FindingTypeDO |
 
@@ -32,7 +32,7 @@
 | Multi-version text storage, text diff analysis | [1.4 Bill Text Versioning](01-shared-models/01.4-bill-text-versioning.md) |
 | User, preference, Q&A, stance, and score domain objects | [1.5 User Domain Objects](01-shared-models/01.5-user-domain-objects.md) |
 | Structured JSON schemas for LLM responses | [1.6 LLM Output Schemas](01-shared-models/01.6-llm-output-schemas.md) |
-| InstructionBlock, PromptProfile, ChainAssembler | [1.7 Prompt Chain Base Traits](01-shared-models/01.7-prompt-chain-base-traits.md) |
+| PromptFragment, PromptProfile, ChainAssembler | [1.7 Prompt Chain Base Traits](01-shared-models/01.7-prompt-chain-base-traits.md) |
 | Circe codecs, enums, constants, multi-source alias parsing | [1.8 Shared Serializers & Constants](01-shared-models/01.8-shared-serializers-constants.md) |
 | Analysis DOs: bill analyses, findings, concepts, fiscal, amendments | [1.9 Analysis Domain Objects](01-shared-models/01.9-analysis-domain-objects.md) |
 

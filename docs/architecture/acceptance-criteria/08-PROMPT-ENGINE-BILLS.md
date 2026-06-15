@@ -100,7 +100,7 @@ The prompt engine builds on these types defined in `repcheck-shared-models`:
 | Type | Source | Role |
 |------|--------|------|
 | `PromptStage` | §1.7 | Enum: System, Persona, Lens, Context, Guardrails, Output, Custom |
-| `InstructionBlock` | §1.7 | Atomic prompt fragment: name, stage, weight, version, content |
+| `PromptFragment` | §1.7 | Atomic prompt fragment: name, stage, weight, version, content |
 | `StageConfig` | §1.7 | Stage + block names + weight for a profile entry |
 | `PromptProfile` | §1.7 | Named chain of `StageConfig` entries defining a complete prompt |
 | `ChainAssembler` | §1.7 | Trait that orders stages, applies weights, merges blocks, injects context |
@@ -217,7 +217,7 @@ repcheck-prompt-engine-bills/
 ```
 repcheck-prompt-engine-bills
 ├── repcheck-shared-models               (published artifact — Component 1)
-│   ├── PromptStage, InstructionBlock, StageConfig, PromptProfile   (§1.7)
+│   ├── PromptStage, PromptFragment, StageConfig, PromptProfile   (§1.7)
 │   ├── ChainAssembler, WeightTranslator                            (§1.7)
 │   └── BillSummaryOutput, TopicClassificationOutput, etc.          (§1.6, referenced by name only)
 └── GCS Java SDK                         (runtime dependency)

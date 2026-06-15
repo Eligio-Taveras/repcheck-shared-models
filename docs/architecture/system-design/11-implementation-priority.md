@@ -3,7 +3,7 @@
 ## Implementation Priority (This Phase)
 
 ### Phase 1: Foundation
-1. **Create `repcheck-shared-models` repo** — Legislative DTOs/DOs, user DTOs/DOs, LLM output schemas, prompt chain base traits (`InstructionBlock`, `PromptProfile`, `ChainAssembler`, weight translation), serializers. Publish as versioned artifact.
+1. **Create `repcheck-shared-models` repo** — Legislative DTOs/DOs, user DTOs/DOs, LLM output schemas, prompt chain base traits (`PromptFragment`, `PromptProfile`, `ChainAssembler`, weight translation), serializers. Publish as versioned artifact.
 2. **Create `repcheck-pipeline-models` repo** — Pub/Sub event schemas, publisher/subscriber helpers, pipeline job metadata/status types, pipeline config types, AlloyDB table name constants. Publish as versioned artifact.
 3. **CI/CD for artifact publishing** — GitHub Actions to publish both model repos to GitHub Packages on tagged releases.
 
