@@ -25,6 +25,8 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
     taxonomyVersion = Some(1),
     createdAt = Some(now),
     updatedAt = Some(now),
+    decompositionSnapshotVersion = Some(3),
+    runId = Some(42L),
   )
 
   "BillConceptGroupDO Circe codec" should "round-trip with all fields populated" in {
@@ -32,7 +34,14 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "round-trip with optional fields as None" in {
-    val minimal = sampleConceptGroup.copy(embedding = None, taxonomyVersion = None, createdAt = None, updatedAt = None)
+    val minimal = sampleConceptGroup.copy(
+      embedding = None,
+      taxonomyVersion = None,
+      createdAt = None,
+      updatedAt = None,
+      decompositionSnapshotVersion = None,
+      runId = None,
+    )
     minimal.asJson.as[BillConceptGroupDO] shouldBe Right(minimal)
   }
 
@@ -565,6 +574,116 @@ class AnalysisDOsSpec extends AnyFlatSpec with Matchers {
     import doobie._
     import com.repcheck.utils.doobie.VectorCodec.floatArrayPut
     implicitly[Write[TaxonomyNodeDO]].shouldBe(a[AnyRef])
+  }
+
+  // ---- PreLlmMetadataSnapshotDO ----
+
+  private val sampleSnapshot = PreLlmMetadataSnapshotDO(snapshotVersion = 7, createdAt = Some(now), status = "active")
+
+  "PreLlmMetadataSnapshotDO Circe codec" should "round-trip with all fields populated" in {
+    sampleSnapshot.asJson.as[PreLlmMetadataSnapshotDO] shouldBe Right(sampleSnapshot)
+  }
+
+  it should "round-trip with createdAt as None" in {
+    val minimal = sampleSnapshot.copy(createdAt = None)
+    minimal.asJson.as[PreLlmMetadataSnapshotDO] shouldBe Right(minimal)
+  }
+
+  it should "fail on missing required field" in {
+    decode[PreLlmMetadataSnapshotDO]("""{"snapshotVersion":1}""").isLeft shouldBe true
+  }
+
+  it should "accumulate decode errors" in {
+    val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
+    val result = Decoder[PreLlmMetadataSnapshotDO].decodeAccumulating(bad.hcursor)
+    result.isInvalid should be(true)
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.postgres.implicits._
+    implicitly[Read[PreLlmMetadataSnapshotDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.postgres.implicits._
+    implicitly[Write[PreLlmMetadataSnapshotDO]].shouldBe(a[AnyRef])
+  }
+
+  // ---- PreLlmMetadataSnapshotMemberDO ----
+
+  private val sampleSnapshotMember =
+    PreLlmMetadataSnapshotMemberDO(snapshotVersion = 7, versionId = 1001L, subjectCount = 3)
+
+  "PreLlmMetadataSnapshotMemberDO Circe codec" should "round-trip" in {
+    sampleSnapshotMember.asJson.as[PreLlmMetadataSnapshotMemberDO] shouldBe Right(sampleSnapshotMember)
+  }
+
+  it should "fail on missing required field" in {
+    decode[PreLlmMetadataSnapshotMemberDO]("""{"snapshotVersion":1}""").isLeft shouldBe true
+  }
+
+  it should "accumulate decode errors" in {
+    val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
+    val result = Decoder[PreLlmMetadataSnapshotMemberDO].decodeAccumulating(bad.hcursor)
+    result.isInvalid should be(true)
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    implicitly[Read[PreLlmMetadataSnapshotMemberDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    implicitly[Write[PreLlmMetadataSnapshotMemberDO]].shouldBe(a[AnyRef])
+  }
+
+  // ---- BillDecompositionRunDO ----
+
+  private val sampleRun = BillDecompositionRunDO(
+    id = 1L,
+    snapshotVersion = 7,
+    orchestratorVersion = "0.1.0",
+    embedderVersion = "qwen3-0.6b-1024",
+    clustererVersion = "routing-v2",
+    promptVersion = "summarize-v1",
+    status = "completed",
+    startedAt = Some(now),
+    completedAt = Some(Instant.parse("2024-06-01T12:30:00Z")),
+    workflowRunId = Some(555L),
+  )
+
+  "BillDecompositionRunDO Circe codec" should "round-trip with all fields populated" in {
+    sampleRun.asJson.as[BillDecompositionRunDO] shouldBe Right(sampleRun)
+  }
+
+  it should "round-trip with optional fields as None" in {
+    val minimal = sampleRun.copy(startedAt = None, completedAt = None, workflowRunId = None)
+    minimal.asJson.as[BillDecompositionRunDO] shouldBe Right(minimal)
+  }
+
+  it should "fail on missing required field" in {
+    decode[BillDecompositionRunDO]("""{"id":1}""").isLeft shouldBe true
+  }
+
+  it should "accumulate decode errors" in {
+    val bad    = io.circe.parser.parse("{}").getOrElse(io.circe.Json.Null)
+    val result = Decoder[BillDecompositionRunDO].decodeAccumulating(bad.hcursor)
+    result.isInvalid should be(true)
+  }
+
+  it should "have Doobie Read instance" in {
+    import doobie._
+    import doobie.postgres.implicits._
+    implicitly[Read[BillDecompositionRunDO]].shouldBe(a[AnyRef])
+  }
+
+  it should "have Doobie Write instance" in {
+    import doobie._
+    import doobie.postgres.implicits._
+    implicitly[Write[BillDecompositionRunDO]].shouldBe(a[AnyRef])
   }
 
 }
