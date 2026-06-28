@@ -7,6 +7,13 @@ final case class UnrecognizedStanceType(value: String)
       s"Unrecognized StanceType: '$value'. Valid values: Conservative, Progressive, Bipartisan, Neutral"
     )
 
+/**
+ * The political lean an LLM assigns to a topic in stance classification (Component-10 analysis).
+ *
+ * Closed set enforced like the decomposition stance enums: the analysis output's `submit`-tool JSON schema publishes
+ * these `apiValue`s as an `enum`, and the [[decoder]] rejects out-of-set values so the agentic enforcer re-prompts. See
+ * `AnalysisOutputSchemaEnforcementSpec`.
+ */
 enum StanceType(val apiValue: String) {
   case Conservative extends StanceType("conservative")
   case Progressive  extends StanceType("progressive")

@@ -7,6 +7,13 @@ final case class UnrecognizedImpactSeverity(value: String)
       s"Unrecognized ImpactSeverity: '$value'. Valid values: High, Medium, Low"
     )
 
+/**
+ * Severity an LLM assigns to an impact or pork finding (Component-10 analysis).
+ *
+ * Closed set enforced like the decomposition stance enums: the analysis output's `submit`-tool JSON schema publishes
+ * these `apiValue`s as an `enum`, and the [[decoder]] rejects out-of-set values so the agentic enforcer re-prompts. See
+ * `AnalysisOutputSchemaEnforcementSpec`.
+ */
 enum ImpactSeverity(val apiValue: String) {
   case High   extends ImpactSeverity("high")
   case Medium extends ImpactSeverity("medium")

@@ -7,6 +7,13 @@ final case class UnrecognizedPorkType(value: String)
       s"Unrecognized PorkType: '$value'. Valid values: Earmark, Rider, UnrelatedProvision"
     )
 
+/**
+ * The kind of wasteful/unrelated provision an LLM flags in pork detection (Component-10 analysis).
+ *
+ * Closed set enforced like the decomposition stance enums: the analysis output's `submit`-tool JSON schema publishes
+ * these `apiValue`s as an `enum`, and the [[decoder]] rejects out-of-set values so the agentic enforcer re-prompts. See
+ * `AnalysisOutputSchemaEnforcementSpec`.
+ */
 enum PorkType(val apiValue: String) {
   case Earmark            extends PorkType("earmark")
   case Rider              extends PorkType("rider")
