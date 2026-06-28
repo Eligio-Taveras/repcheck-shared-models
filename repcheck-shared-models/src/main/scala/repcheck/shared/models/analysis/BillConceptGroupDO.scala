@@ -7,9 +7,10 @@ import io.circe.{Decoder, Encoder}
 
 /**
  * A concept group within a bill version: a cluster of sections about the same thing. `label` + `conceptSummary` are the
- * LLM-extracted concept; `embedding` is the embedding of that summary; `taxonomyVersion` records which taxonomy build
- * the group was classified under (NULL until classified — its scored node assignments live in
- * `bill_concept_group_taxonomy`).
+ * LLM-extracted concept; `embedding` is the embedding of that summary. `decompositionSnapshotVersion` is the SNAP
+ * snapshot this group was produced under (the reuse-check / idempotency dimension) and `runId` the producing
+ * decomposition run (`bill_decomposition_runs`). `taxonomyVersion` is legacy (the taxonomy approach, superseded by
+ * vectors-primary; NULL going forward).
  */
 final case class BillConceptGroupDO(
   id: Long,
@@ -21,6 +22,8 @@ final case class BillConceptGroupDO(
   taxonomyVersion: Option[Int],
   createdAt: Option[Instant],
   updatedAt: Option[Instant],
+  decompositionSnapshotVersion: Option[Int],
+  runId: Option[Long],
 )
 
 object BillConceptGroupDO {
