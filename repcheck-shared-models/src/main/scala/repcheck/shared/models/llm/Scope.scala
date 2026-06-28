@@ -7,7 +7,13 @@ final case class UnrecognizedScope(value: String)
       s"Unrecognized Scope: '$value'. Valid values: MAJOR, MODERATE, MINOR"
     )
 
-/** How central a topic is to its concept: MAJOR central, MODERATE substantive but not central, MINOR a side-effect. */
+/**
+ * How central a topic is to its concept: MAJOR central, MODERATE substantive but not central, MINOR a side-effect.
+ *
+ * Closed set enforced like [[Effect]]: the summarizer's `submit`-tool JSON schema publishes these `apiValue`s as an
+ * `enum`, and the [[decoder]] rejects out-of-set values so the agentic enforcer re-prompts. See
+ * `StanceSchemaEnforcementSpec`.
+ */
 enum Scope(val apiValue: String) {
   case Major    extends Scope("MAJOR")
   case Moderate extends Scope("MODERATE")

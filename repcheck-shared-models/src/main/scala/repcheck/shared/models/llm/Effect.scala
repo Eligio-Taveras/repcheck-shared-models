@@ -7,7 +7,15 @@ final case class UnrecognizedEffect(value: String)
       s"Unrecognized Effect: '$value'. Valid values: EXPANDS, RESTRICTS, CREATES, ELIMINATES, MODIFIES, REPORTS"
     )
 
-/** The structural action a concept's topic takes on its area (vectors-primary stance schema). */
+/**
+ * The structural action a concept's topic takes on its area (vectors-primary stance schema).
+ *
+ * The LLM is held to this closed set end-to-end — it is never trusted to "just use these terms":
+ *   1. the summarizer's `submit`-tool JSON schema publishes these `apiValue`s as an `enum` constraint, so the model is
+ *      told the allowed values up front; and 2. the circe [[decoder]] (via [[fromString]]) rejects any out-of-set
+ *      value, so the agentic structured-output enforcer re-prompts instead of persisting a hallucinated value.
+ * Both layers are verified by `StanceSchemaEnforcementSpec`.
+ */
 enum Effect(val apiValue: String) {
   case Expands    extends Effect("EXPANDS")
   case Restricts  extends Effect("RESTRICTS")

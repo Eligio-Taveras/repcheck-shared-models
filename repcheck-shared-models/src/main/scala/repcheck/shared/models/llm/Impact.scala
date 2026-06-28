@@ -10,6 +10,10 @@ final case class UnrecognizedImpact(value: String)
 /**
  * Valence of a concept's topic against its neutrally-framed area: POSITIVE advances the area, NEGATIVE undermines it,
  * MIXED has real internal tradeoffs, NEUTRAL reorganizes without advancing or undermining.
+ *
+ * Closed set enforced like [[Effect]]: the summarizer's `submit`-tool JSON schema publishes these `apiValue`s as an
+ * `enum`, and the [[decoder]] rejects out-of-set values so the agentic enforcer re-prompts. See
+ * `StanceSchemaEnforcementSpec`.
  */
 enum Impact(val apiValue: String) {
   case Positive extends Impact("POSITIVE")
