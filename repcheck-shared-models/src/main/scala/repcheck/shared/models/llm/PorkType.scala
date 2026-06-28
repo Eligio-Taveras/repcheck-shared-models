@@ -1,47 +1,23 @@
 package repcheck.shared.models.llm
 
-import io.circe.{Decoder, Encoder}
-
-final case class UnrecognizedPorkType(value: String)
-    extends Exception(
-      s"Unrecognized PorkType: '$value'. Valid values: Earmark, Rider, UnrelatedProvision"
-    )
+import repcheck.shared.models.llm.codec.{LlmEnum, LlmEnumCompanion}
 
 /**
  * The kind of wasteful/unrelated provision an LLM flags in pork detection (Component-10 analysis).
  *
- * Closed set enforced like the decomposition stance enums: the analysis output's `submit`-tool JSON schema publishes
- * these `apiValue`s as an `enum`, and the [[decoder]] rejects out-of-set values so the agentic enforcer re-prompts. See
- * `AnalysisOutputSchemaEnforcementSpec`.
+ * Closed set via [[LlmEnumCompanion]]: schema `enum` (constrain) + decoder reject. See `LlmEnumRegistrySpec`.
  */
-enum PorkType(val apiValue: String) {
+enum PorkType(val apiValue: String) extends LlmEnum {
   case Earmark            extends PorkType("earmark")
   case Rider              extends PorkType("rider")
   case UnrelatedProvision extends PorkType("unrelatedprovision")
 }
 
-object PorkType {
+object PorkType extends LlmEnumCompanion[PorkType] {
+  protected def enumValues: Array[PorkType] = PorkType.values
+  protected def label: String               = "PorkType"
 
-  private val lookup: Map[String, PorkType] = {
-    val byName = PorkType.values.map(pt => pt.toString.toUpperCase -> pt).toMap
-    val byApi  = PorkType.values.map(pt => pt.apiValue.toUpperCase -> pt).toMap
-    val aliases = Map(
-      "UNRELATED_PROVISION" -> PorkType.UnrelatedProvision,
-      "UNRELATED-PROVISION" -> PorkType.UnrelatedProvision,
-    )
-    byName ++ byApi ++ aliases
-  }
-
-  def fromString(value: String): Either[UnrecognizedPorkType, PorkType] =
-    lookup.get(value.toUpperCase) match {
-      case Some(pt) => Right(pt)
-      case None     => Left(UnrecognizedPorkType(value))
-    }
-
-  implicit val encoder: Encoder[PorkType] =
-    Encoder.encodeString.contramap(_.apiValue)
-
-  implicit val decoder: Decoder[PorkType] =
-    Decoder.decodeString.emap(str => fromString(str).left.map(_.getMessage))
+  override protected def aliases: Map[String, PorkType] =
+    Map("UNRELATED_PROVISION" -> PorkType.UnrelatedProvision, "UNRELATED-PROVISION" -> PorkType.UnrelatedProvision)
 
 }

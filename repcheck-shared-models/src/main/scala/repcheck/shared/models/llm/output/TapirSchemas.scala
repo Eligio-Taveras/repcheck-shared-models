@@ -1,6 +1,5 @@
 package repcheck.shared.models.llm.output
 
-import repcheck.shared.models.llm.{Effect, Impact, Scope}
 import sttp.tapir.{Schema, Validator}
 
 /**
@@ -14,16 +13,7 @@ private[output] object TapirSchemas {
   val taxonomyOutput: Schema[TaxonomyOutput]             = Schema.derived[TaxonomyOutput]
   val clusterConceptOutput: Schema[ClusterConceptOutput] = Schema.derived[ClusterConceptOutput]
 
-  // Stance enums encode as their UPPERCASE apiValue — the JSON-schema `enum` must list those exact strings.
-  private given Schema[Effect] =
-    Schema.string[Effect].validate(Validator.enumeration(Effect.values.toList, (e: Effect) => Some(e.apiValue)))
-
-  private given Schema[Impact] =
-    Schema.string[Impact].validate(Validator.enumeration(Impact.values.toList, (i: Impact) => Some(i.apiValue)))
-
-  private given Schema[Scope] =
-    Schema.string[Scope].validate(Validator.enumeration(Scope.values.toList, (s: Scope) => Some(s.apiValue)))
-
+  // Enum-field schemas (the `enum` constraints) come from each enum's LlmEnumCompanion.
   private given conceptTopic: Schema[ConceptTopic] = Schema.derived[ConceptTopic]
 
   val conceptSummaryWithTopics: Schema[ConceptSummaryWithTopics] =
